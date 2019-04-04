@@ -43,6 +43,51 @@ def getMeanVel():
 #############################################################################################
 #############################################################################################
 
+def getProfiles():
+	"""Returns the current mean velocity value of the dynamic objects as a Vector3
+	
+	"""
+	n_z = 20
+	dz = h/float(n_z)
+	phi = [0 for i in range(n_z)]
+	vpx = [0 for i in range(n_z)]
+	for body in O.bodies :
+		if body.dynamic == True and not body.isClump:
+			z = body.state.pos[2]
+			r = body.state.shape.radius
+			z_min = z - r
+			z_max = z + r
+			n_min = int(z_min * 3 / h)
+			n_max = int(z_max * 3 / h)
+			vel = body.state.vel
+			for i in range(n_min, n_max+1):
+				z_inf = max(i * dz, z_min)
+				z_sup = min((i + 1) * dz, z_max)
+				vol = math.pi * pow(r, 2) * ((z_sup - z_inf) + (pow(z_inf,3) - pow(z_sup, 3)/(3*pow(r, 2))))
+				phi[i] += vol
+				vpx[i] += vol * vel[0]
+	vpx[i] /= phi[i]
+	phi[i] /= dz * l * w
+	return [phi, vpx] 
+
+#############################################################################################
+#############################################################################################
+
+def getSolidFlow():
+	"""Returns the current mean velocity value of the dynamic objects as a Vector3
+	
+	"""
+	vect = Vector3(0,0,0)
+	n=0.0
+	for body in O.bodies :
+		if body.dynamic == True and not body.isClump:
+			vect += body.state.vel * body.state.mass
+			n+=1.0 vect /= n 
+	return vect
+
+#############################################################################################
+#############################################################################################
+
 def getMaxVel():
 	"""Returns the current max velocity value of the dynamic objects as a Vector3
 	
