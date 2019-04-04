@@ -53,3 +53,7 @@ r = d / 2.0
 n_l = n / (l * w / (d * d))
 ## Estimated number of initial particles layer
 n_ll = n / (l * w / (1.2 * d * 1.2 * d))
+
+# Log file
+
+logFile = open("case.log", "a+")
