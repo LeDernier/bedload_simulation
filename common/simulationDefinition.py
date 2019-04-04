@@ -68,7 +68,7 @@ def simulation():
 #############################################################################################
 #############################################################################################
 
-def simulationWait(iterNb):
+def simulationWait():
 	"""Creates a simulation, runs it and wait until its finished.
 	
 	Parameters:
@@ -82,8 +82,8 @@ def simulationWait(iterNb):
 	O.reset()
 	frameworkCreation()
 	engineCreation()
-	O.run(iterNb) # Run the simulation
-	O.wait() # Wait until the simulation is finished
+	O.run() # Run the simulation
+	O.wait()
 
 #############################################################################################
 #############################################################################################
@@ -117,7 +117,7 @@ def engineCreation():
 			),
 		### inSimulationUtils Calls
 		PyRunner(command='logData()', virtPeriod = 0.01, label = 'logs'),
-		#PyRunner(command='exitWhenFinished()', virtPeriod = 1.0, label = 'exit'),
+		PyRunner(command='exitWhenFinished()', virtPeriod = 0.1, label = 'exit'),
 		### GlobalStiffnessTimeStepper, determine the time step for a stable integration
 		GlobalStiffnessTimeStepper(defaultDt=1e-4, viscEl=True, timestepSafetyCoefficient=0.7, label='GSTS'),
 		### Integrate the equation and calculate the new position/velocities...
@@ -125,17 +125,19 @@ def engineCreation():
 		]
 	
 	logs.dead = False
-	#exit.dead = False
+	exit.dead = False
 
 ####################################################################################################################################
 #################################################### USEFUL PYRUNNERS  #########################################################
 ####################################################################################################################################
 
 def exitWhenFinished():
-	if(O.time < t_max):
-		print("Simulation time, " + str(t_max) +  "s, elapsed.\nEnd of simulation.")
-		O.stop()
+	if(O.time > t_max):
+		logFile.write("Simulation time, " + str(t_max) +  "s, elapsed.\nEnd of simulation.")
+		logFile.write("\n")
+		O.pause()
 		logs.dead = True
 		exit.dead = True
 	else:
-		print("Simulation time progress: " + str(int(100.0 * O.time/t_max)) + "%")
+		logFile.write("Simulation time progress: " + str(int(100.0 * O.time/t_max)) + "%")
+		logFile.write("\n")
