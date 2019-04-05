@@ -1,0 +1,4 @@
+#!/bin/bash
+rm data/*
+rm case.log
+yade -nx case_batch.py
