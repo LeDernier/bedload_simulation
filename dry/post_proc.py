@@ -59,7 +59,7 @@ plt.title(r"Evolution of the $V_x$ profile over time.")
 plt.xlabel(r"$V_x$ (m/s)")
 plt.ylabel("z/d (m)")
 
-for i in range(begt, endt):
+for i in range(len(stime)): 
 	p = profiles[i]
 	zs = p[0]
 	v_x = p[2]
@@ -75,7 +75,7 @@ plt.title(r"Evolution of the $V_x$ profile over time.")
 plt.xlabel(r"$V_x$ (m/s)")
 plt.ylabel("z/d (m)")
 
-for i in range(begt, endt):
+for i in range(len(stime)):
 	p = profiles[i]
 	zs = p[0]
 	phi = p[1]
