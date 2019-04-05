@@ -13,7 +13,7 @@ plt.title(r"Evolution of the tetra's position $\frac{z}{d_tetra}$. Comparison fo
 plt.xlabel("Time (s)")
 plt.ylabel("Position (m)")
 
-ds = [1.0*d_tetra, 1.5*d_tetra, 2.0*d_tetra, 4.0*d_tetra, 8.0*d_tetra]
+ds = [1.5*d_tetra, 1.7*d_tetra, 2.0*d_tetra, 2.5*d_tetra]
 
 for i in range(len(ds)):
 	d = ds[i]

@@ -17,13 +17,13 @@ execfile('../common/simulationDefinition.py')
 
 O.saveTmp() # Saves a "nothing" state
 
-for d in [1.0*d_tetra, 1.5*d_tetra, 2*d_tetra, 4*d_tetra, 8*d_tetra]:
+for d in [1.5*d_tetra, 1.7*d_tetra, 2*d_tetra, 2.5*d_tetra]:
 	logFile.write("Start simulation for d = " + str(d/d_tetra) + "*d_tetra")
 	logFile.write("\n")
 	# Compute radius again
 	r = d/2.0
 	# Set number of particles
-	n = 1e-4/pow(d, 3.0)
+	n = 2e-4/pow(d, 3.0)
 	n_l = n / (l*w/(d*d))
 	n_ll = n / (l*w/(1.2*d*1.2*d))
 	logFile.write("Computing with " + str(n) + " particles.")

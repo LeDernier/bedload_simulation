@@ -1,4 +1,4 @@
 #!/bin/bash
 rm data/*
 rm case.log
-yade case.py
+yade -nx -j6 case.py

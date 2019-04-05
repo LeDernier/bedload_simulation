@@ -23,7 +23,7 @@
 import math
 
 ### Simulation parameters
-t_max = 30.0
+t_max = 6666666666666666666666666666666666666666666666666666666666666666660.0
 
 ### Macroscopic parameters
 n = 1000.0
