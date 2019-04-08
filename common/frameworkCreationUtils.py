@@ -76,6 +76,64 @@ def createParticles():
 			x += d_eff
 		z += d_eff
 
+def addRandomClump(**kwargs):
+	# Parameters
+	center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
+	d_min = kwargs.get('d_min', 1.0e-6)
+	d_max = kwargs.get('d_max', 1.0e-6)
+	n = kwargs.get('n', 10)
+
+	x = center[0]
+	y = center[1]
+	z = center[2]
+	r_min = d_min/2.0
+	r_max = d_max/2.0
+
+	# Spher list
+	ss = []
+	# Create first sphere
+	ss.append(
+			sphere(
+				center = (
+					x, 
+					y, 
+					z
+					),
+				radius = random.random(r_min, r_max),
+				color = (1.0, 0.0, 0.0),
+				fixed = False,
+				material = 'mat'
+				)
+			)
+
+
+	for i in range(n):
+		i_rand = random.randint(0, len(ss))
+
+		theta = random.random(0.0, 2.0*math.pi)
+		phi = random.random(0.0, math.pi)
+		r_s = random.random(max(0.0, ss[i_rand].shape.radius - d_min), ss[i_rand].shape.radius)
+		
+		x = ss[i_rand].state.pos[0] + r_s * cos(theta) * sin(phi)
+		y = ss[i_rand].state.pos[1] + r_s * sin(theta) * sin(phi)
+		z = ss[i_rand].state.pos[2] + r_s * cos(phi)
+		
+		ss.append(
+				sphere(
+					center = (
+						x, 
+						y, 
+						z
+						),
+					radius = random.random(r_min, r_max),
+					color = (1.0, 0.0, 0.0),
+					fixed = False,
+					material = 'mat'
+					)
+				)
+
+
+
 def addTetra(**kwargs):
 	# Parameters
 	center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
