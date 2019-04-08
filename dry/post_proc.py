@@ -10,7 +10,7 @@ begz = int(z_ground * n_z / h)
 endz = begz+n_z/8
 
 ### import measures functions
-execfile("../common_test/measures.py")
+execfile("../common/measures.py")
 
 ### Reading framework ids
 print(sep + "Reading ids.")
