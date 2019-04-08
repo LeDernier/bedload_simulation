@@ -1,1 +1,1 @@
-yade .case.py
+yade -j4 .case.py
