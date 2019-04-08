@@ -1,4 +1,0 @@
-#!/bin/bash
-rm data/*
-rm case.log
-yade -nx -j6 case.py
