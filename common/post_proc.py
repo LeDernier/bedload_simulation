@@ -1,13 +1,8 @@
 import os
 import matplotlib.pyplot as plt
 
-execfile("params.py")
-
 ### Constants
 sep = "---------------------- "
-n_z = 1000
-begz = int(z_ground * n_z / h)
-endz = begz+n_z/8
 
 ### import measures functions
 execfile("../common/measures.py")
@@ -51,36 +46,40 @@ plt.plot(stime, [(z-z_ground)/d_tetra for z in tetraPosZ], '->', markevery=me, l
 plt.plot(stime, max_z, '-<', markevery=me, label=r"max") # markevery is just used to show less markers
 plt.plot(stime, [0 for t in stime], '-o', markevery=me, label=r"ground") # markevery is just used to show less markers
 plt.legend()
-plt.show()
 
 ## Plot v
 plt.figure()
 plt.title(r"Evolution of the $V_x$ profile over time.")
-plt.xlabel(r"$V_x$ (m/s)")
+plt.xlabel(r"$V_x$ (.)")
 plt.ylabel("z/d (m)")
 
-for i in range(len(stime)): 
+begT = 0
+endT = len(stime)
+
+if lastProfile:
+	begT = len(stime)-1
+
+for i in range(begT, endT): 
 	p = profiles[i]
 	zs = p[0]
 	v_x = p[2]
 	me = max(len(zs)/100,1)
 	plt.plot(v_x[begz:endz], [(z-z_ground)/d for z in zs[begz:endz]], '->', markevery=me, label="t="+str(stime[i])) # markevery is just used to show less markers
-
 plt.legend()
-plt.show()
 
 ## Plot phi
 plt.figure()
-plt.title(r"Evolution of the $V_x$ profile over time.")
-plt.xlabel(r"$V_x$ (m/s)")
+plt.title(r"Evolution of the $\phi_x$ profile over time.")
+plt.xlabel(r"$\phi_x$ (m/s)")
 plt.ylabel("z/d (m)")
 
-for i in range(len(stime)):
+for i in range(begT, endT):
 	p = profiles[i]
 	zs = p[0]
 	phi = p[1]
 	me = max(len(zs)/100,1)
 	plt.plot(phi[begz:endz], [(z-z_ground)/d for z in zs[begz:endz]], '->', markevery=me, label="t="+str(stime[i])) # markevery is just used to show less markers
-
 plt.legend()
+
+## Show all figures
 plt.show()
