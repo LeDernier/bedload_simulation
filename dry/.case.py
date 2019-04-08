@@ -21,11 +21,11 @@ if datas:
 		datas[i] = float(datas[i].split(".yade")[0])
 	datas.sort()
 	# import PyRunners
-	execfile('../common_test/simulationPyRunners.py')
+	execfile('../common/simulationPyRunners.py')
 	O.load("data/"+str(datas[-1])+".yade")
 	#O.run()
 else:
 	# import simulation
 	execfile('framework.py')
-	execfile('../common_test/simulationDefinition.py')
+	execfile('../common/simulationDefinition.py')
 	simulation()
