@@ -7,44 +7,7 @@
 #
 #########################################################################################################################################################################
 
-# Import files
-execfile("framework.py")
-execfile("../common/pyRunMeasures.py")
-
-####################################################################################################################################
-####################################################  DATA LOGGING  #########################################################
-####################################################################################################################################
-
-logExecs=[]
-def resetLogs():
-	global logExecs
-	for [f, evalfunc] in logExecs:
-		f.close()
-	logExecs=[]
-
-def addLogData(fileName,evalfunc):
-	"""Creates a new log file and prepare to store values returned by execfunc during the simulation. 
-	
-	Parameters:
-	- fileName  -- name of the log file
-	- execfunc  -- python expression to evaluate and so that its result will be stored
-	
-	"""
-	try:
-		# Create data Directory
-		os.mkdir('data')
-	except:
-		pass
-	f = open('data/'+fileName,"w")
-	logExecs.append([f, evalfunc])
-	
-def logData():
-	"""Loggs the data.
-	
-	"""
-	for [f, evalfunc] in logExecs:
-		f.write(str(eval(evalfunc)))
-		f.write("\n")
+execfile("../common_test/simulationPyRunners.py")
 
 ####################################################################################################################################
 ####################################################  SIMULATION DEFINITION  #########################################################
@@ -116,28 +79,14 @@ def engineCreation():
 			label = 'interactionLoop'
 			),
 		### inSimulationUtils Calls
-		PyRunner(command='logData()', virtPeriod = 0.01, label = 'logs'),
 		PyRunner(command='exitWhenFinished()', virtPeriod = 0.1, label = 'exit'),
+		PyRunner(command='O.save("data/"+str(O.time)+".yade")', virtPeriod = saveInterval, label = 'save'),
 		### GlobalStiffnessTimeStepper, determine the time step for a stable integration
 		GlobalStiffnessTimeStepper(defaultDt=1e-4, viscEl=True, timestepSafetyCoefficient=0.7, label='GSTS'),
 		### Integrate the equation and calculate the new position/velocities...
 		NewtonIntegrator(gravity=g, label='newtonIntegr')
 		]
 	
-	logs.dead = False
 	exit.dead = False
-
-####################################################################################################################################
-#################################################### USEFUL PYRUNNERS  #########################################################
-####################################################################################################################################
-
-def exitWhenFinished():
-	if(O.time > t_max):
-		logFile.write("Simulation time, " + str(t_max) +  "s, elapsed.\nEnd of simulation.")
-		logFile.write("\n")
-		O.pause()
-		logs.dead = True
-		exit.dead = True
-	else:
-		logFile.write("Simulation time progress: " + str(int(100.0 * O.time/t_max)) + "%")
-		logFile.write("\n")
+	if(saveInterval <= 0):
+		save.dead = False
