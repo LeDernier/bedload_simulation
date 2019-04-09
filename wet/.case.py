@@ -28,4 +28,4 @@ else:
 	# import simulation
 	execfile('framework.py')
 	execfile('../common/simulationDefinition.py')
-	simulation()
+	sim.simulation()
