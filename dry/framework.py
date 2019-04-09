@@ -28,13 +28,13 @@ def frameworkCreation():
 
 	createPeriodicSlope()
 	createParticles()
-	(idTetra, [idS_1, idS_2, idS_3, idS_4]) = addTetra(center = Vector3(l/2.0, w/2.0, h/3.0 + n_ll*d*1.2/2.0), d=d_tetra, l=d_tetra/2.0)
-	
-	ids["tetra"] = idTetra
-	ids["s_1"] = idS_1
-	ids["s_2"] = idS_2
-	ids["s_3"] = idS_3
-	ids["s_4"] = idS_4
+#	(idTetra, [idS_1, idS_2, idS_3, idS_4]) = addTetra(center = Vector3(l/2.0, w/2.0, h/3.0 + n_ll*d*1.2/2.0), d=d_tetra, l=d_tetra/2.0)
+#	
+#	ids["tetra"] = idTetra
+#	ids["s_1"] = idS_1
+#	ids["s_2"] = idS_2
+#	ids["s_3"] = idS_3
+#	ids["s_4"] = idS_4
 
 	f = open('.ids','w')
 	f.write(str(ids))
