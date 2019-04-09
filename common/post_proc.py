@@ -16,36 +16,42 @@ f.close()
 ### Reading data
 print(sep + "Loading data.")
 time = []
-tetraPosZ = []
+#tetraPosZ = []
 max_z = []
 profiles = []
 for f in os.listdir("data"):
 	print("Loading file: data/" + f)
 	O.load("data/" + f)
 	time.append(O.time)
-	tetraPosZ.append(getObjPos(ids["tetra"])[2])
-	max_z.append((getMaxZ()-z_ground)/d_tetra)
+#	tetraPosZ.append(getObjPos(ids["tetra"])[2])
+	max_z.append((getMaxZ()-z_ground)/d)
 	profiles.append(getProfiles())
 
 ### Sorting data
 print(sep + "Sorting data.")
-stime, tetraPosZ = zip(*sorted(zip(time, tetraPosZ)))
+#stime, tetraPosZ = zip(*sorted(zip(time, tetraPosZ)))
 stime, max_z = zip(*sorted(zip(time, max_z)))
 stime, profiles = zip(*sorted(zip(time, profiles)))
+
+### Processing parameters from data :
+begT = 0
+endT = len(stime)
+if lastProfile:
+	begT = len(stime)-1
 
 ### Ploting data
 print(sep + "Ploting data.")
 
 ## Plot tetra position
-plt.figure()
-plt.title(r"Evolution of the tetra's position $\frac{z}{d_tetra}$.")
-plt.xlabel("Time (s)")
-plt.ylabel("Position (m)")
-me = max(len(stime)/100,1)
-plt.plot(stime, [(z-z_ground)/d_tetra for z in tetraPosZ], '->', markevery=me, label="tetra") # markevery is just used to show less markers
-plt.plot(stime, max_z, '-<', markevery=me, label=r"max") # markevery is just used to show less markers
-plt.plot(stime, [0 for t in stime], '-o', markevery=me, label=r"ground") # markevery is just used to show less markers
-plt.legend()
+#plt.figure()
+#plt.title(r"Evolution of the tetra's position $\frac{z}{d_tetra}$.")
+#plt.xlabel("Time (s)")
+#plt.ylabel("Position (m)")
+#me = max(len(stime)/100,1)
+#plt.plot(stime, [(z-z_ground)/d_tetra for z in tetraPosZ], '->', markevery=me, label="tetra") # markevery is just used to show less markers
+#plt.plot(stime, max_z, '-<', markevery=me, label=r"max") # markevery is just used to show less markers
+#plt.plot(stime, [0 for t in stime], '-o', markevery=me, label=r"ground") # markevery is just used to show less markers
+#plt.legend()
 
 ## Plot v
 plt.figure()
@@ -53,11 +59,6 @@ plt.title(r"Evolution of the $V_x$ profile over time.")
 plt.xlabel(r"$V_x$ (.)")
 plt.ylabel("z/d (m)")
 
-begT = 0
-endT = len(stime)
-
-if lastProfile:
-	begT = len(stime)-1
 
 for i in range(begT, endT): 
 	p = profiles[i]
@@ -79,6 +80,28 @@ for i in range(begT, endT):
 	phi = p[1]
 	me = max(len(zs)/100,1)
 	plt.plot(phi[begz:endz], [(z-z_ground)/d for z in zs[begz:endz]], '->', markevery=me, label="t="+str(stime[i])) # markevery is just used to show less markers
+plt.legend()
+
+## Plot 
+plt.figure()
+plt.title(r"Evolution of $Q_s$ over time.")
+plt.xlabel(r"$Time$ (s)")
+plt.ylabel(r"$Q_s$ ($m^2s^{-1}$)")
+
+dz = profiles[0][0][1] - profiles[0][0][0]
+qsT = []
+for i in range(endT):
+	p = profiles[i]
+	zs = p[0]
+	phi = p[1]
+	v_x = p[2]
+	qs = 0
+	for j in range(len(zs)):
+		qs += phi[j] * v_x[j] * dz 
+	qsT.append(qs)
+
+me = max(len(zs)/100,1)
+plt.plot(stime, qsT, '->', markevery=me) # markevery is just used to show less markers
 plt.legend()
 
 ## Show all figures
