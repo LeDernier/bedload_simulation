@@ -8,6 +8,8 @@
 #
 #########################################################################################################################################################################
 
+import numpy as np
+
 #############################################################################################
 #############################################################################################
            
@@ -47,30 +49,24 @@ def getProfiles():
 	"""Returns the current mean velocity value of the dynamic objects as a Vector3
 	
 	"""
-	dz = h/float(n_z)
-	zs = [dz * i for i in range(n_z)]
-	phi = [0 for i in range(n_z)]
-	vpx = [0 for i in range(n_z)]
-	for body in O.bodies :
-		if body.dynamic == True and not body.isClump:
-			z = body.state.pos[2]
-			r = body.shape.radius
-			z_min = z - r
-			z_max = z + r
-			n_min = int(z_min*n_z/h)
-			n_max = int(z_max*n_z/h)
-			vel = body.state.vel
-			for i in range(n_min, n_max+1):
-				z_inf = max(zs[i], z_min) - z
-				z_sup = min(zs[i+1], z_max) - z
-				vol = math.pi * pow(r, 2) * ((z_sup - z_inf) + (pow(z_inf,3) - pow(z_sup, 3))/(3*pow(r, 2)))
-				phi[i] += vol
-				vpx[i] += vol * vel[0]
-	for i in range(n_z):
-		if(phi[i] > 0):
-			vpx[i] /= phi[i]
-		phi[i] /= dz * l * w
-	return [zs, phi, vpx] 
+	try:
+		return [[i * pF.dz for i in range(pM.n_z)], hydroEngine.phiPart, hydroEngine.vxPart]
+	except:
+		partsIds = []
+		for i in range(len(O.bodies)):
+			b = O.bodies[i]
+			if not b.isClump:
+				partsIds.append(i)
+		hydroEngine = HydroForceEngine(
+				densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
+				gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
+				lift = False, nCell = pM.n_z, vCell = pM.l * pM.w * pF.dz, 
+				radiusPart= pP.r, phiPart = pP.phi, vxFluid = pF.vx, 
+				vxPart = pP.vx, ids = partsIds, label = 'hydroEngine', dead = True)
+		hydroEngine.ReynoldStresses = np.ones(pM.n_z) * 0.0
+		hydroEngine.turbulentFluctuation()
+		hydroEngine.averageProfile()
+		return [[i * pF.dz for i in range(pM.n_z)], hydroEngine.phiPart, hydroEngine.vxPart]
 
 #############################################################################################
 #############################################################################################

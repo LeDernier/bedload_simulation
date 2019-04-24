@@ -24,7 +24,7 @@ for f in os.listdir("data"):
 	O.load("data/" + f)
 	time.append(O.time)
 #	tetraPosZ.append(getObjPos(ids["tetra"])[2])
-	max_z.append((getMaxZ()-z_ground)/d)
+	max_z.append((getMaxZ()-pM.z_ground)/pP.d)
 	profiles.append(getProfiles())
 
 ### Sorting data
@@ -34,10 +34,10 @@ stime, max_z = zip(*sorted(zip(time, max_z)))
 stime, profiles = zip(*sorted(zip(time, profiles)))
 
 ### Processing parameters from data :
-begT = 0
-endT = len(stime)
-if lastProfile:
-	begT = len(stime)-1
+profilesIt = []
+it = int(math.ceil(len(stime) / nbProfiles) - 1)
+for i in range(nbProfiles+1):
+	profilesIt.append(i * it)
 
 ### Ploting data
 print(sep + "Ploting data.")
@@ -60,12 +60,12 @@ plt.xlabel(r"$V_x$ (.)")
 plt.ylabel("z/d (m)")
 
 
-for i in range(begT, endT): 
+for i in profilesIt: 
 	p = profiles[i]
 	zs = p[0]
 	v_x = p[2]
 	me = max(len(zs)/100,1)
-	plt.plot(v_x[begz:endz], [(z-z_ground)/d for z in zs[begz:endz]], '->', markevery=me, label="t="+str(stime[i])) # markevery is just used to show less markers
+	plt.plot(v_x, zs, '->', markevery=me, label="t="+str(stime[i])) # markevery is just used to show less markers
 plt.legend()
 
 ## Plot phi
@@ -74,12 +74,12 @@ plt.title(r"Evolution of the $\phi_x$ profile over time.")
 plt.xlabel(r"$\phi_x$ (m/s)")
 plt.ylabel("z/d (m)")
 
-for i in range(begT, endT):
+for i in profilesIt:
 	p = profiles[i]
 	zs = p[0]
 	phi = p[1]
 	me = max(len(zs)/100,1)
-	plt.plot(phi[begz:endz], [(z-z_ground)/d for z in zs[begz:endz]], '->', markevery=me, label="t="+str(stime[i])) # markevery is just used to show less markers
+	plt.plot(phi, zs, '->', markevery=me, label="t="+str(stime[i])) # markevery is just used to show less markers
 plt.legend()
 
 ## Plot 
@@ -90,7 +90,7 @@ plt.ylabel(r"$Q_s$ ($m^2s^{-1}$)")
 
 dz = profiles[0][0][1] - profiles[0][0][0]
 qsT = []
-for i in range(endT):
+for i in range(len(stime)):
 	p = profiles[i]
 	zs = p[0]
 	phi = p[1]
