@@ -13,7 +13,7 @@ grad = len(sys.argv) - 1
 for i in range(grad):
 	c = (i/float(grad))
 	colors.append((r[0]*c+r[1]*(1-c), v[0]*c+v[1]*(1-c), b[0]*c+b[1]*(1-c)))
-markers = ["$\MVTwo$", "$\MVOne$", "$\MVZero$", "d", "*", "s", "v", "o"]
+markers = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
 #markers = ["$\mathbf{H}$", "$\mathbf{G}$", "$\mathbf{F}$", "$\mathbf{E}$", "$\mathbf{D}$", "$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$"]
 markevery = 5
 mew = 0.3
