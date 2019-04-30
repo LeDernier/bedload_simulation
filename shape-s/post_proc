@@ -1,0 +1,2 @@
+#!/bin/bash
+yade pp_params.py
