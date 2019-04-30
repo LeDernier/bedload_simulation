@@ -76,7 +76,7 @@ class pS: # Param Shape
 	# Computation of parameters
 	d_tot = sum(ds)
 	ds = [d * pP.d / d_tot for d in ds]
-	d_tot *= pP.d
+	d_tot = sum(ds)
 	d_min = min(ds)
 	d_max = max(ds)
 	vol = 0

@@ -58,6 +58,8 @@ class pP: # Param Particle
 	c_r = 0.7
 	phi_max = 0.4
 	mu = atan(0.5)
+	# Ground rugosity
+	d_rug = d
 	# Computed
 	r = d/2.0
 	n = 0
@@ -76,7 +78,7 @@ class pS: # Param Shape
 	# Computation of parameters
 	d_tot = sum(ds)
 	ds = [d * pP.d / d_tot for d in ds]
-	d_tot *= pP.d
+	d_tot = sum(ds)
 	d_min = min(ds)
 	d_max = max(ds)
 	vol = 0
