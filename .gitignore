@@ -111,3 +111,6 @@ data/
 .ids
 nohup.out
 test/
+
+# batchs
+*_*
