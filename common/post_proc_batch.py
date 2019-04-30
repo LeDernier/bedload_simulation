@@ -179,10 +179,10 @@ ax_qs.legend()
 ax_sh.legend()
 
 ### Saving figures
-fig_phi.savefig(save_fig_dir+name_case+"_"+name_param+"_"+name_value+"_"+"phi.pdf")
-fig_vx.savefig(save_fig_dir+name_case+"_"+name_param+"_"+name_value+"_"+"vx.pdf")
-fig_qs.savefig(save_fig_dir+name_case+"_"+name_param+"_"+name_value+"_"+"qs.pdf")
-fig_sh.savefig(save_fig_dir+name_case+"_"+name_param+"_"+name_value+"_"+"shields.pdf")
+fig_phi.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"phi.pdf")
+fig_vx.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"vx.pdf")
+fig_qs.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs.pdf")
+fig_sh.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"shields.pdf")
 
 ### Showing figures
 plt.show()
