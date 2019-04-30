@@ -175,18 +175,17 @@ class frCrea: # Framework Creation
 		
 		"""
 		
-		randRange = pP.r * 0.2
-		d_eff = pP.d 
-		r_eff = pP.d
+		d_eff = pS.d_tot 
+		r_eff = pS.d_tot
 		n_i = 0 
 
 		# Create particles
-		z = pM.z_ground + d_eff + 2.0*randRange
+		z = pM.z_ground + d_eff + d_eff/2.0
 		while n_i < pP.n:
 			x = -pM.l/2.0
-			while x < pM.l/2.0 and n_i < pP.n:
+			while x < pM.l/2.0 - d_eff/2.0 and n_i < pP.n:
 				y = -pM.w/2.0
-				while y < pM.w/2.0 and n_i < pP.n:
+				while y < pM.w/2.0 - d_eff/2.0 and n_i < pP.n:
 					(id_clump, ids_clumped) = frCrea.addClump(
 							center = Vector3(x, y, z),
 							ds = pS.ds,

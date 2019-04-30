@@ -7,7 +7,7 @@ class pyRuns:
 	@staticmethod
 	def updateQuantities():
 		if pF.enable:
-			pF.shields = max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * pS.d_max * abs(pM.g[2]))
+			pF.shields = max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * pF.shields_d * abs(pM.g[2]))
 	
 	count = 0
 	@staticmethod
