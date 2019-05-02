@@ -99,7 +99,8 @@ class pF: # Param Fluid
 	nu = 1e-6
 	init_shields = 0.1
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
-	h = init_shields * (pP.rho/rho - 1) * pS.d_max / sin(pM.alpha)
+	shields_d = pS.d_max
+	h = init_shields * (pP.rho/rho - 1) * shields_d / sin(pM.alpha)
 	print("Estimated fluid height : " + str(h))
 	dt = 1e-5
 	t = 1e-2
