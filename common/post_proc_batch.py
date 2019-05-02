@@ -89,22 +89,24 @@ def post_process(dr):
 		i_deb = 0
 		while time[i_deb] < pPP.mean_begin_time:
 			i_deb += 1
-		profiles = [profilesT[i_deb][0][:], profilesT[i_deb][1][:], profilesT[i_deb][2][:]]
+		profiles = [profilesT[i_deb][0][:], profilesT[i_deb][1][:], profilesT[i_deb][2][:], profilesT[i_deb][3][:]]
 		i = i_deb + 1
 		while i < n_time + 1 and time[i] < pPP.mean_end_time:
 			for j in range(len(profiles)):
 				for k in range(len(profiles[j])):
 					profiles[j][k] += profilesT[i][j][k]
 			i += 1
-		profiles = [[z/(i - i_deb) for z in profiles[0]], [phi/(i - i_deb) for phi in profiles[1]], [vx/(i - i_deb) for vx in profiles[2]]]
+		profiles = [[z/(i - i_deb) for z in profiles[0]], [phi/(i - i_deb) for phi in profiles[1]], [vx/(i - i_deb) for vx in profiles[2]], [vxf/(i - i_deb) for vxf in profiles[3]]]
 	else :
 		profiles = profilesT[n_time]
 	
 	z_star = [z/d_ad for z in profiles[0]]
 	phi = profiles[1]
 	vx = profiles[2]
+	vxf = profiles[3]
 	
 	dz = z_star[1] - z_star[0]
+	# Computation of qs
 	qsT = []
 	for i in range(n_time + 1):
 		p = profilesT[i]
@@ -115,39 +117,68 @@ def post_process(dr):
 			qs += tmp_phi[j] * tmp_vx[j] * dz 
 		qsT.append(qs)
 	
+	# Computation of qf
+	qfT = []
+	for i in range(n_time + 1):
+		p = profilesT[i]
+		tmp_phi = p[1]
+		tmp_vf = p[3]
+		qf = 0
+		for j in range(len(z_star)):
+			qf += (1.0 - tmp_phi[j]) * tmp_vf[j] * dz
+		qfT.append(qf)
+	
 	### Ploting figures
 	print(sep + "Ploting data.")
 	# Phi plot
-	ax_phi.plot(phi, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+	axs["phi"].plot(phi, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
 	# Vx plot
-	ax_vx.plot(vx, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+	axs["vx"].plot(vx, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+	# Vxf plot
+	axs["vxf"].plot(vxf, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
 	# Qs plot
-	ax_qs.plot(time, qsT, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+	axs["qs"].plot(time, qsT, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+	# Qf plot
+	axs["qf"].plot(time, qfT, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
 	# Shields plot
-	ax_sh.plot(time, data["shields"], color=c, marker=m, markevery=markevery, markeredgewidth=mew, markerfacecolor=c, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+	axs["sh"].plot(time, data["shields"], color=c, marker=m, markevery=markevery, markeredgewidth=mew, markerfacecolor=c, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
 
 ### Creating figures
+figs = {}
+axs = {}
 # Phi profile
-fig_phi = plt.figure()
-ax_phi = plt.gca()
+figs["phi"] = plt.figure()
+axs["phi"] = plt.gca()
 plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $\phi$ profile for different $" + name_param + "$.")
 plt.xlabel(r"$\phi$")
 plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
 # Vx profile
-fig_vx = plt.figure()
-ax_vx = plt.gca()
+figs["vx"] = plt.figure()
+axs["vx"] = plt.gca()
 plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $V^p_x$ profile for different $" + name_param + "$.")
 plt.xlabel(r"$V^p_x$")
 plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+# Vxf profile
+figs["vxf"] = plt.figure()
+axs["vxf"] = plt.gca()
+plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $V^f_x$ profile for different $" + name_param + "$.")
+plt.xlabel(r"$V^f_x$")
+plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
 # Qs over time
-fig_qs = plt.figure()
-ax_qs = plt.gca()
+figs["qs"] = plt.figure()
+axs["qs"] = plt.gca()
 plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of $Q_s$ over time for different $" + name_param + "$.")
 plt.xlabel(r"t (s)")
 plt.ylabel("$Q_s$")
+# Qf over time
+figs["qf"] = plt.figure()
+axs["qf"] = plt.gca()
+plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of $Q_f$ over time for different $" + name_param + "$.")
+plt.xlabel(r"t (s)")
+plt.ylabel("$Q_f$")
 # Shields over time
-fig_sh = plt.figure()
-ax_sh = plt.gca()
+figs["sh"] = plt.figure()
+axs["sh"] = plt.gca()
 plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of $\theta$ over time for different $" + name_param + "$.")
 plt.xlabel(r"t (s)")
 plt.ylabel(r"$\theta$")
@@ -168,21 +199,19 @@ for dr in sys.argv[1:]:
 #### Creating rectangular patch to show averaging
 if pPP.mean_over_time_enable:
 	rect = plt.Rectangle((pPP.mean_begin_time, 0.0), pPP.mean_end_time - pPP.mean_begin_time, 1000, facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
-	ax_qs.add_patch(rect)
+	axs["qs"].add_patch(rect)
 	rect2 = plt.Rectangle((pPP.mean_begin_time, 0.0), pPP.mean_end_time - pPP.mean_begin_time, 1000, facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
-	ax_sh.add_patch(rect2)
+	axs["sh"].add_patch(rect2)
+	rect3 = plt.Rectangle((pPP.mean_begin_time, 0.0), pPP.mean_end_time - pPP.mean_begin_time, 1000, facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
+	axs["qf"].add_patch(rect3)
 
 ## Adding legends
-ax_phi.legend()
-ax_vx.legend()
-ax_qs.legend()
-ax_sh.legend()
+for key in axs:
+	axs[key].legend()
 
 ### Saving figures
-fig_phi.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"phi.pdf")
-fig_vx.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"vx.pdf")
-fig_qs.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs.pdf")
-fig_sh.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"shields.pdf")
+for key in figs:
+	figs[key].savefig(save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf")
 
 ### Showing figures
 plt.show()
