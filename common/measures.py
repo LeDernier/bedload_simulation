@@ -49,24 +49,24 @@ def getProfiles():
 	"""Returns the current mean velocity value of the dynamic objects as a Vector3
 	
 	"""
-	try:
-		return [[i * pF.dz for i in range(pM.n_z)], hydroEngine.phiPart, hydroEngine.vxPart]
-	except:
+	if(pF.enable):
+		return [[i * pF.dz for i in range(pM.n_z)], hydroEngine.phiPart, hydroEngine.vxPart, hydroEngine.vxFluid[0:-1]]
+	else:
 		partsIds = []
 		for i in range(len(O.bodies)):
 			b = O.bodies[i]
 			if not b.isClump:
 				partsIds.append(i)
-		hydroEngine = HydroForceEngine(
+		hydroEngineTmp = HydroForceEngine(
 				densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
 				gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
 				lift = False, nCell = pM.n_z, vCell = pM.l * pM.w * pF.dz, 
 				radiusPart= pP.r, phiPart = pP.phi, vxFluid = pF.vx, 
 				vxPart = pP.vx, ids = partsIds, label = 'hydroEngine', dead = True)
-		hydroEngine.ReynoldStresses = np.ones(pM.n_z) * 0.0
-		hydroEngine.turbulentFluctuation()
-		hydroEngine.averageProfile()
-		return [[i * pF.dz for i in range(pM.n_z)], hydroEngine.phiPart, hydroEngine.vxPart]
+		hydroEngineTmp.ReynoldStresses = np.ones(pM.n_z) * 0.0
+		hydroEngineTmp.turbulentFluctuation()
+		hydroEngineTmp.averageProfile()
+		return [[i * pF.dz for i in range(pM.n_z)], hydroEngineTmp.phiPart, hydroEngineTmp.vxPart, hydroEngineTmp.vxFluid[0:-1]]
 
 #############################################################################################
 #############################################################################################
