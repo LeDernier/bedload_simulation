@@ -148,7 +148,7 @@ class sim: # Simulation
 		if pF.enable:
 			#hydroEngine.vxFluid = pF.vx  
 			hydroEngine.ReynoldStresses = np.ones(pM.n_z) * 0.0
-			hydroEngine.turbulentFluctuation()
+			#hydroEngine.turbulentFluctuation()
 
 ### Reading pyRunners
 execfile("../common/simulationPyRunners.py")
