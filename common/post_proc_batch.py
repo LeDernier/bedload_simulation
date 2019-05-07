@@ -221,45 +221,45 @@ if not pPP.batch_plot_enable:
 	# Vx profile
 	figs["vx"] = plt.figure()
 	axs["vx"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $\frac{V^p_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
-	plt.xlabel(r"$V^p_x$")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final ${V^f_x}^*=\frac{V^p_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"${V^p_x}^*$")
 	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
 	# Vxf profile
 	figs["vxf"] = plt.figure()
 	axs["vxf"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } evolution of the final $\frac{v^f_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
-	plt.xlabel(r"$v^f_x$")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } evolution of the final ${V^f_x}^*=\frac{V^f_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"${V^f_x}^*$")
 	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
 	# Rotx profile
 	figs["rotx"] = plt.figure()
 	axs["rotx"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $x rotation$ profile for different $" + name_param + "$.")
-	plt.xlabel(r"$rot x$")
-	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $rot_x$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"$rot_x$")
+	plt.ylabel(r"$P$")
 	# Roty profile
 	figs["roty"] = plt.figure()
 	axs["roty"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $y rotation$ profile for different $" + name_param + "$.")
-	plt.xlabel(r"$rot y$")
-	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $rot_y$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"$rot_y$")
+	plt.ylabel(r"$P$")
 	# Rotz profile
 	figs["rotz"] = plt.figure()
 	axs["rotz"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $z rotation$ profile for different $" + name_param + "$.")
-	plt.xlabel(r"$rot z$")
-	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $rot_z$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"$rot_z$")
+	plt.ylabel(r"$P$")
 	# Qs over time
 	figs["qs"] = plt.figure()
 	axs["qs"] = plt.gca()
 	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of $Q_s$ over time for different $" + name_param + "$.")
 	plt.xlabel(r"t (s)")
-	plt.ylabel("$Q_s$")
+	plt.ylabel("$Q^*_s$")
 	# Qf over time
 	figs["qf"] = plt.figure()
 	axs["qf"] = plt.gca()
 	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of $Q_f$ over time for different $" + name_param + "$.")
 	plt.xlabel(r"t (s)")
-	plt.ylabel("$Q_f$")
+	plt.ylabel("$Q^*_f$")
 	# Shields over time
 	figs["sh"] = plt.figure()
 	axs["sh"] = plt.gca()
@@ -300,7 +300,7 @@ if pPP.batch_plot_enable:
 		d = batch_data[key]
 		markeveryS = int(max(1.0, me * len(d["sh"])))
 		plt.plot(d["sh"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
-	plt.legend()
+	plt.legend(fancybox=True, framealpha=0.5)
 	plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(shields)"+".pdf")
 	### Qs(Qf)
 	plt.figure()
@@ -317,7 +317,7 @@ if pPP.batch_plot_enable:
 		d = batch_data[key]
 		markeveryS = int(max(1.0, me * len(d["qf"])))
 		plt.plot(d["qf"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
-	plt.legend()
+	plt.legend(fancybox=True, framealpha=0.5)
 	plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(qf)"+".pdf")
 else:
 	#### Creating rectangular patch to show averaging
@@ -331,7 +331,12 @@ else:
 	
 	## Adding legends
 	for key in axs:
-		axs[key].legend()
+		axs[key].legend(fancybox=True, framealpha=0.5)
+
+	## Converting xlabel with radian writing
+	axs["rotx"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["rotx"].get_xticks()])
+	axs["roty"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["roty"].get_xticks()])
+	axs["rotz"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["rotz"].get_xticks()])
 	
 	### Saving figures
 	for key in figs:
