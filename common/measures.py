@@ -45,6 +45,55 @@ def getMeanVel():
 #############################################################################################
 #############################################################################################
 
+def getOrientationHist():
+	rotx = []
+	roty = []
+	rotz = []
+	for body in O.bodies :
+		if body.dynamic == True and body.isClump:
+			rot = body.state.rot()
+			rotx.append(math.fmod(2*math.pi + rot[0], 2*math.pi))
+			roty.append(math.fmod(2*math.pi + rot[1], 2*math.pi))
+			rotz.append(math.fmod(2*math.pi + rot[2], 2*math.pi))
+	binsNb = 20
+	rotx, bins = np.histogram(rotx, bins=binsNb, normed=True)
+	roty, bins = np.histogram(roty, bins=binsNb, normed=True)
+	rotz, bins = np.histogram(rotz, bins=binsNb, normed=True)
+	bin_centers = 0.5*(bins[1:] + bins[:-1])
+	return [bin_centers, rotx, roty, rotz]
+
+#############################################################################################
+#############################################################################################
+
+def getOldProfiles():
+	dz = h/float(n_z)
+	zs = [dz * i for i in range(n_z)]
+	phi = [0 for i in range(n_z)]
+	vpx = [0 for i in range(n_z)]
+	for body in O.bodies :
+		if body.dynamic == True and not body.isClump:
+			z = body.state.pos[2]
+			r = body.shape.radius
+			z_min = z - r
+			z_max = z + r
+			n_min = int(z_min*n_z/h)
+			n_max = int(z_max*n_z/h)
+			vel = body.state.vel
+			for i in range(n_min, n_max+1):
+				z_inf = max(zs[i], z_min) - z
+				z_sup = min(zs[i+1], z_max) - z
+				vol = math.pi * pow(r, 2) * ((z_sup - z_inf) + (pow(z_inf,3) - pow(z_sup, 3))/(3*pow(r, 2)))
+				phi[i] += vol
+				vpx[i] += vol * vel[0]
+	for i in range(n_z):
+		if(phi[i] > 0):
+			vpx[i] /= phi[i]
+			phi[i] /= dz * l * w
+	return [zs, phi, vpx] 
+
+#############################################################################################
+#############################################################################################
+
 def getProfiles():
 	"""Returns the current mean velocity value of the dynamic objects as a Vector3
 	
