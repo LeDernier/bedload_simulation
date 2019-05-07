@@ -30,7 +30,7 @@ import math
 
 class pM: # Param Macro
 	### Simulation parameters
-	t_max = 100.0
+	t_max = 200.0
 	# Mesh :
 	n_z = 900
 	### Macroscopic parameters
@@ -46,6 +46,7 @@ class pM: # Param Macro
 	shake_enable = False
 	shake_period = 0.04
 	shake_intensity = 0.2
+	shake_time = 0.6
 
 class pSave: # Param Save
 	yadeSavePeriod = 1.0
@@ -92,12 +93,13 @@ print("Number of particles : " + str(pP.n))
 print("Estimated number of particle layers : " + str(pP.n_l))
 
 # Setting d_rug
-pS.d_rug = pS.d_max
+pP.d_rug = pS.d_max
 
 ### Fluid
 class pF: # Param Fluid
 	enable = True
 	solve = True
+	solve_begin_time = 0.8
 	## Physics
 	rho = 1e3
 	nu = 1e-6
