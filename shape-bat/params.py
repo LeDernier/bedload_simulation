@@ -46,6 +46,7 @@ class pM: # Param Macro
 	shake_enable = False
 	shake_period = 0.04
 	shake_intensity = 0.2
+	shake_time = 0.6
 
 class pSave: # Param Save
 	yadeSavePeriod = 1.0
@@ -92,6 +93,7 @@ print("Estimated number of particle layers : " + str(pP.n_l))
 class pF: # Param Fluid
 	enable = True
 	solve = True
+	solve_begin_time = 0.8
 	## Physics
 	rho = 1e3
 	nu = 1e-6
