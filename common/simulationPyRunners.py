@@ -25,7 +25,7 @@ class pyRuns:
 	
 	@staticmethod
 	def shaker():
-		if O.time < pM.shake_time:
+		if O.time > pM.shake_time:
 			shaker.dead = True
 			return
 		else:
