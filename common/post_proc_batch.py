@@ -273,6 +273,7 @@ batch_data = {}
 # Processing 1D data
 for dr in sys.argv[1:]:
 	print(bigSep + dr)
+	execfile(dr+"/params.py")
 	d_ad = eval(pPP.d_ad)
 	post_process(dr)
 

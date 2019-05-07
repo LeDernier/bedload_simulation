@@ -1,7 +1,7 @@
 class pPP:
 	# Adimensionalisation
-	d_ad = "pS.d_tot"
-	d_ad_name = "d_{tot}"
+	d_ad = "pS.d_max"
+	d_ad_name = "d_{max}"
 	# Mean operation 
 	mean_over_time_enable = True
 	mean_begin_time = 60.0
