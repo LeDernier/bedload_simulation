@@ -53,7 +53,8 @@ def read_data(dr):
 	time = []
 	data = {
 		"profiles":[],
-		"shields":[]
+		"shields":[],
+		"rots":[]
 		}
 	for f in os.listdir(dr+"/data"):
 		print("Loading file: "+dr+"/data/" + f)
@@ -65,6 +66,7 @@ def read_data(dr):
 		# Add calls to measurements to add data 
 		data["profiles"].append(getProfiles())
 		data["shields"].append(pF.shields)
+		data["rots"].append(getOrientationHist())
 		### End
 	return time, data
 
@@ -87,12 +89,16 @@ def post_process(dr):
 
 	# Useful constants
 	n_time = len(time) - 1
+	profiles = []
 	profilesT = data["profiles"]
+	rots = []
+	rotsT = data["rots"]
 	# Averaging
 	if pPP.mean_over_time_enable:
 		i_deb = 0
 		while time[i_deb] < pPP.mean_begin_time:
 			i_deb += 1
+		# Dealing with profiles
 		profiles = [profilesT[i_deb][0][:], profilesT[i_deb][1][:], profilesT[i_deb][2][:], profilesT[i_deb][3][:]]
 		i = i_deb + 1
 		while i < n_time + 1 and time[i] < pPP.mean_end_time:
@@ -101,13 +107,23 @@ def post_process(dr):
 					profiles[j][k] += profilesT[i][j][k]
 			i += 1
 		profiles = [[z/(i - i_deb) for z in profiles[0]], [phi/(i - i_deb) for phi in profiles[1]], [vx/(i - i_deb) for vx in profiles[2]], [vxf/(i - i_deb) for vxf in profiles[3]]]
+		# Dealing with rots
+		rots = [rotsT[i_deb][0][:], rotsT[i_deb][1][:], rotsT[i_deb][2][:], rotsT[i_deb][3][:]]
+		i = i_deb + 1
+		while i < n_time + 1 and time[i] < pPP.mean_end_time:
+			for j in range(len(rots)):
+				for k in range(len(rots[j])):
+					rots[j][k] += rotsT[i][j][k]
+			i += 1
+		rots = [[rot/(i - i_deb) for rot in rots[0]], [rot/(i - i_deb) for rot in rots[1]], [rot/(i - i_deb) for rot in rots[2]], [rot/(i - i_deb) for rot in rots[3]]]
 	else :
 		profiles = profilesT[n_time]
+		rots = rotsT[n_time]
 	
 	z_star = [z/d_ad for z in profiles[0]]
 	phi = profiles[1]
-	vx = profiles[2]
-	vxf = profiles[3]
+	vx = [vx/(sqrt(abs(pM.g[2] * d_ad))) for vx in profiles[2]]
+	vxf = [vf/(sqrt(abs(pM.g[2] * d_ad))) for vf in profiles[3]]
 	
 	dz = z_star[1] - z_star[0]
 	# Computation of qs
@@ -170,7 +186,8 @@ def post_process(dr):
 		### Ploting figures
 		print(sep + "Ploting data.")
 		# Setting markeverys
-		markevery = int(max(1.0, me * len(z_star))) 
+		markevery = int(max(1.0, me * len(z_star)))
+		markeveryH = int(max(1.0, me * len(rots[0])))
 		markeveryT = int(max(1.0, me * len(time)))
 		# Phi plot
 		axs["phi"].plot(phi, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
@@ -178,6 +195,12 @@ def post_process(dr):
 		axs["vx"].plot(vx, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
 		# Vxf plot
 		axs["vxf"].plot(vxf, z_star, color=c, marker=m, markevery=markevery, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+		# Rotx plot
+		axs["rotx"].plot(rots[0], rots[1], color=c, marker=m, markevery=markeveryH, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+		# Roty plot
+		axs["roty"].plot(rots[0], rots[2], color=c, marker=m, markevery=markeveryH, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
+		# Rotz plot
+		axs["rotz"].plot(rots[0], rots[3], color=c, marker=m, markevery=markeveryH, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
 		# Qs plot
 		axs["qs"].plot(time, qsT, color=c, marker=m, markevery=markeveryT, markerfacecolor=c, markeredgewidth=mew, markersize=ms, label=r"$"+name_param+"="+name_value+"$")
 		# Qf plot
@@ -198,14 +221,32 @@ if not pPP.batch_plot_enable:
 	# Vx profile
 	figs["vx"] = plt.figure()
 	axs["vx"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $V^p_x$ profile for different $" + name_param + "$.")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $\frac{V^p_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
 	plt.xlabel(r"$V^p_x$")
 	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
 	# Vxf profile
 	figs["vxf"] = plt.figure()
 	axs["vxf"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $V^f_x$ profile for different $" + name_param + "$.")
-	plt.xlabel(r"$V^f_x$")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } evolution of the final $\frac{v^f_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"$v^f_x$")
+	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	# Rotx profile
+	figs["rotx"] = plt.figure()
+	axs["rotx"] = plt.gca()
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $x rotation$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"$rot x$")
+	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	# Roty profile
+	figs["roty"] = plt.figure()
+	axs["roty"] = plt.gca()
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $y rotation$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"$rot y$")
+	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	# Rotz profile
+	figs["rotz"] = plt.figure()
+	axs["rotz"] = plt.gca()
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $z rotation$ profile for different $" + name_param + "$.")
+	plt.xlabel(r"$rot z$")
 	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
 	# Qs over time
 	figs["qs"] = plt.figure()
@@ -244,7 +285,7 @@ for dr in sys.argv[1:]:
 	post_process(dr)
 
 if pPP.batch_plot_enable:
-	# Plotting batch
+	### Qs(shields)
 	plt.figure()
 	plt.title(r"\begin{center}"+
 			r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the solid transport compared to the shields number \\ for different $" + pPP.batch_param_name + r"$."
@@ -260,6 +301,24 @@ if pPP.batch_plot_enable:
 		markeveryS = int(max(1.0, me * len(d["sh"])))
 		plt.plot(d["sh"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
 	plt.legend()
+	plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(shields)"+".pdf")
+	### Qs(Qf)
+	plt.figure()
+	plt.title(r"\begin{center}"+
+			r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the solid transport compared to the fluid flow \\ for different $" + pPP.batch_param_name + r"$."
+			+r"\end{center}"
+			)
+	plt.xlabel(r"$\theta$")
+	plt.ylabel(r"$Q_s$")
+	# Plotting
+	for key in batch_data:
+		batch_m = batch_markers.pop()
+		batch_c = batch_colors.pop()
+		d = batch_data[key]
+		markeveryS = int(max(1.0, me * len(d["qf"])))
+		plt.plot(d["qf"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
+	plt.legend()
+	plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(qf)"+".pdf")
 else:
 	#### Creating rectangular patch to show averaging
 	if pPP.mean_over_time_enable:
