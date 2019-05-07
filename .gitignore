@@ -114,3 +114,6 @@ test/
 
 # batchs
 *_*/
+
+# examples
+examples/
