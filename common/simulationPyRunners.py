@@ -12,7 +12,7 @@ class pyRuns:
 	count = 0
 	@staticmethod
 	def solveFluid():
-		if O.time<0.6:
+		if O.time < pF.solve_begin_time:
 			return
 		elif pyRuns.count==0:
 			print("INFO: Starting to apply fluid.\n")
@@ -23,6 +23,14 @@ class pyRuns:
 		hydroEngine.averageProfile()
 		hydroEngine.fluidResolution(pF.t, pF.dt)
 	
+	@staticmethod
+	def shaker():
+		if O.time < pM.shake_time:
+			shaker.dead = True
+			return
+		else:
+			pyRuns.shake(pM.shake_intensity)
+
 	@staticmethod
 	def shake(X = 0.1):
 		for b in O.bodies:
