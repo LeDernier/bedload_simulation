@@ -46,6 +46,7 @@ class pM: # Param Macro
 	shake_enable = False
 	shake_period = 0.04
 	shake_intensity = 0.2
+	shake_time = 0.6
 
 class pSave: # Param Save
 	yadeSavePeriod = 1.0
@@ -92,12 +93,14 @@ print("Estimated number of particle layers : " + str(pP.n_l))
 class pF: # Param Fluid
 	enable = True
 	solve = True
+	solve_begin_time = 0.8
 	## Physics
 	rho = 1e3
 	nu = 1e-6
 	init_shields = 0.1
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
-	h = init_shields * (pP.rho/rho - 1) * pS.d_max / sin(pM.alpha)
+	shields_d = pP.d
+	h = init_shields * (pP.rho/rho - 1) * shields_d / sin(pM.alpha)
 	print("Estimated fluid height : " + str(h))
 	dt = 1e-5
 	t = 1e-2
