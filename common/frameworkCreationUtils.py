@@ -229,7 +229,7 @@ class frCrea: # Framework Creation
 		(id_clump, ids_clumped) = result
 
 		# Random orientation
-		c_body = O.bodies[id_clump].state.ori = Quaternion((0, 0, 1), random.uniform(0, 2 * math.pi)) * Quaternion((0, 1, 0), random.uniform(0, 2 * math.pi))
+		c_body = O.bodies[id_clump].state.ori = Quaternion((0, 0, 1), random.uniform(0, 2 * math.pi)) * Quaternion((0, 1, 0), random.uniform(0, 2 * math.pi)) * Quaternion((1, 0, 0), random.uniform(0, 2 * math.pi))
 		
 		return result
 	
