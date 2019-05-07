@@ -217,19 +217,19 @@ if not pPP.batch_plot_enable:
 	axs["phi"] = plt.gca()
 	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final $\phi$ profile for different $" + name_param + "$.")
 	plt.xlabel(r"$\phi$")
-	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	plt.ylabel(r"$z/"+pPP.d_ad_name+"$")
 	# Vx profile
 	figs["vx"] = plt.figure()
 	axs["vx"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final ${V^f_x}^*=\frac{V^p_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final ${V^f_x}^*=\frac{V^p_x}{\sqrt{g"+pPP.d_ad_name+"}}$ profile for different $" + name_param + "$.")
 	plt.xlabel(r"${V^p_x}^*$")
-	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	plt.ylabel(r"$z/"+pPP.d_ad_name+"$")
 	# Vxf profile
 	figs["vxf"] = plt.figure()
 	axs["vxf"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } evolution of the final ${V^f_x}^*=\frac{V^f_x}{\sqrt{g"+pPP.d_ad_type+"}}$ profile for different $" + name_param + "$.")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } evolution of the final ${V^f_x}^*=\frac{V^f_x}{\sqrt{g"+pPP.d_ad_name+"}}$ profile for different $" + name_param + "$.")
 	plt.xlabel(r"${V^f_x}^*$")
-	plt.ylabel(r"$z/"+pPP.d_ad_type+"$")
+	plt.ylabel(r"$z/"+pPP.d_ad_name+"$")
 	# Rotx profile
 	figs["rotx"] = plt.figure()
 	axs["rotx"] = plt.gca()
@@ -273,15 +273,7 @@ batch_data = {}
 # Processing 1D data
 for dr in sys.argv[1:]:
 	print(bigSep + dr)
-	execfile(dr+"/params.py")
-	if pPP.d_ad_type == "d_min":
-		d_ad = pS.d_min
-		d_ad_type = r"d_{min}"
-	elif pPP.d_ad_type == "d_max":
-		d_ad = pS.d_max
-		d_ad_type = r"d_{max}"
-	elif pPP.d_ad_type == "d":
-		d_ad = pP.d
+	d_ad = eval(pPP.d_ad)
 	post_process(dr)
 
 if pPP.batch_plot_enable:
