@@ -43,7 +43,7 @@ class pM: # Param Macro
 	g_scale = 9.81
 	g = Vector3(g_scale * sin(alpha), 0, -g_scale * cos(alpha))
 	### Shake
-	shake_enable = False
+	shake_enable = True
 	shake_period = 0.04
 	shake_intensity = 0.2
 	shake_time = 0.6
@@ -72,7 +72,7 @@ class pP: # Param Particle
 
 ### Shape
 class pS: # Param Shape
-	A = 0.9
+	A = 0.7
 	d_min_star = pP.d * ((1.0/A) - 1.0) / 2.0
 	ds = [d_min_star, pP.d, d_min_star] 
 	iter_vect = [Vector3(1.0, 0.0, 0.0)]

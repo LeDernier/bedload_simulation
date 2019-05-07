@@ -37,13 +37,13 @@ class pM: # Param Macro
 	alpha = 0.05 
 	l = 1.0e-1
 	w = 1.0e-1
-	h = 10.0e-1
+	h = 20.0e-1
 	z_ground = h/4.0
 	### Physical parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * sin(alpha), 0, -g_scale * cos(alpha))
 	### Shake
-	shake_enable = False
+	shake_enable = True
 	shake_period = 0.04
 	shake_intensity = 0.2
 	shake_time = 0.6
