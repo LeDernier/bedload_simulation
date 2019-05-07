@@ -8,6 +8,8 @@
 #########################################################################################################################################################################
 import numpy as np
 
+test=False
+
 class sim: # Simulation
 	####################################################################################################################################
 	####################################################  SIMULATION DEFINITION  #########################################################
@@ -67,26 +69,58 @@ class sim: # Simulation
 				ForceResetter()
 				)
 		### Detect the potential contacts
-		engines.append(
-				InsertionSortCollider(
-					#[Bo1_Sphere_Aabb(), Bo1_Wall_Aabb(), Bo1_Facet_Aabb(), Bo1_Box_Aabb()],
-					[Bo1_Sphere_Aabb(), Bo1_Box_Aabb()],
-					#[Bo1_Sphere_Aabb()],
-					label='contactDetection',
-					allowBiggerThanPeriod = True
+		if test:
+			engines.append(
+					InsertionSortCollider(
+						[Bo1_GridConnection_Aabb(), Bo1_PFacet_Aabb()],
+						label='contactDetection'
+						)
 					)
-				)
+		else:
+			engines.append(
+					InsertionSortCollider(
+						[Bo1_Sphere_Aabb(), Bo1_Box_Aabb()],
+						label='contactDetection',
+						allowBiggerThanPeriod = True
+						)
+					)
 		### Calculate different interactions
-		engines.append(
-				InteractionLoop(
-					#[Ig2_Sphere_Sphere_ScGeom(), Ig2_Box_Sphere_ScGeom(),Ig2_Facet_Sphere_ScGeom()],
-					[Ig2_Sphere_Sphere_ScGeom(), Ig2_Box_Sphere_ScGeom()],
-					#[Ig2_Sphere_Sphere_ScGeom()],
-					[Ip2_ViscElMat_ViscElMat_ViscElPhys()],
-					[Law2_ScGeom_ViscElPhys_Basic()],
-					label = 'interactionLoop'
+		if test:
+			engines.append(
+					InteractionLoop(
+						[
+							Ig2_GridNode_GridNode_GridNodeGeom6D(),
+							# Cylinder-Cylinder interaction :
+							Ig2_GridConnection_GridConnection_GridCoGridCoGeom(),
+							# Needed for GridNode-pFacet interaction :
+							Ig2_Sphere_PFacet_ScGridCoGeom(),
+							# Cylinder-pFcet interaction :
+							Ig2_GridConnection_PFacet_ScGeom()
+						],
+						[
+							Ip2_CohFrictMat_CohFrictMat_CohFrictPhys(setCohesionNow=True,setCohesionOnNewContacts=False),
+							Ip2_FrictMat_FrictMat_FrictPhys()
+						],
+						[
+							# Contact law for "internal" cylider forces :
+							Law2_ScGeom6D_CohFrictPhys_CohesionMoment(),
+							# Contact law for Cylinder-pFacet interaction :
+							Law2_ScGridCoGeom_FrictPhys_CundallStrack(),
+							# Contact law for cylinder-cylinder interaction :
+							Law2_GridCoGridCoGeom_FrictPhys_CundallStrack()
+						],
+						label = 'interactionLoop'
+						)
 					)
-				)
+		else:
+			engines.append(
+					InteractionLoop(
+						[Ig2_Sphere_Sphere_ScGeom(), Ig2_Box_Sphere_ScGeom()],
+						[Ip2_ViscElMat_ViscElMat_ViscElPhys()],
+						[Law2_ScGeom_ViscElPhys_Basic()],
+						label = 'interactionLoop'
+						)
+					)
 		#### Apply hydrodynamic forces
 		if pF.enable:
 			# Building Parts Id list
