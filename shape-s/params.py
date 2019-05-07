@@ -30,7 +30,7 @@ import math
 
 class pM: # Param Macro
 	### Simulation parameters
-	t_max = 200.0
+	t_max = 400.0
 	# Mesh :
 	n_z = 900
 	### Macroscopic parameters
@@ -38,7 +38,7 @@ class pM: # Param Macro
 	l = 1.0e-1
 	w = 1.0e-1
 	h = 20.0e-1
-	z_ground = h/4.0
+	z_ground = h/2.0
 	### Physical parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * sin(alpha), 0, -g_scale * cos(alpha))
