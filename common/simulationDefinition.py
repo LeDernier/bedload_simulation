@@ -135,7 +135,7 @@ class sim: # Simulation
 				)
 		if pM.shake_enable:
 			engines.append(
-				PyRunner(command='pyRuns.shake(pM.shake_intensity)', virtPeriod = pM.shake_period, label = 'shake')
+				PyRunner(command='pyRuns.shaker()', virtPeriod = pM.shake_period, label = 'shaker')
 				)
 		### Recorder
 		if pSave.vtkRecorderIterPeriod > 0:
