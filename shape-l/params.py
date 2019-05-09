@@ -72,7 +72,7 @@ class pP: # Param Particle
 
 ### Shape
 class pS: # Param Shape
-	A = 0.7
+	A = 0.6
 	d_min_star = pP.d * ((1.0/A) - 1.0) / 2.0
 	ds = [d_min_star, pP.d, d_min_star] 
 	iter_vect = [Vector3(1.0, 0.0, 0.0)]
