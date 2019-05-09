@@ -8,7 +8,8 @@
 #########################################################################################################################################################################
 import numpy as np
 
-test=False
+if not ('test' in globals()):
+	test=False
 
 class sim: # Simulation
 	####################################################################################################################################
@@ -26,8 +27,12 @@ class sim: # Simulation
 		- [positionCoef, angleHouse, lengthHouse, widthHouse, heightHouse] -- parameters relative to the house
 		
 		"""
-		frameworkCreation()
-		sim.engineCreation()
+		if test:
+			sim.engineCreation()
+			frameworkCreation()
+		else:
+			frameworkCreation()
+			sim.engineCreation()
 		O.saveTmp() # User can reload simulation
 	
 	#############################################################################################
@@ -72,7 +77,7 @@ class sim: # Simulation
 		if test:
 			engines.append(
 					InsertionSortCollider(
-						[Bo1_GridConnection_Aabb(), Bo1_PFacet_Aabb()],
+						[Bo1_GridConnection_Aabb()],
 						label='contactDetection'
 						)
 					)
@@ -92,20 +97,16 @@ class sim: # Simulation
 							Ig2_GridNode_GridNode_GridNodeGeom6D(),
 							# Cylinder-Cylinder interaction :
 							Ig2_GridConnection_GridConnection_GridCoGridCoGeom(),
-							# Needed for GridNode-pFacet interaction :
-							Ig2_Sphere_PFacet_ScGridCoGeom(),
-							# Cylinder-pFcet interaction :
-							Ig2_GridConnection_PFacet_ScGeom()
 						],
 						[
+							# Internal Cylinder Physics
 							Ip2_CohFrictMat_CohFrictMat_CohFrictPhys(setCohesionNow=True,setCohesionOnNewContacts=False),
+							# Physics for External Interactions (cylinder-cylinder)
 							Ip2_FrictMat_FrictMat_FrictPhys()
 						],
 						[
 							# Contact law for "internal" cylider forces :
 							Law2_ScGeom6D_CohFrictPhys_CohesionMoment(),
-							# Contact law for Cylinder-pFacet interaction :
-							Law2_ScGridCoGeom_FrictPhys_CundallStrack(),
 							# Contact law for cylinder-cylinder interaction :
 							Law2_GridCoGridCoGeom_FrictPhys_CundallStrack()
 						],
@@ -137,7 +138,6 @@ class sim: # Simulation
 						radiusPart= pP.r, phiPart = pP.phi, vxFluid = pF.vx, 
 						vxPart = pP.vx, ids = partsIds, label = 'hydroEngine')
 					)
-
 			# Fluid resolution
 			if pF.solve:
 				engines.append(
@@ -149,9 +149,12 @@ class sim: # Simulation
 						PyRunner(command='pyRuns.updateFluidDisplay()', virtPeriod = pF.t, label = 'fluidDisplay')
 						)
 		### GlobalStiffnessTimeStepper, determine the time step for a stable integration
-		engines.append(
-				GlobalStiffnessTimeStepper(defaultDt=1e-4, viscEl=True, timestepSafetyCoefficient=0.7, label='GSTS')
-				)
+		if test:
+			O.dt=1e-06
+		else:
+			engines.append(
+					GlobalStiffnessTimeStepper(defaultDt=1e-4, viscEl=True, timestepSafetyCoefficient=0.7, label='GSTS')
+					)
 		### Integrate the equation and calculate the new position/velocities...
 		engines.append(
 				NewtonIntegrator(damping=0.0, gravity=pM.g, label='newtonIntegr')
