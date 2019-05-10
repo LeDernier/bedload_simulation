@@ -1,3 +1,2 @@
 #!/bin/bash
-./clean
 nohup yade -nx .case_batch.py &

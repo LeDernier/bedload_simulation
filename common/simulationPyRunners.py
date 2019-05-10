@@ -14,7 +14,7 @@ class pyRuns:
 	def solveFluid():
 		if O.time < pF.solve_begin_time:
 			return
-		elif pyRuns.count==0:
+		elif pyRuns.count < 1 and O.time < pSave.yadeSavePeriod:
 			print("INFO: Starting to apply fluid.\n")
 			pyRuns.count = 1
 			hydroEngine.averageProfile()
