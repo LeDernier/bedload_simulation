@@ -1,7 +1,9 @@
 class pPP:
+	# Saving figures
+	save_figs = True
 	# Adimensionalisation
-	d_ad = "pS.d_max"
-	d_ad_name = "d_{max}"
+	d_ad = "pS.d_tot"
+	d_ad_name = "l"
 	# Mean operation 
 	mean_over_time_enable = False
 	mean_begin_time = 60.0
