@@ -49,7 +49,7 @@ class pM: # Param Macro
 	shake_time = 0.6
 
 class pSave: # Param Save
-	yadeSavePeriod = 1.0
+	yadeSavePeriod = 2.0
 	vtkRecorderIterPeriod = 0
 
 ### Particles
@@ -87,7 +87,7 @@ class pS: # Param Shape
 		vol += math.pi * pow(d, 3) / 6.0
 
 # Computing n_l and n_ll
-pP.n = 20.0 * (pP.phi_max * pM.l * pM.w * pS.d_max / pS.vol)
+pP.n = 12.0 * (pP.phi_max * pM.l * pM.w * pS.d_max / pS.vol)
 pP.n_l = pP.n / (pP.phi_max * pM.l * pM.w * pS.d_max / pS.vol)
 print("Number of particles : " + str(pP.n))
 print("Estimated number of particle layers : " + str(pP.n_l))
