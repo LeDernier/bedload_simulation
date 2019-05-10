@@ -294,7 +294,8 @@ if pPP.batch_plot_enable:
 		markeveryS = int(max(1.0, me * len(d["sh"])))
 		plt.plot(d["sh"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
 	plt.legend(fancybox=True, framealpha=0.5)
-	plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(shields)"+".pdf")
+	if pPP.save_figs:
+		plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(shields)"+".pdf")
 	### Qs(Qf)
 	plt.figure()
 	plt.title(r"\begin{center}"+
@@ -311,7 +312,8 @@ if pPP.batch_plot_enable:
 		markeveryS = int(max(1.0, me * len(d["qf"])))
 		plt.plot(d["qf"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
 	plt.legend(fancybox=True, framealpha=0.5)
-	plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(qf)"+".pdf")
+	if pPP.save_figs:
+		plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(qf)"+".pdf")
 else:
 	#### Creating rectangular patch to show averaging
 	if pPP.mean_over_time_enable:
@@ -332,8 +334,9 @@ else:
 	axs["rotz"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["rotz"].get_xticks()])
 	
 	### Saving figures
-	for key in figs:
-		figs[key].savefig(save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf")
+	if pPP.save_figs:
+		for key in figs:
+			figs[key].savefig(save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf")
 
 ### Showing figures
 plt.show()
