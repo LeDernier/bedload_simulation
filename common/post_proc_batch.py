@@ -77,8 +77,6 @@ def sort_data(time, data):
 	return stime, data
 
 def post_process(dr):
-	m = markers.pop()
-	c = colors.pop()
 	
 	# Update name_value
 	name_value = dr.split("_")[-1]
@@ -193,6 +191,8 @@ def post_process(dr):
 				}
 	
 	if not pPP.batch_plot_enable:
+		m = markers.pop()
+		c = colors.pop()
 		### Ploting figures
 		print(sep + "Ploting data.")
 		# Setting markeverys
