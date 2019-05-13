@@ -22,7 +22,7 @@ me = 0.005
 mew = 0.3
 ms = 7.0
 d_ad = 0
-save_fig_dir = "/home/rmonthil/Documents/post_proc/"
+save_fig_dir = pPP.save_fig_dir 
 
 ### Setting plt options
 plt.rc('text', usetex=True)

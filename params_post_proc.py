@@ -1,5 +1,6 @@
 class pPP:
 	# Saving figures
+	save_fig_dir = "/home/rmonthil/Documents/post_proc/"
 	save_figs = True
 	# Adimensionalisation
 	d_ad = "pS.d_max"
