@@ -120,6 +120,16 @@ def post_process(dr):
 		profiles = profilesT[n_time]
 		rots = rotsT[n_time]
 	
+	d_eff = 0 
+	i = 0
+	roty = rots[2]
+	for a in rots[0]:
+		d = sin(a) * pS.d_tot + cos(a) * pS.d_max
+		d_eff += roty[i] * d
+		i += 1
+	print("INFO : d_eff/d_max = ", d_eff/pS.d_max)
+
+	
 	z_star = [z/d_ad for z in profiles[0]]
 	phi = profiles[1]
 	vx = [vx/(sqrt(abs(pM.g[2] * d_ad))) for vx in profiles[2]]
