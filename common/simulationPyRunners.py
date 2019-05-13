@@ -2,6 +2,7 @@ class pyRuns:
 	@staticmethod
 	def exitWhenFinished():
 		if(O.time > pM.t_max):
+			print("INFO: Simulation finished at time : " + str(O.time))
 			O.pause()
 
 	@staticmethod
