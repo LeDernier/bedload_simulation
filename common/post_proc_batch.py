@@ -22,7 +22,6 @@ me = 0.005
 mew = 0.3
 ms = 7.0
 d_ad = 0
-save_fig_dir = pPP.save_fig_dir 
 
 ### Setting plt options
 plt.rc('text', usetex=True)
@@ -38,6 +37,7 @@ name_value = name_list[-1]
 
 ### import measures functions
 execfile("params_post_proc.py")
+save_fig_dir = pPP.save_fig_dir 
 execfile("common/simulationPyRunners.py")
 execfile("common/measures.py")
 
