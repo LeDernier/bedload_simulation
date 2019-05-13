@@ -168,7 +168,7 @@ class sim: # Simulation
 				)
 		if pSave.yadeSavePeriod:
 			engines.append(
-				PyRunner(command='O.save("data/"+str(O.time)+".yade")', virtPeriod = pSave.yadeSavePeriod, label = 'save')
+				PyRunner(command='O.save("data/"+str(O.time)+".xml")', virtPeriod = pSave.yadeSavePeriod, label = 'save')
 				)
 		if pM.shake_enable:
 			engines.append(
