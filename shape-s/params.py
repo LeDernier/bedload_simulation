@@ -57,7 +57,7 @@ class pP: # Param Particle
 	d = pM.l/10.0
 	rho = 2.5e3
 	c_r = 0.7
-	phi_max = 0.4
+	phi_max = 0.4 #0.64
 	mu = atan(0.5)
 	# Ground rugosity
 	d_rug = d
@@ -83,8 +83,13 @@ class pS: # Param Shape
 	d_min = min(ds)
 	d_max = max(ds)
 	vol = 0
+	surf = 0
 	for d in ds:
 		vol += math.pi * pow(d, 3) / 6.0
+		surf += math.pi * pow(d, 2) / 4.0
+	d_vol = pow(6.0 * vol / math.pi, 1.0/3.0)
+	d_surf = pow(4.0 * surf / math.pi, 1.0/2.0)
+
 
 # Computing n_l and n_ll
 pP.n = 12.0 * (pP.phi_max * pM.l * pM.w * pS.d_max / pS.vol)
