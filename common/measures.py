@@ -45,20 +45,53 @@ def getMeanVel():
 #############################################################################################
 #############################################################################################
 
+def getShields():
+	"""Returns the current shields number.
+	
+	"""
+	return max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * eval(pPP.d_ad) * abs(pM.g[2])) # pF.shields_d * abs(pM.g[2]))
+
+#############################################################################################
+#############################################################################################
+
+def getEulerHist():
+	rotx = []
+	roty = []
+	rotz = []
+	for body in O.bodies :
+		if body.dynamic == True and body.isClump:
+			print(body.state.refOri)
+			rot = body.state.rot()
+			rotx.append(math.fmod(2*math.pi + rot[0], 2*math.pi))
+			roty.append(math.fmod(2*math.pi + rot[1], 2*math.pi))
+			rotz.append(math.fmod(2*math.pi + rot[2], 2*math.pi))
+	binsNb = 20
+	rotx, bins = np.histogram(rotx, bins=binsNb, normed=False)
+	roty, bins = np.histogram(roty, bins=binsNb, normed=False)
+	rotz, bins = np.histogram(rotz, bins=binsNb, normed=False)
+	bin_centers = 0.5*(bins[1:] + bins[:-1])
+	return [bin_centers, rotx, roty, rotz]
+
+#############################################################################################
+#############################################################################################
+
 def getOrientationHist():
 	rotx = []
 	roty = []
 	rotz = []
 	for body in O.bodies :
 		if body.dynamic == True and body.isClump:
-			rot = body.state.rot()
-			rotx.append(math.fmod(2*math.pi + rot[0], 2*math.pi))
-			roty.append(math.fmod(2*math.pi + rot[1], 2*math.pi))
-			rotz.append(math.fmod(2*math.pi + rot[2], 2*math.pi))
+			u = body.state.ori * Vector3(1.0, 0.0, 0.0)
+			u_yOz = Vector3(0, u[1], u[2])
+			u_xOz = Vector3(u[0], 0, u[2])
+			u_xOy = Vector3(u[0], u[1], 0)
+			rotx.append(math.acos(u.dot(u_yOz)/(u.norm() * u_yOz.norm())))
+			roty.append(math.acos(u.dot(u_xOz)/(u.norm() * u_xOz.norm())))
+			rotz.append(math.acos(u.dot(u_xOy)/(u.norm() * u_xOy.norm())))
 	binsNb = 20
-	rotx, bins = np.histogram(rotx, bins=binsNb, normed=True)
-	roty, bins = np.histogram(roty, bins=binsNb, normed=True)
-	rotz, bins = np.histogram(rotz, bins=binsNb, normed=True)
+	rotx, bins = np.histogram(rotx, bins=binsNb, normed=False)
+	roty, bins = np.histogram(roty, bins=binsNb, normed=False)
+	rotz, bins = np.histogram(rotz, bins=binsNb, normed=False)
 	bin_centers = 0.5*(bins[1:] + bins[:-1])
 	return [bin_centers, rotx, roty, rotz]
 

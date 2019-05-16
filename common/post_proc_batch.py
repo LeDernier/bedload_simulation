@@ -9,14 +9,7 @@ r = [0.0, 0.5]
 v = [0.5, 0.0]
 b = [0.5, 0.0]
 colors = []
-batch_colors = []
-grad = len(sys.argv) - 1
-for i in range(grad):
-	c = (i/float(grad))
-	colors.append((r[0]*c+r[1]*(1-c), v[0]*c+v[1]*(1-c), b[0]*c+b[1]*(1-c)))
-	batch_colors.append((r[0]*c+r[1]*(1-c), v[0]*c+v[1]*(1-c), b[0]*c+b[1]*(1-c)))
 markers = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
-batch_markers = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
 #markers = ["$\mathbf{H}$", "$\mathbf{G}$", "$\mathbf{F}$", "$\mathbf{E}$", "$\mathbf{D}$", "$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$"]
 me = 0.005 
 mew = 0.3
@@ -30,14 +23,20 @@ plt.rc('text', usetex=True)
 name_list = sys.argv[1]
 name_list = name_list.split("_")
 name_case = name_list[0]
-name_param = name_list[1] 
-for n in name_list[2:-1]:
-	name_param += "_{" + n + "}"
+for s in name_list[1:-2]:
+	name_case += "-" + s
+name_param = name_list[-2] 
+#for n in name_list[2:-1]:
+#	name_param += "_{" + n + "}"
 name_value = name_list[-1]
 
 ### import measures functions
 execfile("params_post_proc.py")
 save_fig_dir = pPP.save_fig_dir 
+grad = len(sys.argv) - 1
+for i in range(grad):
+	c = (i/float(grad))
+	colors.append((r[0]*c+r[1]*(1-c), v[0]*c+v[1]*(1-c), b[0]*c+b[1]*(1-c)))
 execfile("common/simulationPyRunners.py")
 execfile("common/measures.py")
 
@@ -65,7 +64,7 @@ def read_data(dr):
 		### Getting data here.
 		# Add calls to measurements to add data 
 		data["profiles"].append(getProfiles())
-		data["shields"].append(pF.shields)
+		data["shields"].append(getShields())
 		data["rots"].append(getOrientationHist())
 		### End
 	return time, data
@@ -113,19 +112,25 @@ def post_process(dr):
 				for k in range(len(rots[j])):
 					rots[j][k] += rotsT[i][j][k]
 			i += 1
-		rots = [[rot/(i - i_deb) for rot in rots[0]], [rot/(i - i_deb) for rot in rots[1]], [rot/(i - i_deb) for rot in rots[2]], [rot/(i - i_deb) for rot in rots[3]]]
+		sumx = sum(rots[1])
+		sumy = sum(rots[2])
+		sumz = sum(rots[3])
+		rots = [[rot/(i - i_deb) for rot in rots[0]], [rot/sumx for rot in rots[1]], [rot/sumy for rot in rots[2]], [rot/sumz for rot in rots[3]]]
 	else :
 		profiles = profilesT[n_time]
 		rots = rotsT[n_time]
 	
+	summ = 0
 	d_eff = 0 
 	i = 0
 	roty = rots[2]
 	for a in rots[0]:
-		d = sin(a) * pS.d_tot + cos(a) * pS.d_max
+		d = abs(sin(a)) * pS.d_tot + abs(cos(a)) * pS.d_max
 		d_eff += roty[i] * d
+		summ += roty[i]
 		i += 1
-	print("INFO : d_eff/d_max = ", d_eff/pS.d_max)
+	print("INFO : d_eff/d_max = ", d_eff/summ/pS.d_max)
+	print("INFO : summ = ", summ)
 
 	
 	z_star = [z/d_ad for z in profiles[0]]
@@ -231,7 +236,7 @@ if not pPP.batch_plot_enable:
 	# Vx profile
 	figs["vx"] = plt.figure()
 	axs["vx"] = plt.gca()
-	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final ${V^f_x}^*=\frac{V^p_x}{\sqrt{g"+pPP.d_ad_name+"}}$ profile for different $" + name_param + "$.")
+	plt.title(r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the final ${V^p_x}^*=\frac{V^p_x}{\sqrt{g"+pPP.d_ad_name+"}}$ profile for different $" + name_param + "$.")
 	plt.xlabel(r"${V^p_x}^*$")
 	plt.ylabel(r"$z/"+pPP.d_ad_name+"$")
 	# Vxf profile
@@ -288,6 +293,23 @@ for dr in sys.argv[1:]:
 	post_process(dr)
 
 if pPP.batch_plot_enable:
+	### Defining constants
+	batch_colors_save = []
+	grad = len(batch_data)
+	for i in range(grad):
+		c = (i/float(grad))
+		batch_colors_save.append((r[0]*c+r[1]*(1-c), v[0]*c+v[1]*(1-c), b[0]*c+b[1]*(1-c)))
+	batch_markers_save = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
+
+	### Sorting data
+	params = []
+	params_val = []
+	for p, v in batch_data.items():
+		params.append(p)
+		params_val.append(v)
+	params, params_val = zip(*sorted(zip(params, params_val)))
+
+
 	### Qs(shields)
 	plt.figure()
 	plt.title(r"\begin{center}"+
@@ -297,33 +319,39 @@ if pPP.batch_plot_enable:
 	plt.xlabel(r"$\theta$")
 	plt.ylabel(r"$Q_s$")
 	# Plotting
-	for key in batch_data:
+	batch_colors = batch_colors_save[:]
+	batch_markers = batch_markers_save[:]
+	for i in range(len(params)):
+		p = params[i]
+		v = params_val[i]
 		batch_m = batch_markers.pop()
 		batch_c = batch_colors.pop()
-		d = batch_data[key]
-		markeveryS = int(max(1.0, me * len(d["sh"])))
-		plt.plot(d["sh"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
+		markeveryS = int(max(1.0, me * len(v["sh"])))
+		plt.plot(v["sh"], v["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(p)+"$")
 	plt.legend(fancybox=True, framealpha=0.5)
 	if pPP.save_figs:
-		plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(shields)"+".pdf")
+		plt.savefig(save_fig_dir+name_case+"_"+pPP.batch_param_name+"_"+"qs(shields)"+".pdf")
 	### Qs(Qf)
 	plt.figure()
 	plt.title(r"\begin{center}"+
 			r"\textbf{" + name_case.capitalize() +  r" : } Evolution of the solid transport compared to the fluid flow \\ for different $" + pPP.batch_param_name + r"$."
 			+r"\end{center}"
 			)
-	plt.xlabel(r"$\theta$")
+	plt.xlabel(r"$Q_f$")
 	plt.ylabel(r"$Q_s$")
 	# Plotting
-	for key in batch_data:
+	batch_colors = batch_colors_save[:]
+	batch_markers = batch_markers_save[:]
+	for i in range(len(params)):
+		p = params[i]
+		v = params_val[i]
 		batch_m = batch_markers.pop()
 		batch_c = batch_colors.pop()
-		d = batch_data[key]
-		markeveryS = int(max(1.0, me * len(d["qf"])))
-		plt.plot(d["qf"], d["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(key)+"$")
+		markeveryS = int(max(1.0, me * len(v["qf"])))
+		plt.plot(v["qf"], v["qs"], color=batch_c, marker=batch_m, markevery=markeveryS, markeredgewidth=mew, markerfacecolor=batch_c, markersize=ms, label=r"$"+pPP.batch_param_name+"="+str(p)+"$")
 	plt.legend(fancybox=True, framealpha=0.5)
 	if pPP.save_figs:
-		plt.savefig(save_fig_dir+name_case+"_"+name_param+"_"+"qs(qf)"+".pdf")
+		plt.savefig(save_fig_dir+name_case+"_"+pPP.batch_param_name+"_"+"qs(qf)"+".pdf")
 else:
 	#### Creating rectangular patch to show averaging
 	if pPP.mean_over_time_enable:
