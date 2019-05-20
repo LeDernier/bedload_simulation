@@ -112,9 +112,9 @@ def post_process(dr):
 				for k in range(len(rots[j])):
 					rots[j][k] += rotsT[i][j][k]
 			i += 1
-		sumx = sum(rots[1])
-		sumy = sum(rots[2])
-		sumz = sum(rots[3])
+		sumx = float(sum(rots[1]))
+		sumy = float(sum(rots[2]))
+		sumz = float(sum(rots[3]))
 		rots = [[rot/(i - i_deb) for rot in rots[0]], [rot/sumx for rot in rots[1]], [rot/sumy for rot in rots[2]], [rot/sumz for rot in rots[3]]]
 	else :
 		profiles = profilesT[n_time]
@@ -129,7 +129,7 @@ def post_process(dr):
 		d_eff += roty[i] * d
 		summ += roty[i]
 		i += 1
-	print("INFO : d_eff/d_max = ", d_eff/summ/pS.d_max)
+	print("INFO : d_eff/d_max = ", d_eff/pS.d_max)
 	print("INFO : summ = ", summ)
 
 	
