@@ -11,7 +11,7 @@ before changing them so that you do not need to define them all.
 
 """
 
-# execfile("../common/default_params.py")
+# execfile("../common/defaultParams.py")
 
 import math
 
@@ -128,11 +128,13 @@ class pF:
 if pN.verbose:
 	print("\n")
 
-	print("Particle volume : " +  str(pP.vol))
-	print("Particle surface : " +  str(pP.surf))
+	print("INFO: Particle volume : " +  str(pP.vol))
+	print("INFO: Particle surface : " +  str(pP.surf))
 
-	print("Number of particles : " + str(pM.n))
-	print("Estimated number of particle layers : " + str(pM.n_l))
+	print("INFO: Number of particles : " + str(pM.n))
+	print("INFO: Estimated number of particle layers : " + str(pM.n_l))
 	
 	if pF.enable:
-		print("Estimated fluid height : " + str(pF.h))
+		print("INFO: Estimated fluid height : " + str(pF.h))
+
+	print("\n")

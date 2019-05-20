@@ -6,159 +6,178 @@
 # Incline plane simulations
 #
 #########################################################################################################################################################################
+
 import numpy as np
 
-if not ('test' in globals()):
-	test=False
-
 class sim: # Simulation
-	####################################################################################################################################
-	####################################################  SIMULATION DEFINITION  #########################################################
-	####################################################################################################################################
 	@staticmethod
 	def simulation():
 		"""Creates a simulation.
 		
-		Parameters:
-		- [diameterPart, densPart, phiPartMax, restitCoef, partFrictAngle] -- parameters relative to the particles
-		- [number, lengthBox, widthBox, heightBox]                         -- parameters relative to the particle cloud
-		- [normalStiffness, youngMod, poissonRatio]                        -- parameters relative to the particles' material
-		- [slopeChannel, lengthChannel, widthChannel, heightChannel]       -- parameters relative to the channel
-		- [positionCoef, angleHouse, lengthHouse, widthHouse, heightHouse] -- parameters relative to the house
-		
 		"""
-		if test:
-			sim.engineCreation()
-			frameworkCreation()
-		else:
-			frameworkCreation()
-			sim.engineCreation()
-		O.saveTmp() # User can reload simulation
-	
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def simulationWait():
-		"""Creates a simulation, runs it and wait until its finished.
-		
-		Parameters:
-		- [diameterPart, densPart, phiPartMax, restitCoef, partFrictAngle] -- parameters relative to the particles
-		- [number, lengthBox, widthBox, heightBox]                         -- parameters relative to the particle cloud
-		- [normalStiffness, youngMod, poissonRatio]                        -- parameters relative to the particles' material
-		- [slopeChannel, lengthChannel, widthChannel, heightChannel]       -- parameters relative to the channel
-		- [positionCoef, angleHouse, lengthHouse, widthHouse, heightHouse] -- parameters relative to the house
-		
-		"""
-		O.reset()
-		frameworkCreation()
 		sim.engineCreation()
-		O.run() # Run the simulation
-		O.wait()
+		frameworkCreation()
+		sim.init()
+		# Save tmp so that the user can reload the simulation. 
+		O.saveTmp() 
+
+	@staticmethod
+	def init():
+		""" Initialise the simulation.
+
+		"""
+		### Initialisation of fluid
+		if pF.enable:
+			partsIds = []
+			for i in range(len(O.bodies)):
+				b = O.bodies[i]
+				if not b.isClump:
+					partsIds.append(i)
+			hydroEngine.ids = partsIds
+			hydroEngine.ReynoldStresses = np.ones(pN.n_z) * 0.0
+			hydroEngine.turbulentFluctuation()
+
+	####---------------####
+	#### Engines Def 
+	####---------------####
 	
-	#############################################################################################
-	#############################################################################################
+	@staticmethod
+	def cylinderContactDetectionCreation(engines):
+		""" Add to the engines the engine necessary to cylinder contact detection.
+		
+		"""
+		### Detect the potential contacts
+		engines.append(
+				InsertionSortCollider(
+					[Bo1_GridConnection_Aabb(), Bo1_Sphere_Aabb()],
+					label='contactDetection',
+					allowBiggerThanPeriod = True
+					)
+				)
+
+	@staticmethod
+	def sphereContactDetectionCreation(engines):
+		""" Add to the engines the engine necessary to sphere contact detection.
+		
+		"""
+		### Detect the potential contacts
+		engines.append(
+				InsertionSortCollider(
+					[Bo1_Sphere_Aabb(), Bo1_Box_Aabb()],
+					label='contactDetection',
+					allowBiggerThanPeriod = True
+					)
+				)
+
+	@staticmethod
+	def cylinderInteractionsCreation(engines):
+		""" Add to the engines the engine necessary to the cylinder interactions.
+		
+		"""
+		### Calculate different interactions
+		engines.append(
+				InteractionLoop(
+					[      
+						# Sphere interactions
+						Ig2_Sphere_Sphere_ScGeom(),
+						# Sphere-Cylinder interactions
+						Ig2_Sphere_GridConnection_ScGridCoGeom(),
+						# Cylinder interactions 
+						Ig2_GridNode_GridNode_GridNodeGeom6D(),
+						# Cylinder-Cylinder interaction :
+						Ig2_GridConnection_GridConnection_GridCoGridCoGeom(),
+					],
+					[
+						# Internal Cylinder Physics
+						Ip2_CohFrictMat_CohFrictMat_CohFrictPhys(setCohesionNow=True,setCohesionOnNewContacts=False),
+						# Physics for External Interactions (cylinder-cylinder)
+						Ip2_FrictMat_FrictMat_FrictPhys()
+					],
+					[
+						# Contact law for sphere-sphere interactions
+						Law2_ScGeom_FrictPhys_CundallStrack(),
+						# Contact law for cylinder-sphere interactions
+						Law2_ScGridCoGeom_FrictPhys_CundallStrack(),
+						# Contact law for "internal" cylider forces :
+						Law2_ScGeom6D_CohFrictPhys_CohesionMoment(),
+						# Contact law for cylinder-cylinder interaction :
+						Law2_GridCoGridCoGeom_FrictPhys_CundallStrack()
+					],
+					label = 'interactionLoop'
+					)
+				)
+
+	@staticmethod
+	def sphereInteractionsCreation(engines):
+		""" Add to the engines the engine necessary to the sphere interactions.
+		
+		"""
+		engines.append(
+				InteractionLoop(
+					[Ig2_Sphere_Sphere_ScGeom(), Ig2_Box_Sphere_ScGeom()],
+					[Ip2_ViscElMat_ViscElMat_ViscElPhys()],
+					[Law2_ScGeom_ViscElPhys_Basic()],
+					label = 'interactionLoop'
+					)
+				)
+
+	####---------------####
+	#### Hydro engine 
+	####---------------####
+	
+	@staticmethod
+	def hydroEngineCreation(engines):
+		""" Add to the engines the engine necessary to the application of hydrodynamic forces.
+		
+		"""
+		# Building Parts Id list
+		engines.append(
+				HydroForceEngine(
+					densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
+					gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
+					lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
+					radiusPart= pow(3 * pP.vol / (4 * math.pi), 1.0/3.0), phiPart = pP.phi, 
+					vxFluid = pF.vx, vxPart = pP.vx, ids = [], dead = True, 
+					label = 'hydroEngine')
+				)
+		# Fluid resolution
+		if pF.solve:
+			engines.append(
+					PyRunner(command='pyRuns.solveFluid()', virtPeriod = pF.t, label = 'fluidSolve')
+					)
+		# Display fluid velocity profile
+		if pF.display_enable:
+			engines.append(
+					PyRunner(command='pyRuns.updateFluidDisplay()', virtPeriod = pF.t, label = 'fluidDisplay')
+					)
+
+	####---------------####
+	#### Engines Creation 
+	####---------------####
+	
 	@staticmethod
 	def engineCreation():
 		"""Creates the engine.
 		
-		Parameters:
-		- idsToRemove -- the ids (as an list) of the objects you want to remove after 1 sec of simulation.
-		
 		"""
-		######################################################################################
-		### Simulation loop
-		######################################################################################
 		engines = []
 		### Reset the forces
 		engines.append(
 				ForceResetter()
 				)
 		### Detect the potential contacts
-		if test:
-			engines.append(
-					InsertionSortCollider(
-						[Bo1_GridConnection_Aabb(), Bo1_Sphere_Aabb()],
-						label='contactDetection',
-						allowBiggerThanPeriod = True
-						)
-					)
+		if pP.kind == "cylinder":
+			sim.cylinderContactDetectionCreation(engines)
 		else:
-			engines.append(
-					InsertionSortCollider(
-						[Bo1_Sphere_Aabb(), Bo1_Box_Aabb()],
-						label='contactDetection',
-						allowBiggerThanPeriod = True
-						)
-					)
+			sim.sphereContactDetectionCreation(engines)
 		### Calculate different interactions
-		if test:
-			engines.append(
-					InteractionLoop(
-						[      
-							# Sphere interactions
-							Ig2_Sphere_Sphere_ScGeom(),
-							# Sphere-Cylinder interactions
-							Ig2_Sphere_GridConnection_ScGridCoGeom(),
-							# Cylinder interactions 
-							Ig2_GridNode_GridNode_GridNodeGeom6D(),
-							# Cylinder-Cylinder interaction :
-							Ig2_GridConnection_GridConnection_GridCoGridCoGeom(),
-						],
-						[
-							# Internal Cylinder Physics
-							Ip2_CohFrictMat_CohFrictMat_CohFrictPhys(setCohesionNow=True,setCohesionOnNewContacts=False),
-							# Physics for External Interactions (cylinder-cylinder)
-							Ip2_FrictMat_FrictMat_FrictPhys()
-						],
-						[
-							# Contact law for sphere-sphere interactions
-							Law2_ScGeom_FrictPhys_CundallStrack(),
-							# Contact law for cylinder-sphere interactions
-							Law2_ScGridCoGeom_FrictPhys_CundallStrack(),
-							# Contact law for "internal" cylider forces :
-							Law2_ScGeom6D_CohFrictPhys_CohesionMoment(),
-							# Contact law for cylinder-cylinder interaction :
-							Law2_GridCoGridCoGeom_FrictPhys_CundallStrack()
-						],
-						label = 'interactionLoop'
-						)
-					)
+		if pP.kind == "cylinder":
+			sim.cylinderinteractionsCreation(engines)
 		else:
-			engines.append(
-					InteractionLoop(
-						[Ig2_Sphere_Sphere_ScGeom(), Ig2_Box_Sphere_ScGeom()],
-						[Ip2_ViscElMat_ViscElMat_ViscElPhys()],
-						[Law2_ScGeom_ViscElPhys_Basic()],
-						label = 'interactionLoop'
-						)
-					)
+			sim.sphereInteractionsCreation(engines)
 		#### Apply hydrodynamic forces
 		if pF.enable:
-			# Building Parts Id list
-			partsIds = []
-			for i in range(len(O.bodies)):
-				b = O.bodies[i]
-				if not b.isClump:
-					partsIds.append(i)
-			engines.append(
-					HydroForceEngine(
-						densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
-						gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
-						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
-						radiusPart= pow(3 * pP.vol / (4 * math.pi), 1.0/3.0), phiPart = pP.phi, 
-						vxFluid = pF.vx, vxPart = pP.vx, ids = partsIds, 
-						label = 'hydroEngine')
-					)
-			# Fluid resolution
-			if pF.solve:
-				engines.append(
-						PyRunner(command='pyRuns.solveFluid()', virtPeriod = pF.t, label = 'fluidSolve')
-						)
-			# Display fluid velocity profile
-			if pF.display_enable:
-				engines.append(
-						PyRunner(command='pyRuns.updateFluidDisplay()', virtPeriod = pF.t, label = 'fluidDisplay')
-						)
+			sim.hydroEngineCreation(engines)
 		### GlobalStiffnessTimeStepper, determine the time step for a stable integration
 		engines.append(
 				GlobalStiffnessTimeStepper(defaultDt=1e-4, viscEl=True, timestepSafetyCoefficient=0.7, label='GSTS')
@@ -168,13 +187,16 @@ class sim: # Simulation
 				NewtonIntegrator(damping=0.0, gravity=pM.g, label='newtonIntegr')
 				)
 		### PyRunner Calls
+		# End of simulation
 		engines.append(
 				PyRunner(command='pyRuns.exitWhenFinished()', virtPeriod = 0.1, label = 'exit')
 				)
+		# Save data 
 		if pSave.yadeSavePeriod:
 			engines.append(
 				PyRunner(command='O.save("data/"+str(O.time)+".xml")', virtPeriod = pSave.yadeSavePeriod, label = 'save')
 				)
+		# Shaker
 		if pN.shake_enable:
 			engines.append(
 				PyRunner(command='pyRuns.shaker()', virtPeriod = pN.shake_period, label = 'shaker')
@@ -186,11 +208,6 @@ class sim: # Simulation
 				)
 		### Adding engines to Omega
 		O.engines = engines
-		### Initialisation of fluid
-		if pF.enable:
-			#hydroEngine.vxFluid = pF.vx  
-			hydroEngine.ReynoldStresses = np.ones(pN.n_z) * 0.0
-			hydroEngine.turbulentFluctuation()
 
 ### Reading pyRunners
 execfile("../common/simulationPyRunners.py")

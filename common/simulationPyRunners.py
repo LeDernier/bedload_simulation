@@ -13,6 +13,7 @@ class pyRuns:
 		elif pyRuns.count < 1 and O.time < pSave.yadeSavePeriod:
 			print("INFO: Starting to apply fluid.\n")
 			pyRuns.count = 1
+			hydroEngine.dead = False
 			hydroEngine.averageProfile()
 			hydroEngine.fluidResolution(1., pF.dt)
 		# Computes average vx, vy, vz, phi, drag profiles
