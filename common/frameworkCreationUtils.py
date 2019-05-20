@@ -17,10 +17,17 @@ from yade.gridpfacet import *
 """
 
 class frCrea: # Framework Creation
-	#############################################################################################
-	#############################################################################################
+	
+
+	####---------------####
+	#### Immaterial 
+	####---------------####
+
 	@staticmethod
 	def createPeriodicCell():
+		""" Defines the domain as periodic
+
+		"""
 		# Defining the domain periodic
 		O.periodic = True
 		# Defining cell with good dimensions
@@ -28,6 +35,9 @@ class frCrea: # Framework Creation
 
 	@staticmethod
 	def defineMaterials():
+		""" Defines materials.
+
+		"""
 		## Estimated max particle pressure from the static load
 		if pF.enable:
 			p_max = -(pP.rho - pF.rho) * pP.phi_max * pM.n_l * pP.S * pM.g[2]
@@ -43,114 +53,25 @@ class frCrea: # Framework Creation
 		## Finaly difining material
 		O.materials.append(ViscElMat(en=pP.c_r, et=0., young=E, poisson=nu, density=pP.rho, frictionAngle=pP.mu, label='mat')) 
 
-	#############################################################################################
-	#############################################################################################
+	####---------------####
+	#### Macro 
+	####---------------####
+
 	@staticmethod
 	def createGround():
-		# Creating ground at (0, 0, 0) with right length, width and orientation
+		""" Create the ground using a very big plane.
+
+		"""
 		ground = box(center = (0.0, 0.0, pM.z_ground), extents = (1.0e5*pM.l, 1.0e5*pM.w, 0.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat') # Flat bottom plane 
 		groundDisplay = box(center = (pM.l/2.0, pM.w/2.0, pM.z_ground), extents = (pM.l/2.0, pM.w/2.0, 0.0), fixed = True, wire = False, color = (0.,0.5,0.), material = 'mat', mask = 0) # Display of flat bottom plane
 		O.bodies.append(ground)
 		O.bodies.append(groundDisplay)
 		return (len(O.bodies)-2, len(O.bodies)-1) 
 	
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def createDisplayFluidHeight():
-		display = box(center = (pM.l/2.0, pM.w/2.0, pF.z), extents = (pM.l/2.0, pM.w/2.0, 0.0), fixed = True, wire = False, color = (0.,0.,0.5), material = 'mat', mask = 0)
-		O.bodies.append(display)
-		return len(O.bodies)-1 
-	
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def createDisplayG():
-		display = box(center = (pM.l/2.0,pM.w/2.0,pF.z), extents = (pM.w/50.0, pM.w/50.0, pM.h/10.0), orientation = Quaternion((0, -1, 0), pM.alpha), fixed = True, wire = False, color = (0.5,0.,0.), material = 'mat', mask = 0)
-		O.bodies.append(display)
-		return len(O.bodies)-1 
-	
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def createBox(**kwargs):
-		# Parameters
-		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
-		extents = kwargs.get('extents', Vector3(0.0, 0.0, 0.0))
-		orientation = kwargs.get('orientation', Quaternion(Vector3(0.0, 1.0, 0.0), 0.0))
-		wire = kwargs.get('wire', False)
-		color = kwargs.get('color', Vector3(1.0, 1.0, 1.0))
-		mask = kwargs.get('mask', 1)
-	
-		# Creating ground at (0, 0, 0) with right length, width and orientation
-		new_box = box(center = center, extents = extents, orientation = orientation, fixed = True, wire = wire, color = color, material = 'mat', mask = mask) # Flat bottom plane 
-		O.bodies.append(new_box)
-		return len(O.bodies) - 1 
-	
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def createSphere(center, radius, color, wire, mask):
-		# Creating ground at (0, 0, 0) with right length, width and orientation
-		new_sphere = sphere(center = center, radius = radius, fixed = True, wire = wire, color = color, material = 'mat', mask = mask) # Flat bottom plane 
-		O.bodies.append(new_sphere)
-		return len(O.bodies) - 1 
-	
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def createParticles():
-		"""Creates a particules cloud in a box at the top of the channel.
-		
-		Parameters:
-		- slopeChannel  -- slope of the channel.
-		- diameterPart  -- diameter of the spheres
-		- number        -- number of particles
-		
-		"""
-	
-		randRange = pP.r * 0.2
-		d_eff = pP.d * 1.2
-		r_eff = pP.r * 1.2
-		n_i = len(O.bodies)
-		n_max = n_i + pP.n
-
-		# Create particles
-		z = pM.z_ground + d_eff + 2.0*randRange
-		while len(O.bodies) < n_max:
-			x = -pM.l/2.0 + r_eff
-			while x < pM.l/2.0-r_eff and len(O.bodies) < n_max:
-				y = -pM.w/2.0 + r_eff
-				while y < pM.w/2.0-r_eff and len(O.bodies) < n_max:
-					O.bodies.append(
-							sphere(
-								center = (
-									x+random.uniform(-1,1)*randRange, 
-									y+random.uniform(-1,1)*randRange, 
-									z+random.uniform(-1,1)*randRange
-									),
-								radius = pP.r,
-								color = (random.uniform(0.0, 0.5), random.uniform(0.0, 0.5), random.uniform(0.0, 0.5)),
-								fixed = False,
-								material = 'mat',
-								wire = False
-								)
-							)
-					y += d_eff
-				x += d_eff
-			z += d_eff
-	
-	#############################################################################################
-	#############################################################################################
 	@staticmethod
 	def createRugosity():
-		"""Creates a particules cloud in a box at the top of the channel.
-		
-		Parameters:
-		- slopeChannel  -- slope of the channel.
-		- diameterPart  -- diameter of the spheres
-		- number        -- number of particles
-		
+		"""Creates a rugous ground based on spheres.
+
 		"""
 	
 		randRangeZ = pM.d_rug/2.0
@@ -180,82 +101,80 @@ class frCrea: # Framework Creation
 				y += d_eff
 			x += d_eff
 	
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def createClumpCloud():
-		"""Creates a particules cloud in a box at the top of the channel.
-		
-		Parameters:
-		- slopeChannel  -- slope of the channel.
-		- diameterPart  -- diameter of the spheres
-		- number        -- number of particles
-		
-		"""
-		
-		d_eff = pP.L 
-		r_eff = pP.L
-		n_i = 0
-
-		iter_vects = [Vector3(1.0, 0.0, 0.0)]
-
-		# Create particles
-		z = pM.z_ground + d_eff + d_eff/2.0
-		while n_i < pM.n:
-			x = -pM.l/2.0
-			while x < pM.l/2.0 - d_eff/2.0 and n_i < pM.n:
-				y = -pM.w/2.0
-				while y < pM.w/2.0 - d_eff/2.0 and n_i < pM.n:
-					(id_clump, ids_clumped) = frCrea.addClump(
-							center = Vector3(x, y, z),
-							ds = pP.ds,
-							iter_vects = iter_vects,
-							)
-					n_i += 1
-					#d_eff = frCrea.computeOutD(id_clump, ids_clumped)
-					y += d_eff
-				x += d_eff
-			z += d_eff
+	####---------------####
+	#### Micro 
+	####---------------####
 	
-	#############################################################################################
-	#############################################################################################
 	@staticmethod
-	def createCylinderCloud():
-		"""Creates a particules cloud in a box at the top of the channel.
-		
-		Parameters:
-		- slopeChannel  -- slope of the channel.
-		- diameterPart  -- diameter of the spheres
-		- number        -- number of particles
-		
-		"""
-		
-		d_eff = pS.d_tot 
-		r_eff = pS.d_tot
-		n_i = 0 
+	def createBox(**kwargs):
+		""" Creates a simple box
 
-		# Create particles
-		z = pM.z_ground + d_eff + d_eff/2.0
-		while n_i < pP.n:
-			x = -pM.l/2.0
-			while x < pM.l/2.0 - d_eff/2.0 and n_i < pP.n:
-				y = -pM.w/2.0
-				while y < pM.w/2.0 - d_eff/2.0 and n_i < pP.n:
-					(id_cyl, ids_nodes) = frCrea.addCylinder(
-							center = Vector3(x, y, z),
-							l = pS.d_tot,
-							s = pS.d_max,
-							)
-					n_i += 1
-					y += d_eff
-				x += d_eff
-			z += d_eff
+		Parameters :
+		- center : center of the box : Vector3
+		- extents : extents of the box : Vector3
+		- orientation : orientation of the box : Quaternion
+		- wire : display as wire : bool
+		- color : color of the box : Vector3
+		- mask : collision mask : int
+		"""
+		# Parameters
+		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
+		extents = kwargs.get('extents', Vector3(0.0, 0.0, 0.0))
+		orientation = kwargs.get('orientation', Quaternion(Vector3(0.0, 1.0, 0.0), 0.0))
+		wire = kwargs.get('wire', False)
+		color = kwargs.get('color', Vector3(1.0, 1.0, 1.0))
+		mask = kwargs.get('mask', 1)
 	
-	#############################################################################################
-	#############################################################################################
+		# Creating ground at (0, 0, 0) with right length, width and orientation
+		new_box = box(center = center, extents = extents, orientation = orientation, fixed = True, wire = wire, color = color, material = 'mat', mask = mask) # Flat bottom plane 
+		O.bodies.append(new_box)
+		return len(O.bodies) - 1 
+
+	@staticmethod
+	def createSphere(center, radius, color, wire, mask):
+		""" Creates a simple sphere
+
+		Parameters :
+		- center : center of the sphere : Vector3
+		- radius : radius of the sphere : float
+		- color : color of the sphere : Vector3
+		- wire : display as wire : bool
+		- mask : collision mask : int
+		"""
+		# Creating ground at (0, 0, 0) with right length, width and orientation
+		new_sphere = sphere(center = center, radius = radius, fixed = True, wire = wire, color = color, material = 'mat', mask = mask) # Flat bottom plane 
+		O.bodies.append(new_sphere)
+		return len(O.bodies) - 1 
+
+	####---------------####
+	#### Display
+	####---------------####
+	
+	@staticmethod
+	def createDisplayFluidHeight():
+		display = box(center = (pM.l/2.0, pM.w/2.0, pF.z), extents = (pM.l/2.0, pM.w/2.0, 0.0), fixed = True, wire = False, color = (0.,0.,0.5), material = 'mat', mask = 0)
+		O.bodies.append(display)
+		return len(O.bodies)-1 
+	
+	@staticmethod
+	def createDisplayG():
+		display = box(center = (pM.l/2.0,pM.w/2.0,pF.z), extents = (pM.w/50.0, pM.w/50.0, pM.h/10.0), orientation = Quaternion((0, -1, 0), pM.alpha), fixed = True, wire = False, color = (0.5,0.,0.), material = 'mat', mask = 0)
+		O.bodies.append(display)
+		return len(O.bodies)-1 
+	
+	####---------------####
+	#### Clump
+	####---------------####
 	
 	@staticmethod
 	def addClump(**kwargs):
+		""" Add a 'fiber' clump.
+			
+			Parameters:
+			- center : center of the clump : Vector3
+			- ds : diameter of each spheres of the clump : float list
+			- iter_vects : direction vectors : Vector3 list
+		"""
 		# Parameters
 		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
 		ds = kwargs.get('ds', [1.0e-6])
@@ -287,11 +206,50 @@ class frCrea: # Framework Creation
 		O.bodies[id_clump].state.ori = Quaternion((0, 0, 1), random.uniform(0, 2 * math.pi)) * Quaternion((0, 1, 0), random.uniform(0, 2 * math.pi)) * Quaternion((1, 0, 0), random.uniform(0, 2 * math.pi))
 		
 		return result
+
+	@staticmethod
+	def createClumpCloud():
+		"""Creates a simple clump cloud.
+		
+		"""
+		
+		d_eff = pP.L 
+		r_eff = pP.L
+		n_i = 0
+
+		iter_vects = [Vector3(1.0, 0.0, 0.0)]
+
+		# Create particles
+		z = pM.z_ground + d_eff + d_eff/2.0
+		while n_i < pM.n:
+			x = -pM.l/2.0
+			while x < pM.l/2.0 - d_eff/2.0 and n_i < pM.n:
+				y = -pM.w/2.0
+				while y < pM.w/2.0 - d_eff/2.0 and n_i < pM.n:
+					(id_clump, ids_clumped) = frCrea.addClump(
+							center = Vector3(x, y, z),
+							ds = pP.ds,
+							iter_vects = iter_vects,
+							)
+					n_i += 1
+					#d_eff = frCrea.computeOutD(id_clump, ids_clumped)
+					y += d_eff
+				x += d_eff
+			z += d_eff
 	
-	#############################################################################################
-	#############################################################################################
+	####---------------####
+	#### Cylinder
+	####---------------####
+	
 	@staticmethod
 	def addCylinder(**kwargs):
+		""" Creates a simple cylinder.
+
+		Parameters :
+		- center : center of the cylinder : Vector3
+		- l : length of the cylinder : float
+		- s : diameter of the cylinder : float
+		"""
 		# Parameters
 		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
 		l = kwargs.get('l', [1.0e-6])
@@ -307,110 +265,37 @@ class frCrea: # Framework Creation
 		# c_body = O.bodies[id_clump].state.ori = Quaternion((0, 0, 1), random.uniform(0, 2 * math.pi)) * Quaternion((0, 1, 0), random.uniform(0, 2 * math.pi)) * Quaternion((1, 0, 0), random.uniform(0, 2 * math.pi))
 		return (cylIds[0], nodesIds)
 
-	#############################################################################################
-	#############################################################################################
 	@staticmethod
-	def addRandomClump(**kwargs):
-		# Parameters
-		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
-		d_min = kwargs.get('d_min', 1.0e-6)
-		d_max = kwargs.get('d_max', 1.0e-6)
-		n = kwargs.get('n', 10)
-	
-		x = center[0]
-		y = center[1]
-		z = center[2]
-		r_min = d_min/2.0
-		r_max = d_max/2.0
-
-		# Sphere list
-		ss = []
-		# Create first sphere
-		rand_r = random.uniform(r_min, r_max)
-		ss.append(
-				sphere(
-					center = (
-						x, 
-						y, 
-						z
-						),
-					radius = rand_r, 
-					color = (1.0, 0.0, 0.0),
-					fixed = False,
-					material = 'mat'
-					)
-				)
-	
-		for i in range(n):
-			i_rand = random.randint(0, len(ss) - 1)
-
-			theta = random.uniform(0.0, 2.0*math.pi)
-			phi = random.uniform(0.0, math.pi)
-			r_s = random.uniform(max(0.0, ss[i_rand].shape.radius - d_min), ss[i_rand].shape.radius)
-			
-			x = ss[i_rand].state.pos[0] + r_s * cos(theta) * sin(phi)
-			y = ss[i_rand].state.pos[1] + r_s * sin(theta) * sin(phi)
-			z = ss[i_rand].state.pos[2] + r_s * cos(phi)
-			
-			rand_r = random.uniform(r_min, r_max)
-			ss.append(
-					sphere(
-						center = (
-							x, 
-							y, 
-							z
-							),
-						radius = rand_r, 
-						color = (1.0, 0.0, 0.0),
-						fixed = False,
-						material = 'mat'
-						)
-					)
-		# Adding clump to simulation
-		result = O.bodies.appendClumped(ss)
-		(id_clump, ids_clumped) = result
-
-		printParticleShapeInfo(id_clump, ids_clumped)
+	def createCylinderCloud():
+		"""Creates a simple cylinder cloud.
 		
-		return result
+		"""
+		
+		d_eff = pS.L 
+		r_eff = pS.L
+		n_i = 0 
 
-	@staticmethod
-	def printParticleShapeInfo(id_clump, ids_clumped):
-		# Debug prints after generation of random clump
-		body_c = O.bodies[id_clump]
-		print("Clump mass : " + str(body_c.state.mass))
-		sum_mass = 0.0
-		for b_id in ids_clumped:
-			sum_mass += O.bodies[b_id].state.mass
-		print("Sum mass : " + str(sum_mass))
-		in_d = 0.0
-		for b_ids in ids_clumped:
-			in_d = max(in_d, O.bodies[b_id].shape.radius)
-		in_d *= 2.0
-		print("In d : " + str(in_d))
-		out_d = frCrea.computeOutD(id_clump, ids_clumped)
-		print("Out d : " + str(out_d))
-		print("Ratio in_d/out_d : " + str(in_d/out_d))
-
-
-	#############################################################################################
-	#############################################################################################
-	@staticmethod
-	def computeOutD(id_clump, ids_clumped):
-		out_d = 0
-		for i in range(len(ids_clumped) - 1):
-			b_id = ids_clumped[i]
-			b = O.bodies[b_id]
-			for j in range(i+1, len(ids_clumped)):
-				test_id = ids_clumped[j]
-				t = O.bodies[test_id]
-				test_d = ((t.state.pos - b.state.pos).norm() + t.shape.radius + b.shape.radius)
-				if test_d > out_d:
-					out_d = test_d
-		return out_d
+		# Create particles
+		z = pM.z_ground + d_eff + d_eff/2.0
+		while n_i < pM.n:
+			x = -pM.l/2.0
+			while x < pM.l/2.0 - d_eff/2.0 and n_i < pM.n:
+				y = -pM.w/2.0
+				while y < pM.w/2.0 - d_eff/2.0 and n_i < pM.n:
+					(id_cyl, ids_nodes) = frCrea.addCylinder(
+							center = Vector3(x, y, z),
+							l = pS.L,
+							s = pS.S,
+							)
+					n_i += 1
+					y += d_eff
+				x += d_eff
+			z += d_eff
 	
-	#############################################################################################
-	#############################################################################################
+	####---------------####
+	#### Misc
+	####---------------####
+
 	@staticmethod
 	def addTetra(**kwargs):
 		# Parameters
