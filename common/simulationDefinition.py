@@ -77,8 +77,9 @@ class sim: # Simulation
 		if test:
 			engines.append(
 					InsertionSortCollider(
-						[Bo1_GridConnection_Aabb()],
-						label='contactDetection'
+						[Bo1_GridConnection_Aabb(), Bo1_Sphere_Aabb()],
+						label='contactDetection',
+						allowBiggerThanPeriod = True
 						)
 					)
 		else:
@@ -93,7 +94,12 @@ class sim: # Simulation
 		if test:
 			engines.append(
 					InteractionLoop(
-						[
+						[      
+							# Sphere interactions
+							Ig2_Sphere_Sphere_ScGeom(),
+							# Sphere-Cylinder interactions
+							Ig2_Sphere_GridConnection_ScGridCoGeom(),
+							# Cylinder interactions 
 							Ig2_GridNode_GridNode_GridNodeGeom6D(),
 							# Cylinder-Cylinder interaction :
 							Ig2_GridConnection_GridConnection_GridCoGridCoGeom(),
@@ -105,6 +111,10 @@ class sim: # Simulation
 							Ip2_FrictMat_FrictMat_FrictPhys()
 						],
 						[
+							# Contact law for sphere-sphere interactions
+							Law2_ScGeom_FrictPhys_CundallStrack(),
+							# Contact law for cylinder-sphere interactions
+							Law2_ScGridCoGeom_FrictPhys_CundallStrack(),
 							# Contact law for "internal" cylider forces :
 							Law2_ScGeom6D_CohFrictPhys_CohesionMoment(),
 							# Contact law for cylinder-cylinder interaction :
@@ -149,12 +159,9 @@ class sim: # Simulation
 						PyRunner(command='pyRuns.updateFluidDisplay()', virtPeriod = pF.t, label = 'fluidDisplay')
 						)
 		### GlobalStiffnessTimeStepper, determine the time step for a stable integration
-		if test:
-			O.dt=1e-06
-		else:
-			engines.append(
-					GlobalStiffnessTimeStepper(defaultDt=1e-4, viscEl=True, timestepSafetyCoefficient=0.7, label='GSTS')
-					)
+		engines.append(
+				GlobalStiffnessTimeStepper(defaultDt=1e-4, viscEl=True, timestepSafetyCoefficient=0.7, label='GSTS')
+				)
 		### Integrate the equation and calculate the new position/velocities...
 		engines.append(
 				NewtonIntegrator(damping=0.0, gravity=pM.g, label='newtonIntegr')
