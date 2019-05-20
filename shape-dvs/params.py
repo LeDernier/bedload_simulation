@@ -30,25 +30,26 @@ import math
 
 class pM: # Param Macro
 	### Simulation parameters
-	t_max = 100.0
+	t_max = 400.0
 	# Mesh :
 	n_z = 900
 	### Macroscopic parameters
 	alpha = 0.05 
 	l = 1.0e-1
 	w = 1.0e-1
-	h = 6.0e-1
-	z_ground = h/4.0
+	h = 20.0e-1
+	z_ground = h/2.0
 	### Physical parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * sin(alpha), 0, -g_scale * cos(alpha))
 	### Shake
-	shake_enable = False
+	shake_enable = True
 	shake_period = 0.04
 	shake_intensity = 0.2
+	shake_time = 0.6
 
 class pSave: # Param Save
-	yadeSavePeriod = 1.0
+	yadeSavePeriod = 2.0
 	vtkRecorderIterPeriod = 0
 
 ### Particles
@@ -56,7 +57,7 @@ class pP: # Param Particle
 	d = pM.l/10.0
 	rho = 2.5e3
 	c_r = 0.7
-	phi_max = 0.4
+	phi_max = 0.4 #0.64
 	mu = atan(0.5)
 	# Ground rugosity
 	d_rug = d
@@ -72,34 +73,41 @@ class pP: # Param Particle
 ### Shape
 class pS: # Param Shape
 	A = 0.5
-	d_min_star = ((1.0/A) - 1.0) / 2.0
-	ds = [d_min_star, 1.0, d_min_star] 
+	d_min_star = pP.d * ((1.0/A) - 1.0) / 2.0
+	ds = [d_min_star, pP.d, d_min_star] 
 	iter_vect = [Vector3(1.0, 0.0, 0.0)]
 	# Computation of parameters
-	d_tot = sum(ds)
-	ds = [d * pP.d / d_tot for d in ds]
+	# d_tot = sum(ds)
+	# ds = [d * pP.d / d_tot for d in ds]
 	d_tot = sum(ds)
 	d_min = min(ds)
 	d_max = max(ds)
 	vol = 0
+	surf = 0
 	for d in ds:
 		vol += math.pi * pow(d, 3) / 6.0
+		surf += math.pi * pow(d, 2) / 4.0
+	d_vol = pow(6.0 * vol / math.pi, 1.0/3.0)
+	d_surf = pow(4.0 * surf / math.pi, 1.0/2.0)
+
 
 # Computing n_l and n_ll
-pP.n = 10.0 * (pP.phi_max * pM.l * pM.w * pS.d_max / pS.vol)
+pP.n = 12.0 * (pP.phi_max * pM.l * pM.w * pS.d_max / pS.vol)
 pP.n_l = pP.n / (pP.phi_max * pM.l * pM.w * pS.d_max / pS.vol)
+print("Number of particles : " + str(pP.n))
 print("Estimated number of particle layers : " + str(pP.n_l))
 
 ### Fluid
 class pF: # Param Fluid
 	enable = True
 	solve = True
+	solve_begin_time = 0.8
 	## Physics
 	rho = 1e3
 	nu = 1e-6
-	init_shields = 0.1
+	init_shields = 0.2
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
-	shields_d = pS.d_max
+	shields_d = pS.vol/pS.surf
 	h = init_shields * (pP.rho/rho - 1) * shields_d / sin(pM.alpha)
 	print("Estimated fluid height : " + str(h))
 	dt = 1e-5
@@ -114,5 +122,5 @@ class pF: # Param Fluid
 	vx = [0] * (pM.n_z+1)
 	# Display parameters
 	display_enable = False
-	display_n = 10
+	display_n = 100
 	display_mult = 0
