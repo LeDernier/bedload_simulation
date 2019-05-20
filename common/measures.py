@@ -49,7 +49,10 @@ def getShields():
 	"""Returns the current shields number.
 	
 	"""
-	return max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * eval(pPP.d_ad) * abs(pM.g[2])) # pF.shields_d * abs(pM.g[2]))
+	if pF.enable:
+		return max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * eval(pPP.d_ad) * abs(pM.g[2])) # pF.shields_d * abs(pM.g[2]))
+	else:
+		return 0
 
 #############################################################################################
 #############################################################################################
