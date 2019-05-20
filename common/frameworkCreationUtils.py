@@ -10,6 +10,7 @@ import math
 import random
 
 from yade import pack
+from yade.gridpfacet import *
 
 """Call frameworkCreation to create the framework in your simulation. You will need to define the parameters in the frameworkCreation.py file.
 
@@ -200,6 +201,41 @@ class frCrea: # Framework Creation
 	#############################################################################################
 	#############################################################################################
 	@staticmethod
+	def createCylinderCloud():
+		"""Creates a particules cloud in a box at the top of the channel.
+		
+		Parameters:
+		- slopeChannel  -- slope of the channel.
+		- diameterPart  -- diameter of the spheres
+		- number        -- number of particles
+		
+		"""
+		
+		d_eff = pS.d_tot 
+		r_eff = pS.d_tot
+		n_i = 0 
+
+		# Create particles
+		z = pM.z_ground + d_eff + d_eff/2.0
+		while n_i < pP.n:
+			x = -pM.l/2.0
+			while x < pM.l/2.0 - d_eff/2.0 and n_i < pP.n:
+				y = -pM.w/2.0
+				while y < pM.w/2.0 - d_eff/2.0 and n_i < pP.n:
+					(id_cyl, ids_nodes) = frCrea.addCylinder(
+							center = Vector3(x, y, z),
+							l = pS.d_tot,
+							s = pS.d_max,
+							)
+					n_i += 1
+					y += d_eff
+				x += d_eff
+			z += d_eff
+	
+	#############################################################################################
+	#############################################################################################
+	
+	@staticmethod
 	def addClump(**kwargs):
 		# Parameters
 		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
@@ -229,10 +265,29 @@ class frCrea: # Framework Creation
 		(id_clump, ids_clumped) = result
 
 		# Random orientation
-		c_body = O.bodies[id_clump].state.ori = Quaternion((0, 0, 1), random.uniform(0, 2 * math.pi)) * Quaternion((0, 1, 0), random.uniform(0, 2 * math.pi)) * Quaternion((1, 0, 0), random.uniform(0, 2 * math.pi))
+		O.bodies[id_clump].state.ori = Quaternion((0, 0, 1), random.uniform(0, 2 * math.pi)) * Quaternion((0, 1, 0), random.uniform(0, 2 * math.pi)) * Quaternion((1, 0, 0), random.uniform(0, 2 * math.pi))
 		
 		return result
 	
+	#############################################################################################
+	#############################################################################################
+	@staticmethod
+	def addCylinder(**kwargs):
+		# Parameters
+		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
+		l = kwargs.get('l', [1.0e-6])
+		s = kwargs.get('s', l/4.0)
+
+		# Sphere list
+		col = (random.uniform(0.0, 0.5), random.uniform(0.0, 0.5), random.uniform(0.0, 0.5))
+		nodesIds = []
+		cylIds = []
+		cylinder(center - Vector3((l-s)/2.0, 0.0, 0.0), center + Vector3((l-s)/2.0, 0.0, 0.0), radius=s/2.0, nodesIds=nodesIds, cylIds=cylIds, fixed=False, color=col, intMaterial='cMat', extMaterial='fMat')
+		
+		# Random orientation
+		# c_body = O.bodies[id_clump].state.ori = Quaternion((0, 0, 1), random.uniform(0, 2 * math.pi)) * Quaternion((0, 1, 0), random.uniform(0, 2 * math.pi)) * Quaternion((1, 0, 0), random.uniform(0, 2 * math.pi))
+		return (cylIds[0], nodesIds)
+
 	#############################################################################################
 	#############################################################################################
 	@staticmethod
