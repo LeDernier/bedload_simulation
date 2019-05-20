@@ -3,7 +3,7 @@ class pPP:
 	save_fig_dir = "/home/rmonthil/Documents/post_proc/"
 	save_figs = True
 	# Adimensionalisation
-	d_ad = "pow(pS.d_vol, 3.0)/pow(pS.d_surf, 2.0)"
+	d_ad = "pS.vol/pS.surf"
 	d_ad_name = "d_{vs}"
 	# Mean operation 
 	mean_over_time_enable = False
