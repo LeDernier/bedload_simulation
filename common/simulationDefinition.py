@@ -144,9 +144,10 @@ class sim: # Simulation
 					HydroForceEngine(
 						densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
 						gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
-						lift = False, nCell = pM.n_z, vCell = pM.l * pM.w * pF.dz, 
-						radiusPart= pP.r, phiPart = pP.phi, vxFluid = pF.vx, 
-						vxPart = pP.vx, ids = partsIds, label = 'hydroEngine')
+						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
+						radiusPart= pow(3 * pP.vol / (4 * math.pi), 1.0/3.0), phiPart = pP.phi, 
+						vxFluid = pF.vx, vxPart = pP.vx, ids = partsIds, 
+						label = 'hydroEngine')
 					)
 			# Fluid resolution
 			if pF.solve:
@@ -170,16 +171,13 @@ class sim: # Simulation
 		engines.append(
 				PyRunner(command='pyRuns.exitWhenFinished()', virtPeriod = 0.1, label = 'exit')
 				)
-		engines.append(
-				PyRunner(command='pyRuns.updateQuantities()', virtPeriod = 0.1, label = 'update')
-				)
 		if pSave.yadeSavePeriod:
 			engines.append(
 				PyRunner(command='O.save("data/"+str(O.time)+".xml")', virtPeriod = pSave.yadeSavePeriod, label = 'save')
 				)
-		if pM.shake_enable:
+		if pN.shake_enable:
 			engines.append(
-				PyRunner(command='pyRuns.shaker()', virtPeriod = pM.shake_period, label = 'shaker')
+				PyRunner(command='pyRuns.shaker()', virtPeriod = pN.shake_period, label = 'shaker')
 				)
 		### Recorder
 		if pSave.vtkRecorderIterPeriod > 0:
@@ -191,7 +189,7 @@ class sim: # Simulation
 		### Initialisation of fluid
 		if pF.enable:
 			#hydroEngine.vxFluid = pF.vx  
-			hydroEngine.ReynoldStresses = np.ones(pM.n_z) * 0.0
+			hydroEngine.ReynoldStresses = np.ones(pN.n_z) * 0.0
 			hydroEngine.turbulentFluctuation()
 
 ### Reading pyRunners

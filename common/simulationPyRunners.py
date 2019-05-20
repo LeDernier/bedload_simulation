@@ -1,15 +1,10 @@
 class pyRuns:
 	@staticmethod
 	def exitWhenFinished():
-		if(O.time > pM.t_max):
+		if(O.time > pN.t_max):
 			print("INFO: Simulation finished at time : " + str(O.time))
 			O.pause()
 
-	@staticmethod
-	def updateQuantities():
-		if pF.enable:
-			pF.shields = max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * pF.shields_d * abs(pM.g[2]))
-	
 	count = 0
 	@staticmethod
 	def solveFluid():
@@ -26,11 +21,11 @@ class pyRuns:
 	
 	@staticmethod
 	def shaker():
-		if O.time > pM.shake_time:
+		if O.time > pN.shake_time:
 			shaker.dead = True
 			return
 		else:
-			pyRuns.shake(pM.shake_intensity)
+			pyRuns.shake(pN.shake_intensity)
 
 	@staticmethod
 	def shake(X = 0.1):
@@ -52,7 +47,7 @@ class pyRuns:
 			renderer.ghosts = False
 			# Drawing profile
 			dz = (pF.z-pM.z_ground)/pF.display_n
-			nn = pM.n_z/pF.display_n
+			nn = pN.n_z/pF.display_n
 			vx = []
 			vmax = 0.001
 			for i in pyRuns.fluidDisplayIds:
@@ -66,7 +61,7 @@ class pyRuns:
 				if vx[i] > vmax:
 					vmax = vx[i]
 			if pF.display_mult == 0.0:
-				mult = (pM.l-pP.r)/vmax
+				mult = (pM.l-pP.S)/vmax
 			else:
 				mult = pF.display_mult
 			for i in range(pF.display_n):

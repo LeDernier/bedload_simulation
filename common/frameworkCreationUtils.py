@@ -25,7 +25,24 @@ class frCrea: # Framework Creation
 		O.periodic = True
 		# Defining cell with good dimensions
 		O.cell.setBox(pM.w, pM.w, pM.h)
+
+	@staticmethod
+	def defineMaterials():
+		## Estimated max particle pressure from the static load
+		if pF.enable:
+			p_max = -(pP.rho - pF.rho) * pP.phi_max * pM.n_l * pP.S * pM.g[2]
+		else:
+			p_max = -pP.rho * pP.phi_max * pM.n_l * pP.S * pM.g[2]
 	
+		## Evaluate the minimal normal stiffness to be in the rigid particle limit (cf Roux and Combe 2002)
+		N_s = p_max * pP.S * 1.0e4
+		## Young modulus of the particles from the stiffness wanted.
+		E = N_s / pP.S
+		## Poisson's ratio of the particles. Classical values, does not have much influence.
+		nu = 0.5
+		## Finaly difining material
+		O.materials.append(ViscElMat(en=pP.c_r, et=0., young=E, poisson=nu, density=pP.rho, frictionAngle=pP.mu, label='mat')) 
+
 	#############################################################################################
 	#############################################################################################
 	@staticmethod
@@ -136,9 +153,9 @@ class frCrea: # Framework Creation
 		
 		"""
 	
-		randRangeZ = pP.d_rug/2.0
+		randRangeZ = pM.d_rug/2.0
 		randRangeXY = 0.0
-		d_eff = pP.d_rug
+		d_eff = pM.d_rug
 	
 		# Create particles
 		z = pM.z_ground 
@@ -153,7 +170,7 @@ class frCrea: # Framework Creation
 								y + random.uniform(-1,1) * randRangeXY, 
 								z + random.uniform(-1,1) * randRangeZ
 								),
-							radius = pP.d_rug/2.0,
+							radius = pM.d_rug/2.0,
 							color = (0.0, 0.3, 0.0),
 							fixed = True,
 							material = 'mat',
@@ -176,21 +193,23 @@ class frCrea: # Framework Creation
 		
 		"""
 		
-		d_eff = pS.d_tot 
-		r_eff = pS.d_tot
-		n_i = 0 
+		d_eff = pP.L 
+		r_eff = pP.L
+		n_i = 0
+
+		iter_vects = [Vector3(1.0, 0.0, 0.0)]
 
 		# Create particles
 		z = pM.z_ground + d_eff + d_eff/2.0
-		while n_i < pP.n:
+		while n_i < pM.n:
 			x = -pM.l/2.0
-			while x < pM.l/2.0 - d_eff/2.0 and n_i < pP.n:
+			while x < pM.l/2.0 - d_eff/2.0 and n_i < pM.n:
 				y = -pM.w/2.0
-				while y < pM.w/2.0 - d_eff/2.0 and n_i < pP.n:
+				while y < pM.w/2.0 - d_eff/2.0 and n_i < pM.n:
 					(id_clump, ids_clumped) = frCrea.addClump(
 							center = Vector3(x, y, z),
-							ds = pS.ds,
-							iter_vects = pS.iter_vect,
+							ds = pP.ds,
+							iter_vects = iter_vects,
 							)
 					n_i += 1
 					#d_eff = frCrea.computeOutD(id_clump, ids_clumped)
