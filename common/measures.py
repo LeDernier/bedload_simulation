@@ -135,7 +135,7 @@ def getProfiles():
 	
 	"""
 	if(pF.enable):
-		return [[i * pF.dz for i in range(pM.n_z)], hydroEngine.phiPart, hydroEngine.vxPart, hydroEngine.vxFluid[0:-1]]
+		return [[i * pF.dz for i in range(pN.n_z)], hydroEngine.phiPart, hydroEngine.vxPart, hydroEngine.vxFluid[0:-1]]
 	else:
 		partsIds = []
 		for i in range(len(O.bodies)):

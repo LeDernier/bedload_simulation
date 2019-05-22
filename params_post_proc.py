@@ -9,7 +9,7 @@ class pPP:
 	#-------------------#
 	# Adimensionalisation
 	#-------------------#
-	d_ad = "pS.vol/pS.surf"
+	d_ad = "pP.vol/pP.surf"
 	d_ad_name = "d_{vs}"
 	#-------------------#
 	# Mean operation 
@@ -30,13 +30,13 @@ class pPP:
 	# Plot Names
 	#-------------------#
 	plots_names = {
-			"mean_phi":r"$\bar{\phi$}",
-			"mean_vx":r"$\bar{U^p_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+pPP.d_ad_name+"}}$",
-			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+pPP.d_ad_name+"}}$",
+			"mean_phi":r"$\bar{\phi}$",
+			"mean_vx":r"$\bar{U^p_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+d_ad_name+"}}$",
+			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+d_ad_name+"}}$",
 			"qs":r"${Q_s}^*$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
-			"z":r"$z^* =  \frac{z}{"+pPP.d_ad_name+"}$",
+			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			}
 
@@ -55,29 +55,38 @@ class pP1D:
 	# Post Processing
 	#-------------------#
 	# Time is dealt seperately but data['time'] can be accessed from here.
-	post_process = {
+	# Dictionaries are not sorted so it is an array of dictionaries.
+	# An element of the array can use all the previous elements results. 
+	post_process = [
+			{
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
-			"vx":"[adim(l[2], sqrt(pM.g[2] * d_ad)) for l in data['profiles']]",
-			"vfx":"[adim(l[3], sqrt(pM.g[2] * d_ad)) for l in data['profiles']]",
+			"vx":"[adim(l[2], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
+			"vfx":"[adim(l[3], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
-			"mean_profiles":"average_profile(data['profiles'])",
-			"mean_rots":"average_profile(data['rots'], True)",
+			"mean_profiles":"average_profile(data['profiles'], data['time'])",
+			"mean_rots":"average_profile(data['rots'], data['time'], True)",
+			},
+			{
 			# Adimentionalisation.
 			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
 			"mean_phi":"data['mean_profiles'][1]",
-			"mean_vx":"adim(data['mean_profiles'][2], sqrt(pM.g[2] * d_ad))", 
-			"mean_vfx":"adim(data['mean_profiles'][3], sqrt(pM.g[2] * d_ad))",
+			"mean_vx":"adim(data['mean_profiles'][2], sqrt(-pM.g[2] * d_ad))", 
+			"mean_vfx":"adim(data['mean_profiles'][3], sqrt(-pM.g[2] * d_ad))",
+			},
+			{
 			# Flows
-			"qs":"[integration(data['phi'][i], data['vx'][i], data['z'][1]-data['z'][0]) for i in range(len(profiles))]",
-			"qf":"[integration(data['phi'][i], data['vfx'][i], data['z'][1]-data['z'][0]) for i in range(len(profiles))]",
+			"qs":"[integration(data['phi'][i], data['vx'][i], data['z'][1]-data['z'][0]) for i in range(len(data['profiles']))]",
+			"qf":"[integration(data['phi'][i], data['vfx'][i], data['z'][1]-data['z'][0]) for i in range(len(data['profiles']))]",
 			}
+			]
 	#-------------------#
 	# Plot Visuals
 	#-------------------#
 	r = pPP.r
 	v = pPP.v
 	b = pPP.b
+	colors = []
 	markers = pPP.markers[:]
 	me = pPP.me
 	mew = pPP.mew
@@ -97,13 +106,13 @@ class pP1D:
 class pP2D:
 	plot_enable = False
 	# Plot param
-	param = "pS.A"
+	param = "pP.A"
 	param_name = "A"
 	# Measuring 2D data in the 1D data
 	measures = {
-			"qs":"average(data['qs'])"
-			"qf":"average(data['qf'])"
-			"sh":"average(data['shields'])"
+			"qs":"average(data['qs'], data['time'])",
+			"qf":"average(data['qf'], data['time'])",
+			"sh":"average(data['shields'], data['time'])",
 			}
 	#-------------------#
 	# Plot visuals
@@ -111,6 +120,7 @@ class pP2D:
 	r = pPP.r
 	v = pPP.v
 	b = pPP.b
+	colors = []
 	markers = pPP.markers[:]
 	me = pPP.me
 	mew = pPP.mew

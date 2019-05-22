@@ -28,29 +28,32 @@ name_list = name_list.split("_")
 name_case = name_list[0]
 for s in name_list[1:-2]:
 	name_case += "-" + s
-name_param = name_list[-2] 
-name_value = name_list[-1]
+if len(name_list) > 2:
+	name_param = name_list[-2]
+	name_value = name_list[-1]
+else:
+	name_param = ""
+	name_value = ""
 
 #-------------------#
 # Defining utils
 #-------------------#
-def color_gradient(grad_nb):
-	global colors
-	colors = []
+def color_gradient(grad_nb, p):
+	p.colors = []
 	for i in range(grad_nb):
 		c = (i/float(grad_nb))
-		colors.append((r[0]*c+r[1]*(1-c), v[0]*c+v[1]*(1-c), b[0]*c+b[1]*(1-c)))
+		p.colors.append((p.r[0]*c+p.r[1]*(1-c), p.v[0]*c+p.v[1]*(1-c), p.b[0]*c+p.b[1]*(1-c)))
 
-def average(qT):
+def average(qT, t):
 	""" Average qT over time.
 
 	Parameters:
 	- qT : Contains the quantity. : List of floats.
 	"""
-	n_time = len(time) - 1
+	n_time = len(t) - 1
 	# Finding the first value to take into account.
 	i_deb = 0
-	while time[i_deb] < pPP.mean_begin_time:
+	while stime[i_deb] < pPP.mean_begin_time:
 		i_deb += 1
 	if i_deb > n_time - 1:
 		print('WARNING average: End of simulation before start of averaging.')
@@ -60,13 +63,13 @@ def average(qT):
 	q = qT[i_deb]
 	# Averaging
 	i = i_deb + 1
-	while i < n_time + 1 and time[i] < pPP.mean_end_time:
+	while i < n_time + 1 and t[i] < pPP.mean_end_time:
 		q += qT[i]
 		i += 1
 	q /= (i - i_deb)
 	return q
 
-def average_profile(qT, n=False):
+def average_profile(qT, t, n=False):
 	""" Average qT profiles over time.
 
 	Parameters:
@@ -74,10 +77,10 @@ def average_profile(qT, n=False):
 	qT[k][0] should correspond to the abscissa.
 	- n : Enable normalise (for histograms) : bool
 	"""
-	n_time = len(time) - 1
+	n_time = len(t) - 1
 	# Finding the first value to take into account.
 	i_deb = 0
-	while time[i_deb] < pPP.mean_begin_time:
+	while i_deb < len(t) and t[i_deb] < pPP.mean_begin_time:
 		i_deb += 1
 	if i_deb > n_time - 1:
 		print('WARNING average_profile: End of simulation before start of averaging.')
@@ -85,21 +88,21 @@ def average_profile(qT, n=False):
 		i_deb = n_time - 1
 	# Initialisation
 	q = []
-	for l in qT[i_deb]
+	for l in qT[i_deb]:
 		q.append(l[:])
 	# Averaging
 	i = i_deb + 1
-	while i < n_time + 1 and time[i] < pPP.mean_end_time:
+	while i < n_time + 1 and t[i] < pPP.mean_end_time:
 		for j in range(1, len(q)):
 			for k in range(len(q[j])):
 				q[j][k] += qT[i][j][k]
 		i += 1
 	if n:
-		for j in range(1, q):
+		for j in range(1, len(q)):
 			summ = sum(q[j])
 			q[j] = [v/summ for v in q[j]]
 	else:
-		for j in range(1, q):
+		for j in range(1, len(q)):
 			q[j] = [v/(i - i_deb) for v in q[j]]
 	return q
 
@@ -116,14 +119,17 @@ def integration(phi, y, dx):
 	""" Integrate y along x ponderate by phi.
 
 	"""
+	q = 0
 	for j in range(len(y)):
-		qs += phi[j] * y[j] * dx 
+		q += phi[j] * y[j] * dx 
+	
+	return q
 
 #-------------------#
 # Import measures functions
 #-------------------#
 execfile("params_post_proc.py")
-color_gradient(len(sys.argv) - 1)
+color_gradient(len(sys.argv) - 1, pP1D)
 execfile("common/simulationPyRunners.py")
 execfile("common/measures.py")
 
@@ -136,7 +142,7 @@ def read_ids(dr):
 
 def read_data(dr):
 	print(sep + "Loading data.")
-	time = []
+	stime = []
 	data = {}
 	for key in pP1D.measures:
 		data[key] = []
@@ -145,16 +151,16 @@ def read_data(dr):
 		### Loading data.
 		O.load(dr+"/data/" + f)
 		### Getting time.
-		time.append(O.time)
+		stime.append(O.time)
 		### Measure data.
 		for key in pP1D.measures: 
 			data[key].append(eval(pP1D.measures[key]))
-	return time, data
+	return stime, data
 
-def sort_data(time, data):
+def sort_data(stime, data):
 	print(sep + "Sorting data.")
 	for key in data:
-		stime, data[key] = zip(*sorted(zip(time, data[key])))
+		stime, data[key] = zip(*sorted(zip(stime, data[key])))
 	return stime, data
 
 def post_process(dr):
@@ -162,23 +168,26 @@ def post_process(dr):
 	name_value = dr.split("_")[-1]
 
 	ids = read_ids(dr)
-	time, data = read_data(dr)
-	time, data = sort_data(time, data)
+	stime, data = read_data(dr)
+	stime, data = sort_data(stime, data)
 	# Adding time to data
-	data["time"] = time
+	data["time"] = stime
 	# Post Processing
-	for key in pP1D.post_process:
-		data[key] = eval(post_process[key])
+	for p in pP1D.post_process:
+		for key in p:
+			data[key] = eval(p[key])
 	
 	### Storing 2D data
 	batch_val = eval(pP2D.param)
 	if not (batch_val in batch_data):
+		batch_data[batch_val] = {}
 		for key in pP2D.measures:
 			batch_data[batch_val][key] = []
 	if pP2D.plot_enable:
 		for key in pP2D.measures:
 			batch_data[batch_val][key].append(eval(pP2D.measures[key]))
 	
+	### Ploting 1D data
 	if pP1D.plot_enable:
 		m = pP1D.markers.pop()
 		c = pP1D.colors.pop()
@@ -186,10 +195,10 @@ def post_process(dr):
 		print(sep + "Ploting data.")
 		# Plots
 		for key in pP1D.plots:
-			for x in pP1D.plots["key"][0]:
+			for x in pP1D.plots[key][0]:
 				me = int(max(1.0, pP1D.me * len(x)))
-				for y in plots["key"][1]:
-					axs[key].plot(x, y, color=c, marker=m, markevery=me,
+				for y in pP1D.plots[key][1]:
+					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP1D.mew, 
 							markersize=pP1D.ms, label=r"$"+name_param+"="+name_value+"$")
 
@@ -213,7 +222,9 @@ batch_data = {}
 #-------------------#
 for dr in sys.argv[1:]:
 	print(bigSep + dr)
-	execfile(dr+"/params.py")
+	os.chdir(dr)
+	execfile("params.py")
+	os.chdir("..")
 	d_ad = eval(pPP.d_ad)
 	post_process(dr)
 
@@ -222,7 +233,7 @@ for dr in sys.argv[1:]:
 #-------------------#
 if pP2D.plot_enable:
 	### Computing Colors
-	color_gradient(len(sys.argv) - 1)
+	color_gradient(len(sys.argv) - 1, pP2D)
 	
 	### Sorting data
 	params = []
@@ -274,7 +285,7 @@ if pP1D.plot_enable:
 	### Saving figures
 	if pPP.save_figs:
 		for key in figs:
-			figs[key].savefig(save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf")
+			figs[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf")
 
 ### Showing figures
 plt.show()
