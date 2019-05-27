@@ -18,7 +18,7 @@ execfile('params.py')
 try:
 	datas = os.listdir("data")
 except:
-	datas = []
+	datas = False
 if datas:
 	for i in range(len(datas)):
 		datas[i] = float(datas[i].split(".xml")[0])
