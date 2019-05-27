@@ -27,7 +27,7 @@ class pN:
 	shake_intensity = 0.2
 	shake_time = 0.6
 	### Verbose
-	verbose = True
+	verbose = False
 
 ### Particle Parameters
 class pP: 
@@ -66,7 +66,7 @@ class pP:
 	### Friction angle
 	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
-	vx = [0] * (pN.n_z-1)
+	v = [Vector3(0,0,0)] * (pN.n_z-1)
 	phi = [0] * (pN.n_z-1)
 
 ### Macroscopic Parameters
