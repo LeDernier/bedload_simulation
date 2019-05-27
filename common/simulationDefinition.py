@@ -137,7 +137,7 @@ class sim: # Simulation
 					gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
 					lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
 					radiusPart= pow(3 * pP.vol / (4 * math.pi), 1.0/3.0), phiPart = pP.phi, 
-					vxFluid = pF.vx, vxPart = pP.vx, ids = [], dead = True, 
+					vxFluid = pF.vx, vPart = pP.v, ids = [], dead = True, 
 					label = 'hydroEngine')
 				)
 		# Fluid resolution
