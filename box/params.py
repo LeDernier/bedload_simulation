@@ -11,7 +11,7 @@ before changing them so that you do not need to define them all.
 
 """
 
-execfile("../common/defaultParams.py")
+# execfile("../common/defaultParams.py")
 
 import math
 
@@ -66,7 +66,7 @@ class pP:
 	### Friction angle
 	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
-	vx = [0] * (pN.n_z-1)
+	v = [Vector3(0,0,0)] * (pN.n_z-1)
 	phi = [0] * (pN.n_z-1)
 
 ### Macroscopic Parameters
