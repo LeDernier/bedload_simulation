@@ -15,7 +15,10 @@ import matplotlib.pyplot as plt
 execfile('params.py')
 
 # Simulation
-datas = os.listdir("data")
+try:
+	datas = os.listdir("data")
+else:
+	datas = []
 if datas:
 	for i in range(len(datas)):
 		datas[i] = float(datas[i].split(".xml")[0])
