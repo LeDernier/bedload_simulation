@@ -18,6 +18,7 @@ execfile('params.py')
 try:
 	datas = os.listdir("data")
 except:
+	os.mkdir("data")
 	datas = False
 if datas:
 	for i in range(len(datas)):
