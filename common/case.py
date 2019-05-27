@@ -17,7 +17,7 @@ execfile('params.py')
 # Simulation
 try:
 	datas = os.listdir("data")
-else:
+except:
 	datas = []
 if datas:
 	for i in range(len(datas)):
