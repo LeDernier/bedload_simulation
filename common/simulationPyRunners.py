@@ -14,11 +14,11 @@ class pyRuns:
 			print("INFO: Starting to apply fluid.\n")
 			pyRuns.count = 1
 			hydroEngine.dead = False
-			hydroEngine.averageProfile()
-			hydroEngine.fluidResolution(1., pF.dt)
+			hydroEngine.newAverageProfile()
+			hydroEngine.newFluidResolution(1., pF.dt)
 		# Computes average vx, vy, vz, phi, drag profiles
-		hydroEngine.averageProfile()
-		hydroEngine.fluidResolution(pF.t, pF.dt)
+		hydroEngine.newAverageProfile()
+		hydroEngine.newFluidResolution(pF.t, pF.dt)
 	
 	@staticmethod
 	def shaker():
