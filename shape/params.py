@@ -66,8 +66,8 @@ class pP:
 	### Friction angle
 	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
-	v = [Vector3(0,0,0)] * (pN.n_z-1)
-	phi = [0] * (pN.n_z-1)
+	v = [Vector3(0,0,0)] * pN.n_z
+	phi = [0] * pN.n_z
 
 ### Macroscopic Parameters
 class pM: 
@@ -117,7 +117,7 @@ class pF:
 	expoDrag = 3.1
 	# Computed parameters
 	z = pM.hs + h + pM.z_ground
-	dz = (z-pM.z_ground)/float(pN.n_z-1)
+	dz = (z-pM.z_ground)/float(pN.n_z)
 	# Attributes of the fluid
 	vx = [0] * (pN.n_z+1)
 	# Display parameters
