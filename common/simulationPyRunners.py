@@ -14,11 +14,46 @@ class pyRuns:
 			print("INFO: Starting to apply fluid.\n")
 			pyRuns.count = 1
 			hydroEngine.dead = False
-			hydroEngine.newAverageProfile()
-			hydroEngine.newFluidResolution(1., pF.dt)
+			if pF.method == "new":
+				hydroEngine.newAverageProfile()
+				hydroEngine.newFluidResolution(1., pF.dt)
+			elif pF.method == "old":
+				hydroEngine.averageProfile()
+				hydroEngine.fluidResolution(1., pF.dt)
 		# Computes average vx, vy, vz, phi, drag profiles
-		hydroEngine.newAverageProfile()
-		hydroEngine.newFluidResolution(pF.t, pF.dt)
+		if pF.method == "new":
+			hydroEngine.newAverageProfile()
+			hydroEngine.newFluidResolution(pF.t, pF.dt)
+		elif pF.method == "old":
+			hydroEngine.averageProfile()
+			hydroEngine.fluidResolution(pF.t, pF.dt)
+	
+	@staticmethod
+	def computeTurbulentFluctuations():
+		if O.time < pF.solve_begin_time:
+			return
+		# Computes average vx, vy, vz, phi, drag profiles
+		if pF.method == "new" or pF.method == "old":
+			# Evaluate nBed, the position of the bed which is assumed to be located around the first maximum of concentration when considering decreasing z.
+			nBed = 0.
+			bedElevation = 0.
+			for n in range(1, pN.n_z):
+				# If there is a peak and its value is superior to 0.5, we consider it to be the position of the bed
+				if phiPartPY[pN.n_z - n] < phiPartPY[pN.n_z - n-1] and phiPartPY[pN.n_z - n] > 0.5 :
+					nBed = pN.n_z - n
+					waterDepth = (pN.n_z-1 - nBed) * pF.dz + pF.z_ground
+					# Evaluate the bed elevation for the following
+					bedElevation = pF.z - waterDepth
+					break
+			#(Re)Define the bed elevation over which fluid turbulent fluctuations will be applied.
+			hydroEngine.bedElevation = bedElevation
+			#Impose a unique constant lifetime for the turbulent fluctuation, flucTimeScale
+			vMeanAboveBed = sum(vxFluidPY[nBed:])/(ndimz-nBed)	# fluid elocity scale in the water depth
+			flucTimeScale = waterDepth/vMeanAboveBed	# time scale of the fluctuation w_d/v, eddy turn over time
+			# New evaluation of the random fluid velocity fluctuation for each particle. 
+			hydroEngine.turbulentFluctuation() 
+			# Actualize when will be calculated the next fluctuations. 
+			turbFluct.virtPeriod = flucTimeScale 
 	
 	@staticmethod
 	def shaker():

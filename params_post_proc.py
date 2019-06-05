@@ -32,7 +32,9 @@ class pPP:
 	plots_names = {
 			"mean_phi":r"$\bar{\phi}$",
 			"mean_vx":r"$\bar{U^p_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+d_ad_name+"}}$",
+			"vx":r"${U^p_x}^* = \frac{U^p_x}{\sqrt{g"+d_ad_name+"}}$",
 			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+d_ad_name+"}}$",
+			"vfx":r"${U^f_x}^* = \frac{U^p_x}{\sqrt{g"+d_ad_name+"}}$",
 			"qs":r"${Q_s}^*$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
@@ -49,7 +51,7 @@ class pP1D:
 	measures = {
 			"profiles":"getProfiles()",
 			"shields":"getShields()",
-			"rots":"getOrientationHist()",
+			#"rots":"getEulerHist()",
 			}
 	#-------------------#
 	# Post Processing
@@ -65,7 +67,7 @@ class pP1D:
 			"vfx":"[adim(l[3], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_profile(data['profiles'], data['time'])",
-			"mean_rots":"average_profile(data['rots'], data['time'], True)",
+			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
 			},
 			{
 			# Adimentionalisation.
@@ -102,6 +104,13 @@ class pP1D:
 			"qf":[["time"], ["qf"]],
 			"sh":[["time"], ["shields"]],
 			}
+	plotsT = {
+			"vx":[["vx"], ["z"], 20.0],
+			"vfx":[["vfx"], ["z"], 20.0],
+			}
+	#contours = {
+	#		"ori":[["mean_vx"], ["z"]],
+	#		}
 
 class pP2D:
 	plot_enable = False

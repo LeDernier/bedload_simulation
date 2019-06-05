@@ -130,20 +130,37 @@ class sim: # Simulation
 		""" Add to the engines the engine necessary to the application of hydrodynamic forces.
 		
 		"""
-		# Building Parts Id list
-		engines.append(
-				HydroForceEngine(
-					densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
-					gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
-					lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
-					radiusPart= pow(3 * pP.vol / (4 * math.pi), 1.0/3.0), phiPart = pP.phi, 
-					vxFluid = pF.vx, vPart = pP.v, ids = [], dead = True, 
-					label = 'hydroEngine')
-				)
+		# Creating Hydro Engine
+		if pF.method == "new":
+			engines.append(
+					HydroForceEngine(
+						densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
+						gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
+						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
+						phiPart = pP.phi, vxFluid = pF.vx, vPart = pP.v, ids = [],
+						wallFriction = pF.enable_wall_friction,
+						dead = True, label = 'hydroEngine')
+					)
+		elif pF.method == "old":
+			engines.append(
+					HydroForceEngine(
+						densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
+						gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
+						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
+						radiusPart = pP.S/2.0, phiPart = pP.phi, 
+						vxFluid = pF.vx, vxPart = [0.0] * (pN.n_z-1), ids = [],
+						wallFriction = pF.enable_wall_friction,
+						dead = True, label = 'hydroEngine')
+					)
 		# Fluid resolution
 		if pF.solve:
 			engines.append(
 					PyRunner(command='pyRuns.solveFluid()', virtPeriod = pF.t, label = 'fluidSolve')
+					)
+		# Turbulent fluctuations
+		if pF.enable_fluctuations:
+			engines.append(
+					PyRunner(command='pyRuns.computeTurbulentFluctuations()', virtPeriod = pF.t_fluct, label = 'turbFluct')
 					)
 		# Display fluid velocity profile
 		if pF.display_enable:

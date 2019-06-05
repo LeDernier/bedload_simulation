@@ -37,7 +37,7 @@ class pP:
 	# Characteristic lengh taken for the adimensionalisation within the shields number.
 	dvs = 1.0e-2 
 	# Shape factor 
-	A = 3.0
+	A = 1.0
 	# Small characteristic length 
 	S = (2.0 * pow(A - 1.0, 2) + 4.0)/(pow(A - 1.0, 3) + 4.0) * dvs
 	# Long Characteristic length
@@ -88,7 +88,7 @@ class pM:
 	### Number of Particles
 	n = pP.phi_max * l * w * hs / pP.vol
 	# Number of particles "layers"
-	n_l = n / (pP.phi_max * l * w * pP.S / pP.vol)
+	n_l = n / (pP.phi_max * w * l * pP.S / pP.vol)
 	### Gravity parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
@@ -132,10 +132,6 @@ class pF:
 	display_enable = False
 	display_n = 100
 	display_mult = 0
-	# Mostly useless parameters
-	enable_wall_friction = False
-	enable_fluctuations = False
-	t_fluct = 1e-1
 
 if pN.verbose:
 	print("\n")

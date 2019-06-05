@@ -63,17 +63,15 @@ def getEulerHist():
 	rotz = []
 	for body in O.bodies :
 		if body.dynamic == True and body.isClump:
-			print(body.state.refOri)
 			rot = body.state.rot()
-			rotx.append(math.fmod(2*math.pi + rot[0], 2*math.pi))
-			roty.append(math.fmod(2*math.pi + rot[1], 2*math.pi))
-			rotz.append(math.fmod(2*math.pi + rot[2], 2*math.pi))
+			#rotx.append(rot[0])
+			roty.append(rot[1])
+			rotz.append(rot[2])
+			#rotz.append(math.fmod(2*math.pi + rot[2], 2*math.pi))
 	binsNb = 20
-	rotx, bins = np.histogram(rotx, bins=binsNb, normed=False)
-	roty, bins = np.histogram(roty, bins=binsNb, normed=False)
-	rotz, bins = np.histogram(rotz, bins=binsNb, normed=False)
+	rots, bins = np.histogram2D(roty, rotz, bins=binsNb, normed=False)
 	bin_centers = 0.5*(bins[1:] + bins[:-1])
-	return [bin_centers, rotx, roty, rotz]
+	return [bin_centers, rots]
 
 #############################################################################################
 #############################################################################################
@@ -135,7 +133,14 @@ def getProfiles():
 	
 	"""
 	if(pF.enable):
-		return [[i * pF.dz for i in range(pN.n_z)], hydroEngine.phiPart, hydroEngine.vxPart, hydroEngine.vxFluid[0:-1]]
+		vxPart = []
+		if pF.method == "new":
+			for i in range(0, len(hydroEngine.vPart)):
+				vxPart.append(hydroEngine.vPart[i][0])
+		elif pF.method == "old":
+			for i in range(0, len(hydroEngine.vxPart)):
+				vxPart.append(hydroEngine.vxPart[i])
+		return [[i * pF.dz for i in range(pN.n_z)], hydroEngine.phiPart, vxPart, hydroEngine.vxFluid[0:-1]]
 	else:
 		partsIds = []
 		for i in range(len(O.bodies)):
@@ -147,11 +152,63 @@ def getProfiles():
 				gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
 				lift = False, nCell = pM.n_z, vCell = pM.l * pM.w * pF.dz, 
 				radiusPart= pP.r, phiPart = pP.phi, vxFluid = pF.vx, 
-				vxPart = pP.vx, ids = partsIds, label = 'hydroEngine', dead = True)
+				vPart = pP.v, ids = partsIds, label = 'hydroEngine', dead = True)
 		hydroEngineTmp.ReynoldStresses = np.ones(pM.n_z) * 0.0
 		hydroEngineTmp.turbulentFluctuation()
 		hydroEngineTmp.averageProfile()
-		return [[i * pF.dz for i in range(pM.n_z)], hydroEngineTmp.phiPart, hydroEngineTmp.vxPart, hydroEngineTmp.vxFluid[0:-1]]
+		vxPart = []
+		for v in hydroEngine.vPart:
+			vxPart.append(v[0])
+		return [[i * pF.dz for i in range(pM.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1]]
+
+#############################################################################################
+#############################################################################################
+
+def getInertialProfile():
+	"""Returns the current mean velocity value of the dynamic objects as a Vector3
+	
+	"""
+	if(pF.enable):
+		# Computation of \dot{\gamma}
+		## Starting with vxPart
+		vxPart = []
+		for i in range(0, len(hydroEngine.vPart)):
+			vxPart.append(hydroEngine.vPart[i][0])
+		gamma_dot = []
+		for i in range(0, len(vxPart)):
+			gamma_dot.append((vxPart[i+1][0] - vxPart[i][0])/2.0)
+		# Computation of the Granular Pressure : 
+		# P_p = (\rho_p - \rho_f) * g * d_{vs} * \int{\phi dz}_z^\inf
+		pressure = [0] * len(hydroEngine.phiPart)
+		integ = 0
+		for i in range(len(hydroEngine.phiPart) - 1, -1, -1):
+			integ += hydroEngine.phiPart[i] * pF.dz
+			pressure[i] = (pP.rho - pF.rho) * pM.g[2] * pP.dvs * integ
+		# Finishing by computing the inertial number profile
+		# I = \frac{\dot{\gamma} d}{\sqrt{\frac{P}{\rho_p}}}
+		inertial = []
+		for i in range(0, len(pressure)):
+			inertial.append(gamma_dot[i] * dvs / sqrt(pressure / pP.rho))
+		return [[i * pF.dz for i in range(pN.n_z)], inertial]
+	else:
+		partsIds = []
+		for i in range(len(O.bodies)):
+			b = O.bodies[i]
+			if not b.isClump:
+				partsIds.append(i)
+		hydroEngineTmp = HydroForceEngine(
+				densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
+				gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
+				lift = False, nCell = pM.n_z, vCell = pM.l * pM.w * pF.dz, 
+				radiusPart= pP.r, phiPart = pP.phi, vxFluid = pF.vx, 
+				vPart = pP.v, ids = partsIds, label = 'hydroEngine', dead = True)
+		hydroEngineTmp.ReynoldStresses = np.ones(pM.n_z) * 0.0
+		hydroEngineTmp.turbulentFluctuation()
+		hydroEngineTmp.averageProfile()
+		vxPart = []
+		for v in hydroEngine.vPart:
+			vxPart.append(v[0])
+		return [[i * pF.dz for i in range(pM.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1]]
 
 #############################################################################################
 #############################################################################################

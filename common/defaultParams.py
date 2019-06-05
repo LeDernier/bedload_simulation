@@ -34,27 +34,33 @@ class pP:
 	### Shape and length parameters of the particles
 	# Type : "clump" or "cylinder"
 	kind = "clump"
+	# Characteristic lengh taken for the adimensionalisation within the shields number.
+	dvs = 1.0e-2 
 	# Shape factor 
 	A = 1.5
 	# Small characteristic length 
-	S = 1.0e-2
+	S = (2.0 * pow(A - 1.0, 2) + 4.0)/(pow(A - 1.0, 3) + 4.0) * dvs
 	# Long Characteristic length
 	L = A * S
 	# Volume and frontale surface that will be computed differently depending on the kind 
 	vol = 0
 	surf = 0
 	### Clump parameters
-	# Diameter of the small spheres
-	dss = (L-S)/2.0
-	# List of the diameters of the spheres in the clump
-	ds = [dss, S, dss]
-	# Computation of the volume and the surface of the particles
 	if kind == "clump":
+		# Diameter of the small spheres
+		dss = (L-S)/2.0
+		# List of the diameters of the spheres in the clump
+		ds = []
+		if dss > 0.0:
+			ds = [dss, S, dss]
+		else:
+			ds = [S]
+		# Computation of the volume and the surface of the particles
 		for d in ds:
 			vol += math.pi * pow(d, 3) / 6.0
 			surf += math.pi * pow(d, 2) / 4.0
-	# Characteristic lengh taken for the adimensionalisation within the shields number.
-	dvs = vol/surf
+	# Verification
+	dvs_calc = 3.0/2.0 * vol/surf
 	### Cylinder parameters
 	# TODO
 	### Density of particles
@@ -66,23 +72,23 @@ class pP:
 	### Friction angle
 	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
-	v = [Vector3(0,0,0)] * pN.n_z
-	phi = [0] * pN.n_z
+	v = [Vector3(0,0,0)] * (pN.n_z - 1)
+	phi = [0] * (pN.n_z - 1)
 
 ### Macroscopic Parameters
 class pM: 
 	### Framework parameters
 	alpha = 0.05 
-	l = 10 * pP.L
-	w = l
-	h = 20.0e-1
+	l = 30 * pP.dvs
+	w = 30 * pP.dvs
+	h = 2.0
 	z_ground = h/2.0
 	### Sediment height
-	hs = 12.0 * pP.S
+	hs = 12.0 * pP.dvs
 	### Number of Particles
 	n = pP.phi_max * l * w * hs / pP.vol
 	# Number of particles "layers"
-	n_l = n / (pP.phi_max * l * pP.S / pP.vol)
+	n_l = n / (pP.phi_max * l * w * pP.S / pP.vol)
 	### Gravity parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
@@ -100,6 +106,8 @@ class pSave:
 class pF: 
 	enable = True
 	solve = True
+	# Can be "old" or "new"
+	method = "new"
 	solve_begin_time = 0.8
 	## Physics
 	rho = 1e3
@@ -117,22 +125,29 @@ class pF:
 	expoDrag = 3.1
 	# Computed parameters
 	z = pM.hs + h + pM.z_ground
-	dz = (z-pM.z_ground)/float(pN.n_z)
+	dz = (z-pM.z_ground)/float(pN.n_z-1)
 	# Attributes of the fluid
 	vx = [0] * (pN.n_z+1)
 	# Display parameters
 	display_enable = False
 	display_n = 100
 	display_mult = 0
+	# Mostly useless parameters
+	enable_wall_friction = False
+	enable_fluctuations = False
+	t_fluct = 1e-1
 
 if pN.verbose:
 	print("\n")
 
 	print("INFO: Particle volume : " +  str(pP.vol))
 	print("INFO: Particle surface : " +  str(pP.surf))
+	print("INFO: dvs:" + str(pP.dvs) + " dvs_calc:" + str(pP.dvs_calc))
+	print("INFO: Diameter of the spheres: " + str(pP.ds))
 
 	print("INFO: Number of particles : " + str(pM.n))
 	print("INFO: Estimated number of particle layers : " + str(pM.n_l))
+	
 	
 	if pF.enable:
 		print("INFO: Estimated fluid height : " + str(pF.h))

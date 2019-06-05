@@ -18,9 +18,9 @@ import math
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 400.0
+	t_max = 100.0
 	### Number of cells of the mesh
-	n_z = 900
+	n_z = 301
 	### Shake
 	shake_enable = True
 	shake_period = 0.04
@@ -35,9 +35,9 @@ class pP:
 	# Type : "clump" or "cylinder"
 	kind = "clump"
 	# Characteristic lengh taken for the adimensionalisation within the shields number.
-	dvs = 1.0e-2 
+	dvs = 6.0e-3 
 	# Shape factor 
-	A = 3.0
+	A = 1.0
 	# Small characteristic length 
 	S = (2.0 * pow(A - 1.0, 2) + 4.0)/(pow(A - 1.0, 3) + 4.0) * dvs
 	# Long Characteristic length
@@ -66,11 +66,11 @@ class pP:
 	### Density of particles
 	rho = 2.5e3
 	### Coefficient of restitution
-	c_r = 0.7
+	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
-	phi_max = 0.64
+	phi_max = 0.51
 	### Friction angle
-	mu = math.atan(0.5)
+	mu = math.atan(0.4)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
 	v = [Vector3(0,0,0)] * (pN.n_z - 1)
 	phi = [0] * (pN.n_z - 1)
@@ -78,17 +78,17 @@ class pP:
 ### Macroscopic Parameters
 class pM: 
 	### Framework parameters
-	alpha = 0.05 
-	l = 30 * pP.dvs
-	w = 30 * pP.dvs
-	h = 2.0
+	alpha = 0.1 
+	l = 1000 * pP.dvs
+	w = 6.5/6. * pP.dvs
+	h = 5.0 * 5.3e-2
 	z_ground = h/2.0
 	### Sediment height
-	hs = 12.0 * pP.dvs
+	hs = 7.08 * pP.dvs
 	### Number of Particles
 	n = pP.phi_max * l * w * hs / pP.vol
 	# Number of particles "layers"
-	n_l = n / (pP.phi_max * l * w * pP.S / pP.vol)
+	n_l = n / (pP.phi_max * w * l * pP.S / pP.vol)
 	### Gravity parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
@@ -115,9 +115,9 @@ class pF:
 	init_shields = 0.55
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
 	shields_d = pP.dvs
-	h = 0
-	if pM.alpha != 0:
-		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
+	h = 5.3e-2 - pM.hs
+	#if pM.alpha != 0:
+	#	h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	dt = 1e-5
 	t = 1e-2
 	## Fluid mesh
@@ -133,8 +133,8 @@ class pF:
 	display_n = 100
 	display_mult = 0
 	# Mostly useless parameters
-	enable_wall_friction = False
-	enable_fluctuations = False
+	enable_wall_friction = True
+	enable_fluctuations = True
 	t_fluct = 1e-1
 
 if pN.verbose:

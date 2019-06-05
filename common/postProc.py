@@ -201,11 +201,26 @@ def post_process(dr):
 					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP1D.mew, 
 							markersize=pP1D.ms, label=r"$"+name_param+"="+name_value+"$")
-
+		# Plots
+		for key in pP1D.plotsT:
+			space = pP1D.plotsT[key][2]
+			for i in range(len(data["time"])):
+				for x in pP1D.plotsT[key][0]:
+					me = int(max(1.0, pP1D.me * len(x)))
+					for y in pP1D.plotsT[key][1]:
+						if i < 1:
+							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
+									markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
+									markersize=pP1D.ms/len(data["time"]), label=r"$"+name_param+"="+name_value+"$")
+						else:
+							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
+									markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
+									markersize=pP1D.ms/len(data["time"]))
 #-------------------#
 # Creating 1D Figures
 #-------------------#
 if pP1D.plot_enable:
+	# Plots 
 	figs = {}
 	axs = {}
 	for key in pP1D.plots:
@@ -213,6 +228,14 @@ if pP1D.plot_enable:
 		axs[key] = plt.gca()
 		plt.xlabel(pPP.plots_names[pP1D.plots[key][0][0]])
 		plt.ylabel(pPP.plots_names[pP1D.plots[key][1][0]])
+	# PlotsT
+	figsT = {}
+	axsT = {}
+	for key in pP1D.plotsT:
+		figsT[key] = plt.figure()
+		axsT[key] = plt.gca()
+		plt.xlabel(pPP.plots_names[pP1D.plotsT[key][0][0]])
+		plt.ylabel(pPP.plots_names[pP1D.plotsT[key][1][0]])
 
 # Declaring batch data storage
 batch_data = {}
@@ -276,6 +299,8 @@ if pP1D.plot_enable:
 	## Adding legends
 	for key in axs:
 		axs[key].legend(fancybox=True, framealpha=0.5)
+	for key in axsT:
+		axsT[key].legend(fancybox=True, framealpha=0.5)
 
 	### Converting xlabel with radian writing
 	#axs["rotx"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["rotx"].get_xticks()])
@@ -286,6 +311,8 @@ if pP1D.plot_enable:
 	if pPP.save_figs:
 		for key in figs:
 			figs[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf")
+		for key in figsT:
+			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf")
 
 ### Showing figures
 plt.show()
