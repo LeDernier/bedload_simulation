@@ -138,7 +138,7 @@ class sim: # Simulation
 						gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
 						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
 						phiPart = pP.phi, vxFluid = pF.vx, vPart = pP.v, ids = [],
-						wallFriction = pF.enable_wall_friction,
+						fluidWallFriction = pF.enable_wall_friction,
 						dead = True, label = 'hydroEngine')
 					)
 		elif pF.method == "old":
