@@ -13,13 +13,11 @@ def frameworkCreation():
 	######################################################################################
 
 	frCrea.defineMaterials()
-	frCrea.createPeriodicCell()
-	#frCrea.createGround()
-	frCrea.createRugosity()
-	#frCrea.createParticles()
+	frCrea.createPeriodicCell(pM.l, 2.0 * pM.w, pM.h)
+	frCrea.createWalls()
+	frCrea.createGround()
+#	frCrea.createRugosity()
 	frCrea.createClumpCloud()
-	#frCrea.createDisplayG()
-	#frCrea.createDisplayFluidHeight()
 	
 	f = open('.ids','w')
 	f.write(str(ids))

@@ -37,9 +37,10 @@ class pyRuns:
 			# Evaluate nBed, the position of the bed which is assumed to be located around the first maximum of concentration when considering decreasing z.
 			nBed = 0.
 			bedElevation = 0.
+			phi = hydroEngine.phiPart
 			for n in range(1, pN.n_z):
 				# If there is a peak and its value is superior to 0.5, we consider it to be the position of the bed
-				if phiPartPY[pN.n_z - n] < phiPartPY[pN.n_z - n-1] and phiPartPY[pN.n_z - n] > 0.5 :
+				if phi[pN.n_z - n] < phi[pN.n_z - n-1] and phi[pN.n_z - n] > 0.5 :
 					nBed = pN.n_z - n
 					waterDepth = (pN.n_z-1 - nBed) * pF.dz + pF.z_ground
 					# Evaluate the bed elevation for the following
@@ -48,7 +49,7 @@ class pyRuns:
 			#(Re)Define the bed elevation over which fluid turbulent fluctuations will be applied.
 			hydroEngine.bedElevation = bedElevation
 			#Impose a unique constant lifetime for the turbulent fluctuation, flucTimeScale
-			vMeanAboveBed = sum(vxFluidPY[nBed:])/(ndimz-nBed)	# fluid elocity scale in the water depth
+			vMeanAboveBed = sum(hydroEngine.vxFluid[nBed:])/(ndimz-nBed)	# fluid elocity scale in the water depth
 			flucTimeScale = waterDepth/vMeanAboveBed	# time scale of the fluctuation w_d/v, eddy turn over time
 			# New evaluation of the random fluid velocity fluctuation for each particle. 
 			hydroEngine.turbulentFluctuation() 

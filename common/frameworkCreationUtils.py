@@ -24,14 +24,14 @@ class frCrea: # Framework Creation
 	####---------------####
 
 	@staticmethod
-	def createPeriodicCell():
+	def createPeriodicCell(l=pM.l, w=pM.w, h=pM.h):
 		""" Defines the domain as periodic
 
 		"""
 		# Defining the domain periodic
 		O.periodic = True
 		# Defining cell with good dimensions
-		O.cell.setBox(pM.w, pM.w, pM.h)
+		O.cell.setBox(l, w, h)
 
 	@staticmethod
 	def defineMaterials():
@@ -100,6 +100,21 @@ class frCrea: # Framework Creation
 						)
 				y += d_eff
 			x += d_eff
+	
+	@staticmethod
+	def createWalls():
+		"""Creates walls.
+
+		"""
+		wall_1 = box(center = (pM.l/2.0, 0.0, pM.z_ground), extents = (1.0e5*pM.l, 0.0, 1.0e5*pM.h), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat')
+		display_1 = box(center = (pM.l/2.0, 0.0, pM.z_ground), extents = (pM.l/2.0, 0.0, pM.h/2.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat', mask = 0) 
+		wall_2 = box(center = (pM.l/2.0, pM.w, pM.z_ground), extents = (1.0e5*pM.l, 0.0, 1.0e5*pM.h), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat')
+		display_2 = box(center = (pM.l/2.0, pM.w, pM.z_ground), extents = (pM.l/2.0, 0.0, pM.h/2.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat', mask = 0) 
+		wall_1_id = O.bodies.append(wall_1)
+		display_1_id = O.bodies.append(display_1)
+		wall_2_id = O.bodies.append(wall_2)
+		display_2_id = O.bodies.append(display_2)
+		return (wall_1_id, display_1_id, wall_2_id, display_2_id) 
 	
 	####---------------####
 	#### Micro 

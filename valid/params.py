@@ -79,7 +79,7 @@ class pP:
 class pM: 
 	### Framework parameters
 	alpha = 0.1 
-	l = 1000 * pP.dvs
+	l = 1000. * pP.dvs
 	w = 6.5/6. * pP.dvs
 	h = 5.0 * 5.3e-2
 	z_ground = h/2.0
