@@ -2,6 +2,10 @@
 # Basic plot parameters
 class pPP:
 	#-------------------#
+	# Plot Names
+	#-------------------#
+	show_figs = False
+	#-------------------#
 	# Saving figures
 	#-------------------#
 	save_fig_dir = "/home/rmonthil/Documents/post_proc/"

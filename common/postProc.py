@@ -315,4 +315,5 @@ if pP1D.plot_enable:
 			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf")
 
 ### Showing figures
-plt.show()
+if pPP.show_figs:
+	plt.show()

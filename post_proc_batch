@@ -1,2 +1,2 @@
 #!/bin/bash
-yade common/postProc.py $@ 
+yade -nx common/postProc.py $@ 
