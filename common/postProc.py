@@ -18,7 +18,7 @@ d_ad = 0
 #-------------------#
 # Setting plt options for latex
 #-------------------#
-plt.rc('text', usetex=True)
+#plt.rc('text', usetex=True)
 
 #-------------------#
 # Getting names
