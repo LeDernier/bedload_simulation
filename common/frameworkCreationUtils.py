@@ -62,8 +62,9 @@ class frCrea: # Framework Creation
 		""" Create the ground using a very big plane.
 
 		"""
-		ground = box(center = (0.0, 0.0, pM.z_ground), extents = (1.0e5*pM.l, 1.0e5*pM.w, 0.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat') # Flat bottom plane 
-		groundDisplay = box(center = (pM.l/2.0, pM.w/2.0, pM.z_ground), extents = (pM.l/2.0, pM.w/2.0, 0.0), fixed = True, wire = False, color = (0.,0.5,0.), material = 'mat', mask = 0) # Display of flat bottom plane
+		cell_center = O.cell.size/2.0
+		ground = box(center = (cell_center[0], cell_center[1], pM.z_ground), extents = (1.0e5*pM.l, 1.0e5*pM.w, 0.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat') # Flat bottom plane 
+		groundDisplay = box(center = (cell_center[0], cell_center[1], pM.z_ground), extents = (pM.l/2.0, pM.w/2.0, 0.0), fixed = True, wire = False, color = (0.,0.5,0.), material = 'mat', mask = 0) # Display of flat bottom plane
 		O.bodies.append(ground)
 		O.bodies.append(groundDisplay)
 		return (len(O.bodies)-2, len(O.bodies)-1) 
@@ -80,10 +81,10 @@ class frCrea: # Framework Creation
 	
 		# Create particles
 		z = pM.z_ground 
-		x = -pM.l/2.0
-		while x < pM.l/2.0:
-			y = -pM.w/2.0
-			while y < pM.w/2.0:
+		x = -pM.l/2.0 + cell_center[0] + d_eff/2.0
+		while x < pM.l/2.0 + cell_center[0] - d_eff/2.0:
+			y = -pM.w/2.0 + cell_center[1] + d_eff/2.0
+			while y < pM.w/2.0 + cell_center[1] - d_eff/2.0:
 				O.bodies.append(
 						sphere(
 							center = (
@@ -106,10 +107,11 @@ class frCrea: # Framework Creation
 		"""Creates walls.
 
 		"""
-		wall_1 = box(center = (pM.l/2.0, 0.0, pM.z_ground), extents = (1.0e5*pM.l, 0.0, 1.0e5*pM.h), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat')
-		display_1 = box(center = (pM.l/2.0, 0.0, pM.z_ground), extents = (pM.l/2.0, 0.0, pM.h/2.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat', mask = 0) 
-		wall_2 = box(center = (pM.l/2.0, pM.w, pM.z_ground), extents = (1.0e5*pM.l, 0.0, 1.0e5*pM.h), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat')
-		display_2 = box(center = (pM.l/2.0, pM.w, pM.z_ground), extents = (pM.l/2.0, 0.0, pM.h/2.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat', mask = 0) 
+		cell_center = O.cell.size/2.0
+		wall_1 = box(center = (cell_center[0], cell_center[1]-pM.w/2.0, pM.z_ground), extents = (1.0e5*pM.l, 0.0, 1.0e5*pM.h), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat')
+		display_1 = box(center = (cell_center[0], cell_center[1]-pM.w/2.0, pM.z_ground), extents = (pM.l/2.0, 0.0, pM.h/2.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat', mask = 0) 
+		wall_2 = box(center = (cell_center[0], cell_center[1]+pM.w/2.0, pM.z_ground), extents = (1.0e5*pM.l, 0.0, 1.0e5*pM.h), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat')
+		display_2 = box(center = (cell_center[0], cell_center[1]+pM.w/2.0, pM.z_ground), extents = (pM.l/2.0, 0.0, pM.h/2.0), fixed = True, wire = True, color = (0.,0.5,0.), material = 'mat', mask = 0) 
 		wall_1_id = O.bodies.append(wall_1)
 		display_1_id = O.bodies.append(display_1)
 		wall_2_id = O.bodies.append(wall_2)
@@ -227,6 +229,7 @@ class frCrea: # Framework Creation
 		"""Creates a simple clump cloud.
 		
 		"""
+		cell_center = O.cell.size/2.0
 		
 		d_eff = pP.L 
 		r_eff = pP.L
@@ -237,10 +240,10 @@ class frCrea: # Framework Creation
 		# Create particles
 		z = pM.z_ground + d_eff + d_eff/2.0
 		while n_i < pM.n:
-			x = -pM.l/2.0
-			while x < pM.l/2.0 - d_eff/2.0 and n_i < pM.n:
-				y = -pM.w/2.0
-				while y < pM.w/2.0 - d_eff/2.0 and n_i < pM.n:
+			x = -pM.l/2.0 + cell_center[0] + d_eff/2.0
+			while x < pM.l/2.0 + cell_center[0] - d_eff/2.0 and n_i < pM.n:
+				y = -pM.w/2.0 + cell_center[1] + d_eff/2.0
+				while y < pM.w/2.0 + cell_center[1] - d_eff/2.0 and n_i < pM.n:
 					(id_clump, ids_clumped) = frCrea.addClump(
 							center = Vector3(x, y, z),
 							ds = pP.ds,
