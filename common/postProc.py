@@ -53,7 +53,7 @@ def average(qT, t):
 	n_time = len(t) - 1
 	# Finding the first value to take into account.
 	i_deb = 0
-	while t[i_deb] < pPP.mean_begin_time:
+	while i_deb < len(t) and t[i_deb] < pPP.mean_begin_time:
 		i_deb += 1
 	if i_deb > n_time - 1:
 		print('WARNING average: End of simulation before start of averaging.')
