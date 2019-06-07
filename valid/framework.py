@@ -13,7 +13,7 @@ def frameworkCreation():
 	######################################################################################
 
 	frCrea.defineMaterials()
-	frCrea.createPeriodicCell(pM.l, 2.0 * pM.w, pM.h)
+	frCrea.createPeriodicCell(pM.l, 4.0 * pM.w, pM.h)
 	frCrea.createWalls()
 	frCrea.createGround()
 #	frCrea.createRugosity()
