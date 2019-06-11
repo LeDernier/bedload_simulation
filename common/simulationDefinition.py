@@ -31,7 +31,7 @@ class sim: # Simulation
 			partsIds = []
 			for i in range(len(O.bodies)):
 				b = O.bodies[i]
-				if not b.isClump:
+				if not b.isClump and isinstance(b.shape, Sphere) and b.dynamic:
 					partsIds.append(i)
 			hydroEngine.ids = partsIds
 			hydroEngine.ReynoldStresses = np.ones(pN.n_z) * 0.0
@@ -138,6 +138,7 @@ class sim: # Simulation
 						gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
 						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
 						phiPart = pP.phi, vxFluid = pF.vx, vPart = pP.v, ids = [],
+						phiMax = pP.phi_max, 
 						fluidWallFriction = pF.enable_wall_friction,
 						dead = True, label = 'hydroEngine')
 					)
@@ -149,6 +150,7 @@ class sim: # Simulation
 						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
 						radiusPart = pP.S/2.0, phiPart = pP.phi, 
 						vxFluid = pF.vx, vxPart = [0.0] * (pN.n_z-1), ids = [],
+						phiMax = pP.phi_max, 
 						wallFriction = pF.enable_wall_friction,
 						dead = True, label = 'hydroEngine')
 					)
@@ -211,7 +213,7 @@ class sim: # Simulation
 		# Save data 
 		if pSave.yadeSavePeriod:
 			engines.append(
-				PyRunner(command='O.save("data/"+str(O.time)+".xml")', virtPeriod = pSave.yadeSavePeriod, label = 'save')
+				PyRunner(command='pyRuns.save()', virtPeriod = pSave.yadeSavePeriod, label = 'save')
 				)
 		# Shaker
 		if pN.shake_enable:
