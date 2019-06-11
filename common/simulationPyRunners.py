@@ -5,6 +5,15 @@ class pyRuns:
 			print("INFO: Simulation finished at time : " + str(O.time))
 			O.pause()
 
+	@staticmethod
+	def save():
+		if pF.enable:
+			if pF.method == "new":
+				hydroEngine.newAverageProfile()
+			elif pF.method == "old":
+				hydroEngine.averageProfile()
+		O.save("data/"+str(O.time)+".yade")
+
 	count = 0
 	@staticmethod
 	def solveFluid():
