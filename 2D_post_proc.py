@@ -48,7 +48,7 @@ class pPP:
 
 # 1D plot parameters
 class pP1D:
-	plot_enable = True
+	plot_enable = False
 	#-------------------#
 	# Measures
 	#-------------------#
@@ -68,7 +68,7 @@ class pP1D:
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
 			"vx":"[adim(l[2], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
-#			"vfx":"[adim(l[3], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
+			"vfx":"[adim(l[3], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
 			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
@@ -77,14 +77,13 @@ class pP1D:
 			# Adimentionalisation.
 			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
 			"mean_phi":"data['mean_profiles'][1]",
-#			"mean_vx":"adim(data['mean_profiles'][2], sqrt(-pM.g[2] * d_ad))", 
-			"mean_vx":"data['mean_profiles'][2]", 
-#			"mean_vfx":"adim(data['mean_profiles'][3], sqrt(-pM.g[2] * d_ad))",
+			"mean_vx":"adim(data['mean_profiles'][2], sqrt(-pM.g[2] * d_ad))", 
+			"mean_vfx":"adim(data['mean_profiles'][3], sqrt(-pM.g[2] * d_ad))",
 			},
 			{
 			# Flows
-			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
-#			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pN.dz) for i in range(len(data['profiles']))]",
+			"qs":"[integration(data['phi'][i], data['vx'][i], pN.dz) for i in range(len(data['profiles']))]",
+			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pN.dz) for i in range(len(data['profiles']))]",
 			}
 			]
 	#-------------------#
@@ -103,20 +102,18 @@ class pP1D:
 	#-------------------#
 	plots = {
 			"vx":[["mean_vx"], ["z"]],
-#			"vfx":[["mean_vfx"], ["z"]],
+			"vfx":[["mean_vfx"], ["z"]],
 			"phi":[["mean_phi"], ["z"]],
 			"qs":[["time"], ["qs"]],
-#			"qf":[["time"], ["qf"]],
-#			"sh":[["time"], ["shields"]],
+			"qf":[["time"], ["qf"]],
+			"sh":[["time"], ["shields"]],
 			}
 	plotsT = {
 #			"vx":[["vx"], ["z"], 20.0],
 #			"vfx":[["vfx"], ["z"], 20.0],
 			}
-	plotsExtPath = ["./exp-data/Frey2014_EXP6.py"]
+	plotsExtPath = []
 	plotsExt = {
-			"vx":[["vx"], ["z"]],
-			"phi":[["phi"], ["z"]],
 			}
 
 	#contours = {
@@ -124,7 +121,7 @@ class pP1D:
 	#		}
 
 class pP2D:
-	plot_enable = False
+	plot_enable = True
 	# Plot param
 	param = "pP.A"
 	param_name = "A"
