@@ -69,6 +69,50 @@ def average(qT, t):
 	q /= (i - i_deb)
 	return q
 
+def average_phi_u_profile(qT, t):
+	""" Average qT profiles over time.
+
+	Parameters:
+	- qT : Contains all the profiles. : List of lists.
+	qT[k][0] corresponds to z.
+	qT[k][1] corresponds to phi.
+	qT[k][2] corresponds to vxPart.
+	qT[k][3] corresponds to vxf.
+	"""
+	n_time = len(t) - 1
+	# Finding the first value to take into account.
+	i_deb = 0
+	while i_deb < len(t) and t[i_deb] < pPP.mean_begin_time:
+		i_deb += 1
+	if i_deb > n_time - 1:
+		print('WARNING average_profile: End of simulation before start of averaging.')
+		print('WARNING average_profile: Taking only last profile.')
+		i_deb = n_time - 1
+	# Initialisation
+	q = []
+	q.append(qT[i_deb][0])
+	q.append([0] * len(qT[i_deb][1]))
+	q.append([0] * len(qT[i_deb][2]))
+	q.append([0] * len(qT[i_deb][3]))
+	# Averaging
+	i = i_deb
+	while i < n_time + 1 and t[i] < pPP.mean_end_time:
+		for k in range(len(q[1])):
+			q[1][k] += qT[i][1][k]
+		for k in range(len(q[2])):
+			q[2][k] += qT[i][1][k] * qT[i][2][k]
+		for k in range(len(q[3])):
+			q[3][k] += qT[i][3][k]
+		i += 1
+	
+	q[1] = [v/(i - i_deb) for v in q[1]]
+	for k in range(len(q[2])):
+		if q[1][k] > 0:
+			q[2][k] /= q[1][k]
+	q[2] = [v/(i - i_deb) for v in q[2]]
+	
+	return q
+
 def average_profile(qT, t, n=False):
 	""" Average qT profiles over time.
 
@@ -129,7 +173,7 @@ def integration(phi, y, dx):
 # Import measures functions
 #-------------------#
 execfile("params_post_proc.py")
-color_gradient(len(sys.argv) - 1, pP1D)
+color_gradient(len(sys.argv) + len(pP1D.plotsExtPath) - 1, pP1D)
 execfile("common/simulationPyRunners.py")
 execfile("common/measures.py")
 
@@ -163,12 +207,6 @@ def sort_data(stime, data):
 		stime, data[key] = zip(*sorted(zip(stime, data[key])))
 	return stime, data
 
-def store_data(stime, data):
-	return # TODO
-
-def plot_data(stime, data):
-	return # TODO
-
 def post_process(dr):
 	# Update name_value
 	name_value = dr.split("_")[-1]
@@ -184,12 +222,12 @@ def post_process(dr):
 			data[key] = eval(p[key])
 	
 	### Storing 2D data
-	batch_val = eval(pP2D.param)
-	if not (batch_val in batch_data):
-		batch_data[batch_val] = {}
-		for key in pP2D.measures:
-			batch_data[batch_val][key] = []
 	if pP2D.plot_enable:
+		batch_val = eval(pP2D.param)
+		if not (batch_val in batch_data):
+			batch_data[batch_val] = {}
+			for key in pP2D.measures:
+				batch_data[batch_val][key] = []
 		for key in pP2D.measures:
 			batch_data[batch_val][key].append(eval(pP2D.measures[key]))
 	
@@ -207,7 +245,7 @@ def post_process(dr):
 					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP1D.mew, 
 							markersize=pP1D.ms, label=r"$"+name_param+"="+name_value+"$")
-		# Plots
+		# PlotsT
 		for key in pP1D.plotsT:
 			space = pP1D.plotsT[key][2]
 			for i in range(len(data["time"])):
@@ -222,6 +260,23 @@ def post_process(dr):
 							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
 									markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
 									markersize=pP1D.ms/len(data["time"]))
+
+def plot_external_data():
+	for path in pP1D.plotsExtPath:
+		# Selecting marker and color
+		m = pP1D.markers.pop()
+		c = pP1D.colors.pop()
+		# Getting data
+		data = {}
+		execfile(path)
+		# Plots Ext
+		for key in pP1D.plotsExt:
+			for x in pP1D.plotsExt[key][0]:
+				me = int(max(1.0, pP1D.me * len(x)))
+				for y in pP1D.plotsExt[key][1]:
+					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
+							markerfacecolor=c, markeredgewidth=pP1D.mew, 
+							markersize=pP1D.ms, label=path)
 #-------------------#
 # Creating 1D Figures
 #-------------------#
@@ -256,6 +311,11 @@ for dr in sys.argv[1:]:
 	os.chdir("..")
 	d_ad = eval(pPP.d_ad)
 	post_process(dr)
+
+#-------------------#
+# Post Processing External
+#-------------------#
+plot_external_data()
 
 #-------------------#
 # Post Processing 2D
