@@ -83,9 +83,9 @@ class frCrea: # Framework Creation
 		# Create particles
 		z = pM.z_ground 
 		x = -pM.l/2.0 + cell_center[0] + d_eff/2.0
-		while x < pM.l/2.0 + cell_center[0] - d_eff/2.0:
+		while x < pM.l/2.0 + cell_center[0]:
 			y = -pM.w/2.0 + cell_center[1] + d_eff/2.0
-			while y < pM.w/2.0 + cell_center[1] - d_eff/2.0:
+			while y < pM.w/2.0 + cell_center[1]:
 				O.bodies.append(
 						sphere(
 							center = (
@@ -242,9 +242,9 @@ class frCrea: # Framework Creation
 		z = pM.z_ground + d_eff + d_eff/2.0
 		while n_i < pM.n:
 			x = -pM.l/2.0 + cell_center[0] + d_eff/2.0
-			while x < pM.l/2.0 + cell_center[0] - d_eff/2.0 and n_i < pM.n:
+			while x < pM.l/2.0 + cell_center[0] and n_i < pM.n:
 				y = -pM.w/2.0 + cell_center[1] + d_eff/2.0
-				while y < pM.w/2.0 + cell_center[1] - d_eff/2.0 and n_i < pM.n:
+				while y < pM.w/2.0 + cell_center[1] and n_i < pM.n:
 					if pP.kind == "sphere":
 						col = (random.uniform(0.0, 0.5), random.uniform(0.0, 0.5), random.uniform(0.0, 0.5))
 						O.bodies.append(
