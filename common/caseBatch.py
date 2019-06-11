@@ -22,11 +22,11 @@ except:
 	datas = False
 if datas:
 	for i in range(len(datas)):
-		datas[i] = float(datas[i].split(".xml")[0])
+		datas[i] = float(datas[i].split(".yade")[0])
 	datas.sort()
 	# import PyRunners
 	execfile('../common/simulationPyRunners.py')
-	O.load("data/"+str(datas[-1])+".xml")
+	O.load("data/"+str(datas[-1])+".yade")
 	O.run()
 else:
 	# import simulation
