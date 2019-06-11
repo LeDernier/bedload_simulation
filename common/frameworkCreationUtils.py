@@ -74,6 +74,7 @@ class frCrea: # Framework Creation
 		"""Creates a rugous ground based on spheres.
 
 		"""
+		cell_center = O.cell.size/2.0
 	
 		randRangeZ = pM.d_rug/2.0
 		randRangeXY = 0.0
@@ -225,7 +226,7 @@ class frCrea: # Framework Creation
 		return result
 
 	@staticmethod
-	def createClumpCloud():
+	def createParticles():
 		"""Creates a simple clump cloud.
 		
 		"""
@@ -244,7 +245,19 @@ class frCrea: # Framework Creation
 			while x < pM.l/2.0 + cell_center[0] - d_eff/2.0 and n_i < pM.n:
 				y = -pM.w/2.0 + cell_center[1] + d_eff/2.0
 				while y < pM.w/2.0 + cell_center[1] - d_eff/2.0 and n_i < pM.n:
-					(id_clump, ids_clumped) = frCrea.addClump(
+					if pP.kind == "sphere":
+						col = (random.uniform(0.0, 0.5), random.uniform(0.0, 0.5), random.uniform(0.0, 0.5))
+						O.bodies.append(
+							sphere(
+								center = Vector3(x, y, z),
+								radius = pP.dvs/2.0, 
+								color = col,
+								fixed = False,
+								material = 'mat'
+							)
+						)
+					elif pP.kind == "clump":
+						(id_clump, ids_clumped) = frCrea.addClump(
 							center = Vector3(x, y, z),
 							ds = pP.ds,
 							iter_vects = iter_vects,
