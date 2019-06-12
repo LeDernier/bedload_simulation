@@ -1,3 +1,7 @@
+#-------------------#
+# Setting latex
+#-------------------#
+plt.rc('text', usetex=True)
 
 # Basic plot parameters
 class pPP:
@@ -35,11 +39,11 @@ class pPP:
 	#-------------------#
 	plots_names = {
 			"mean_phi":r"$\bar{\phi}$",
-			"mean_vx":r"$\bar{U^p_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+d_ad_name+"}}$",
+			"mean_vx":r"$\bar{U^p_x}$",
 			"vx":r"${U^p_x}^* = \frac{U^p_x}{\sqrt{g"+d_ad_name+"}}$",
 			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+d_ad_name+"}}$",
 			"vfx":r"${U^f_x}^* = \frac{U^p_x}{\sqrt{g"+d_ad_name+"}}$",
-			"qs":r"${Q_s}^*$",
+			"qs":r"${Q_s}$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
@@ -67,7 +71,8 @@ class pP1D:
 			{
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
-			"vx":"[adim(l[2], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
+			#"vx":"[adim(l[2], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
+			"vx":"[l[2] for l in data['profiles']]",
 #			"vfx":"[adim(l[3], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
@@ -113,7 +118,7 @@ class pP1D:
 #			"vx":[["vx"], ["z"], 20.0],
 #			"vfx":[["vfx"], ["z"], 20.0],
 			}
-	plotsExtPath = ["./exp-data/Frey2014_EXP6.py"]
+	plotsExtPath = {"Exp: 20, Frey et al. 2014":"./exp-data/Frey2014_EXP20.py"}
 	plotsExt = {
 			"vx":[["vx"], ["z"]],
 			"phi":[["phi"], ["z"]],

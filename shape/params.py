@@ -27,7 +27,7 @@ class pN:
 	shake_intensity = 0.2
 	shake_time = 0.6
 	### Verbose
-	verbose = True
+	verbose = False
 
 ### Particle Parameters
 class pP: 
@@ -37,7 +37,7 @@ class pP:
 	# Characteristic lengh taken for the adimensionalisation within the shields number.
 	dvs = 1.0e-2 
 	# Shape factor 
-	A = 3.0
+	A = 1.5
 	# Small characteristic length 
 	S = (2.0 * pow(A - 1.0, 2) + 4.0)/(pow(A - 1.0, 3) + 4.0) * dvs
 	# Long Characteristic length
@@ -66,7 +66,7 @@ class pP:
 	### Density of particles
 	rho = 2.5e3
 	### Coefficient of restitution
-	c_r = 0.7
+	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
 	phi_max = 0.64
 	### Friction angle
@@ -77,14 +77,14 @@ class pP:
 
 ### Macroscopic Parameters
 class pM: 
+	### Sediment height
+	hs = 10.0 * pP.dvs
 	### Framework parameters
 	alpha = 0.05 
 	l = 30 * pP.dvs
 	w = 30 * pP.dvs
 	h = 2.0
 	z_ground = h/2.0
-	### Sediment height
-	hs = 12.0 * pP.dvs
 	### Number of Particles
 	n = pP.phi_max * l * w * hs / pP.vol
 	# Number of particles "layers"
@@ -116,7 +116,7 @@ class pF:
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
 	shields_d = pP.dvs
 	h = 0
-	if pM.alpha != 0:
+	if pM.alpha != 0 and pF.enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	dt = 1e-5
 	t = 1e-2

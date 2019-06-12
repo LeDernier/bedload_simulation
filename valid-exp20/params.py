@@ -18,9 +18,9 @@ import math
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 300.0
+	t_max = 100.0
 	### Number of cells of the mesh
-	n_z = 825
+	n_z = 301
 	### Shake
 	shake_enable = True
 	shake_period = 0.04
@@ -68,7 +68,7 @@ class pP:
 	### Coefficient of restitution
 	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
-	phi_max = 0.61
+	phi_max = 0.51
 	### Friction angle
 	mu = math.atan(0.4)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
@@ -78,15 +78,16 @@ class pP:
 ### Macroscopic Parameters
 class pM: 
 	### Framework parameters
-	alpha = 0.05 
-	l = 20. * pP.dvs
-	w = 20. * pP.dvs
-	h = 5.0 * 17.5 * pP.dvs
+	alpha = 0.1 
+	l = 1000. * pP.dvs
+	w = 6.5/6. * pP.dvs
+	h = 5.0 * 5.9e-2
 	z_ground = h/2.0
 	### Sediment height
-	hs = 10.0 * pP.dvs
+	hs = 7.30 * pP.dvs
 	### Number of Particles
-	n = pP.phi_max * l * w * hs / pP.vol
+	#n = pP.phi_max * l * w * hs / pP.vol
+	n = l/pP.dvs * hs/pP.dvs
 	# Number of particles "layers"
 	n_l = n / (pP.phi_max * w * l * pP.S / pP.vol)
 	### Gravity parameters
@@ -115,8 +116,7 @@ class pF:
 	init_shields = 0.55
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
 	shields_d = pP.dvs
-	# Fluid heigth
-	h = 17.5 * pP.dvs
+	h = 5.9e-2 - pM.hs
 	#if pM.alpha != 0:
 	#	h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	dt = 1e-5
@@ -134,8 +134,8 @@ class pF:
 	display_n = 100
 	display_mult = 0
 	# Mostly useless parameters
-	enable_wall_friction = False
-	enable_fluctuations = False
+	enable_wall_friction = True
+	enable_fluctuations = True
 	t_fluct = 1e-1
 
 if pN.verbose:
