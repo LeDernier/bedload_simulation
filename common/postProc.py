@@ -16,11 +16,6 @@ colors = []
 d_ad = 0
 
 #-------------------#
-# Setting plt options for latex
-#-------------------#
-#plt.rc('text', usetex=True)
-
-#-------------------#
 # Getting names
 #-------------------#
 name_list = sys.argv[1]
@@ -204,8 +199,8 @@ def read_data(dr):
 def sort_data(stime, data):
 	print(sep + "Sorting data.")
 	for key in data:
-		stime, data[key] = zip(*sorted(zip(stime, data[key])))
-	return stime, data
+		sstime, data[key] = zip(*sorted(zip(stime, data[key])))
+	return sstime, data
 
 def post_process(dr):
 	# Update name_value
@@ -262,7 +257,8 @@ def post_process(dr):
 									markersize=pP1D.ms/len(data["time"]))
 
 def plot_external_data():
-	for path in pP1D.plotsExtPath:
+	for ext_key in pP1D.plotsExtPath:
+		path = pP1D.plotsExtPath[ext_key]
 		# Selecting marker and color
 		m = pP1D.markers.pop()
 		c = pP1D.colors.pop()
@@ -276,7 +272,7 @@ def plot_external_data():
 				for y in pP1D.plotsExt[key][1]:
 					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP1D.mew, 
-							markersize=pP1D.ms, label=path)
+							markersize=pP1D.ms, label=ext_key)
 #-------------------#
 # Creating 1D Figures
 #-------------------#
