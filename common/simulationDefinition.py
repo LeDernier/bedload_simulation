@@ -151,7 +151,7 @@ class sim: # Simulation
 						radiusPart = pP.S/2.0, phiPart = pP.phi, 
 						vxFluid = pF.vx, vxPart = [0.0] * (pN.n_z-1), ids = [],
 						phiMax = pP.phi_max, 
-						wallFriction = pF.enable_wall_friction,
+						fluidWallFriction = pF.enable_wall_friction,
 						dead = True, label = 'hydroEngine')
 					)
 		# Fluid resolution
