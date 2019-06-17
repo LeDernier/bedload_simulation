@@ -56,8 +56,6 @@ class pPP:
 			"shields":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
-			"mean_z_phi":r"$\phi_{max}$",
-			"var_z_phi":r"$\sigma_\phi^2$",
 			}
 
 # 1D plot parameters
@@ -99,8 +97,6 @@ class pP1D:
 			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
 			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
 			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz) for i in range(len(data['profiles']))]",
-			"mean_z_phi":"[np.mean(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)]) for i in range(len(data['profiles']))]",
-			"var_z_phi":"[np.var(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)]) for i in range(len(data['profiles']))]",
 			}
 			]
 	#-------------------#
@@ -131,8 +127,6 @@ class pP1D:
 			"qs":[["time"], ["qs"]],
 			"qf":[["time"], ["qf"]],
 			"sh":[["time"], ["shields"]],
-			"mean_z_phi":[["time"], ["mean_z_phi"]],
-			"var_z_phi":[["time"], ["var_z_phi"]],
 			}
 	plotsT = {
 #			"vx":[["vx"], ["z"], 20.0],
