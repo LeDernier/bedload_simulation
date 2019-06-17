@@ -235,7 +235,7 @@ def post_process(dr):
 		# Plots
 		for key in pP1D.plots:
 			for x in pP1D.plots[key][0]:
-				me = int(max(1.0, pP1D.me * len(x)))
+				me = int(max(1.0, pP1D.me * len(data[x])))
 				for y in pP1D.plots[key][1]:
 					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP1D.mew, 
@@ -245,7 +245,7 @@ def post_process(dr):
 			space = pP1D.plotsT[key][2]
 			for i in range(len(data["time"])):
 				for x in pP1D.plotsT[key][0]:
-					me = int(max(1.0, pP1D.me * len(x)))
+					me = int(max(1.0, pP1D.me * len(data[x])))
 					for y in pP1D.plotsT[key][1]:
 						if i < 1:
 							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
@@ -268,7 +268,7 @@ def plot_external_data():
 		# Plots Ext
 		for key in pP1D.plotsExt:
 			for x in pP1D.plotsExt[key][0]:
-				me = int(max(1.0, pP1D.me * len(x)))
+				me = int(max(1.0, pP1D.me * len(data[x])))
 				for y in pP1D.plotsExt[key][1]:
 					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP1D.mew, 
@@ -285,6 +285,11 @@ if pP1D.plot_enable:
 		axs[key] = plt.gca()
 		plt.xlabel(pPP.plots_names[pP1D.plots[key][0][0]])
 		plt.ylabel(pPP.plots_names[pP1D.plots[key][1][0]])
+	for key in pP1D.alims:
+		if pP1D.alims[key][0]:
+			axs[key].set_xlim(pP1D.alims[key][0][0], pP1D.alims[key][0][1])
+		if pP1D.alims[key][1]:
+			axs[key].set_ylim(pP1D.alims[key][1][0], pP1D.alims[key][1][1])
 	# PlotsT
 	figsT = {}
 	axsT = {}
@@ -341,10 +346,10 @@ if pP2D.plot_enable:
 			m = batch_markers.pop()
 			c = batch_colors.pop()
 			for x in pP2D.plots[key][0]:
-				me = int(max(1.0, pP2D.me * len(x)))
+				me = int(max(1.0, pP2D.me * len(v[x])))
 				for y in pP2D.plots[key][1]:
 					plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms, label=r"$"+pPP.batch_param_name+"="+str(p)+"$")
-					plt.legend(fancybox=True, framealpha=0.5)
+					plt.legend(fancybox=True, framealpha=0.5, loc=0)
 					if pPP.save_figs:
 						plt.savefig(pPP.save_fig_dir+name_case+"_"+pPP.batch_param_name+"_"+"qs(shields)"+".pdf")
 	
@@ -360,9 +365,9 @@ if pP2D.plot_enable:
 if pP1D.plot_enable:
 	## Adding legends
 	for key in axs:
-		axs[key].legend(fancybox=True, framealpha=0.5)
+		axs[key].legend(fancybox=True, framealpha=0.5, loc=0)
 	for key in axsT:
-		axsT[key].legend(fancybox=True, framealpha=0.5)
+		axsT[key].legend(fancybox=True, framealpha=0.5, loc=0)
 
 	### Converting xlabel with radian writing
 	#axs["rotx"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["rotx"].get_xticks()])
@@ -372,9 +377,9 @@ if pP1D.plot_enable:
 	### Saving figures
 	if pPP.save_figs:
 		for key in figs:
-			figs[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf")
+			figs[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf", bbox_inches="tight")
 		for key in figsT:
-			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf")
+			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:
