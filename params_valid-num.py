@@ -6,8 +6,8 @@ plt.rc('text', usetex=True)
 # Setting Font
 #-------------------#
 font = {'family' : 'normal',
-        'weight' : 'bold',
-        'size'   : 20}
+#        'weight' : 'bold',
+        'size'   : 18}
 plt.rc('font', **font)
 
 # Basic plot parameters
@@ -30,7 +30,7 @@ class pPP:
 	# Mean operation 
 	#-------------------#
 	mean_begin_time = 50.0
-	mean_end_time = 100.0
+	mean_end_time = 300.0
 	#-------------------#
 	# Plot visuals
 	#-------------------#
@@ -116,9 +116,9 @@ class pP1D:
 	# Plots
 	#-------------------#
 	alims = {
-			"vx":[[], [4, 9]],
-			"qsx":[[], [4, 9]],
-			"phi":[[], [4, 9]],
+			"vx":[[], [4, 18]],
+			"qsx":[[], [4, 18]],
+			"phi":[[], [4, 18]],
 			"qs":[[], []],
 			}
 	plots = {
@@ -134,11 +134,13 @@ class pP1D:
 #			"vx":[["vx"], ["z"], 20.0],
 #			"vfx":[["vfx"], ["z"], 20.0],
 			}
-	plotsExtPath = {"Experimental data: 6,\nFrey et al. 2014":"./exp-data/Frey2014_EXP6.py"}
+	plotsExtPath = {
+#			"Numerical data,\nMaurin et al. 2016":"num-data/DATAr2d6s2_Maurinetal2016.py"
+			}
 	plotsExt = {
-			"vx":[["vx"], ["z"]],
-			"phi":[["phi"], ["z"]],
-			"qsx":[["qsx"], ["z"]],
+#			"vx":[["vx"], ["z"]],
+#			"phi":[["phi"], ["z"]],
+#			"qsx":[["qsx"], ["z"]],
 			}
 
 	#contours = {

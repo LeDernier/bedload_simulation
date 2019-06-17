@@ -2,6 +2,13 @@
 # Setting latex
 #-------------------#
 plt.rc('text', usetex=True)
+#-------------------#
+# Setting Font
+#-------------------#
+font = {'family' : 'normal',
+#        'weight' : 'bold',
+        'size'   : 18}
+plt.rc('font', **font)
 
 # Basic plot parameters
 class pPP:
@@ -31,7 +38,7 @@ class pPP:
 	v = [0.5, 0.0]
 	b = [0.5, 0.0]
 	markers = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
-	me = 0.5 
+	me = 0.05 
 	mew = 0.3
 	ms = 7.0
 	#-------------------#
@@ -40,9 +47,10 @@ class pPP:
 	plots_names = {
 			"mean_phi":r"$\bar{\phi}$",
 			"mean_vx":r"$\bar{U^p_x}$",
-			"vx":r"${U^p_x}^* = \frac{U^p_x}{\sqrt{g"+d_ad_name+"}}$",
-			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{\sqrt{g"+d_ad_name+"}}$",
-			"vfx":r"${U^f_x}^* = \frac{U^p_x}{\sqrt{g"+d_ad_name+"}}$",
+			"vx":r"${U^p_x}^* = \frac{U^p_x}{\sqrt{(\rho_s/\rho_f - 1) g"+d_ad_name+"}}$",
+			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
+			"vfx":r"${U^f_x}^* = \frac{U^p_x}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
+			"mean_qsx":r"$\bar{Q_s}$",
 			"qs":r"${Q_s}$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
@@ -71,9 +79,9 @@ class pP1D:
 			{
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
-			#"vx":"[adim(l[2], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
+			#"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
 			"vx":"[l[2] for l in data['profiles']]",
-#			"vfx":"[adim(l[3], sqrt(-pM.g[2] * d_ad)) for l in data['profiles']]",
+#			"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
 			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
@@ -82,12 +90,13 @@ class pP1D:
 			# Adimentionalisation.
 			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
 			"mean_phi":"data['mean_profiles'][1]",
-#			"mean_vx":"adim(data['mean_profiles'][2], sqrt(-pM.g[2] * d_ad))", 
+#			"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
 			"mean_vx":"data['mean_profiles'][2]", 
-#			"mean_vfx":"adim(data['mean_profiles'][3], sqrt(-pM.g[2] * d_ad))",
+#			"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
 			},
 			{
 			# Flows
+			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
 			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
 #			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pN.dz) for i in range(len(data['profiles']))]",
 			}
@@ -106,8 +115,15 @@ class pP1D:
 	#-------------------#
 	# Plots
 	#-------------------#
+	alims = {
+			"vx":[[], [4, 9]],
+			"qsx":[[], [4, 9]],
+			"phi":[[], [4, 9]],
+			"qs":[[], []],
+			}
 	plots = {
 			"vx":[["mean_vx"], ["z"]],
+			"qsx":[["mean_qsx"], ["z"]],
 #			"vfx":[["mean_vfx"], ["z"]],
 			"phi":[["mean_phi"], ["z"]],
 			"qs":[["time"], ["qs"]],
@@ -118,10 +134,11 @@ class pP1D:
 #			"vx":[["vx"], ["z"], 20.0],
 #			"vfx":[["vfx"], ["z"], 20.0],
 			}
-	plotsExtPath = {"Exp: 6, Frey et al. 2014":"./exp-data/Frey2014_EXP6.py"}
+	plotsExtPath = {"Experimental data: 6,\nFrey et al. 2014":"./exp-data/Frey2014_EXP6.py"}
 	plotsExt = {
 			"vx":[["vx"], ["z"]],
 			"phi":[["phi"], ["z"]],
+			"qsx":[["qsx"], ["z"]],
 			}
 
 	#contours = {
