@@ -66,24 +66,20 @@ class pyRuns:
 				# Actualize when will be calculated the next fluctuations. 
 				turbFluct.virtPeriod = flucTimeScale 
 	
+	shaker_vel = 0.0
 	@staticmethod
 	def shaker():
-		if O.time > pN.shake_time:
+		old_shaker_vel = pyRuns.shaker_vel
+		pyRuns.shaker_vel = 2.0*pi * pM.shake_f * 0.5*pM.shake_a * sin(O.time * 2.0*pi * pM.shake_f)
+		if O.time > pM.shake_time and np.sign(old_shaker_vel) != np.sign(pyRuns.shaker_vel):
 			shaker.dead = True
-			return
+			for b in O.bodies:
+				if not b.dynamic:
+					b.state.vel[2] = 0.0
 		else:
-			pyRuns.shake(pN.shake_intensity)
-
-	@staticmethod
-	def shake(X = 0.1):
-		for b in O.bodies:
-			rx = random.uniform(-X,X)
-			ry = random.uniform(-X,X)
-			rz = random.uniform(-X,X)
-			if b.dynamic:
-				b.state.vel[0] += rx
-				b.state.vel[1] += ry
-				b.state.vel[2] += rz
+			for b in O.bodies:
+				if not b.dynamic:
+					b.state.vel[2] = pyRuns.shaker_vel
 	
 	fluidDisplayIds = []
 	@staticmethod

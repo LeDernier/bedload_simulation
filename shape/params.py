@@ -21,13 +21,8 @@ class pN:
 	t_max = 400.0
 	### Number of cells of the mesh
 	n_z = 900
-	### Shake
-	shake_enable = True
-	shake_period = 0.04
-	shake_intensity = 0.2
-	shake_time = 0.6
 	### Verbose
-	verbose = False
+	verbose = True
 
 ### Particle Parameters
 class pP: 
@@ -35,9 +30,9 @@ class pP:
 	# Type : "clump" or "cylinder"
 	kind = "clump"
 	# Characteristic lengh taken for the adimensionalisation within the shields number.
-	dvs = 1.0e-2 
+	dvs = 6.0e-3 
 	# Shape factor 
-	A = 1.5
+	A = 3.0
 	# Small characteristic length 
 	S = (2.0 * pow(A - 1.0, 2) + 4.0)/(pow(A - 1.0, 3) + 4.0) * dvs
 	# Long Characteristic length
@@ -83,7 +78,7 @@ class pM:
 	alpha = 0.05 
 	l = 30 * pP.dvs
 	w = 30 * pP.dvs
-	h = 2.0
+	h = 200.0 * pP.dvs
 	z_ground = h/2.0
 	### Number of Particles
 	n = pP.phi_max * l * w * hs / pP.vol
@@ -94,6 +89,12 @@ class pM:
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
 	### Ground Rugosity
 	d_rug = pP.S
+	### Shake
+	shake_enable = False
+	shake_f = 50.0
+	shake_dt = 0.1/shake_f
+	shake_a = pP.dvs/2.0
+	shake_time = pN.t_max - 1.0
 
 ### Param Save
 class pSave:
@@ -115,7 +116,7 @@ class pF:
 	init_shields = 0.55
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
 	shields_d = pP.dvs
-	h = 0
+	h = 0.0
 	if pM.alpha != 0 and pF.enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	dt = 1e-5

@@ -21,11 +21,6 @@ class pN:
 	t_max = 2.0
 	### Number of cells of the mesh
 	n_z = 825
-	### Shake
-	shake_enable = True
-	shake_period = 0.04
-	shake_intensity = 0.2
-	shake_time = t_max - 1.0
 	### Verbose
 	verbose = True
 
@@ -94,6 +89,12 @@ class pM:
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
 	### Ground Rugosity
 	d_rug = pP.S
+	### Shake
+	shake_enable = True
+	shake_f = 50.0
+	shake_dt = 0.1/shake_f
+	shake_a = pP.dvs/2.0
+	shake_time = pN.t_max - 1.0
 
 ### Param Save
 class pSave:
@@ -116,8 +117,8 @@ class pF:
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
 	shields_d = pP.dvs
 	# Fluid heigth
-	h = 0.5 * pM.hs
-	if pM.alpha != 0:
+	h = 0.0
+	if pM.alpha != 0 and enable:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	dt = 1e-5
 	t = 1e-2
