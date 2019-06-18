@@ -1,7 +1,7 @@
 #-------------------#
 # Setting latex
 #-------------------#
-plt.rc('text', usetex=True)
+#plt.rc('text', usetex=True)
 #-------------------#
 # Setting Font
 #-------------------#
@@ -19,7 +19,7 @@ class pPP:
 	#-------------------#
 	# Saving figures
 	#-------------------#
-	save_fig_dir = "/home/rmonthil/Documents/post_proc/"
+	save_fig_dir = "./post_proc/"
 	save_figs = True
 	#-------------------#
 	# Adimensionalisation
@@ -57,7 +57,7 @@ class pPP:
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			"mean_z_phi":r"$\phi_{max}$",
-			"var_z_phi":r"$\sigma_\phi^2$",
+			"var_z_phi":r"$\sigma_\phi$",
 			}
 
 # 1D plot parameters
@@ -68,7 +68,7 @@ class pP1D:
 	#-------------------#
 	measures = {
 			"profiles":"getProfiles()",
-			"shields":"getShields()",
+			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
 			}
 	#-------------------#
@@ -81,8 +81,8 @@ class pP1D:
 			{
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
-			"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
-			"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
+			#"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
+			#"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
 			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
@@ -91,16 +91,16 @@ class pP1D:
 			# Adimentionalisation.
 			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
 			"mean_phi":"data['mean_profiles'][1]",
-			"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
-			"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
+			#"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
+			#"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
 			},
 			{
 			# Flows
-			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
-			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
-			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz) for i in range(len(data['profiles']))]",
+			#"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
+			#"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
+			#"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz) for i in range(len(data['profiles']))]",
 			"mean_z_phi":"[np.mean(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)]) for i in range(len(data['profiles']))]",
-			"var_z_phi":"[np.var(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)]) for i in range(len(data['profiles']))]",
+			"var_z_phi":"[sqrt(np.var(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)])) for i in range(len(data['profiles']))]",
 			}
 			]
 	#-------------------#
@@ -118,19 +118,18 @@ class pP1D:
 	# Plots
 	#-------------------#
 	alims = {
-#			"vx":[[], [4, 18]],
-#			"qsx":[[], [4, 18]],
-#			"phi":[[], [4, 18]],
-#			"qs":[[], []],
+			"phi":[[], []],
+			"mean_z_phi":[[], [0.4, 0.65]],
+			"var_z_phi":[[], [0.0, 0.02]],
 			}
 	plots = {
-			"vx":[["mean_vx"], ["z"]],
-			"qsx":[["mean_qsx"], ["z"]],
-			"vfx":[["mean_vfx"], ["z"]],
+			#"vx":[["mean_vx"], ["z"]],
+			#"qsx":[["mean_qsx"], ["z"]],
+			#"vfx":[["mean_vfx"], ["z"]],
 			"phi":[["mean_phi"], ["z"]],
-			"qs":[["time"], ["qs"]],
-			"qf":[["time"], ["qf"]],
-			"sh":[["time"], ["shields"]],
+			#"qs":[["time"], ["qs"]],
+			#"qf":[["time"], ["qf"]],
+			#"sh":[["time"], ["shields"]],
 			"mean_z_phi":[["time"], ["mean_z_phi"]],
 			"var_z_phi":[["time"], ["var_z_phi"]],
 			}
