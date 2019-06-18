@@ -73,7 +73,7 @@ class pP:
 ### Macroscopic Parameters
 class pM: 
 	### Framework parameters
-	alpha = 0.1 
+	alpha = 0.0 
 	l = 20. * pP.dvs
 	w = 20. * pP.dvs
 	h = 200. * pP.dvs
