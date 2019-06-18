@@ -63,7 +63,7 @@ class pP:
 	### Coefficient of restitution
 	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
-	phi_max = 0.64
+	phi_max = 0.61
 	### Friction angle
 	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
@@ -90,11 +90,11 @@ class pM:
 	### Ground Rugosity
 	d_rug = pP.S
 	### Shake
-	shake_enable = False
+	shake_enable = True
 	shake_f = 50.0
 	shake_dt = 0.1/shake_f
 	shake_a = pP.dvs/2.0
-	shake_time = pN.t_max - 1.0
+	shake_time = 0.6
 
 ### Param Save
 class pSave:
@@ -113,7 +113,7 @@ class pF:
 	## Physics
 	rho = 1e3
 	nu = 1e-6
-	init_shields = 0.55
+	init_shields = 0.8
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
 	shields_d = pP.dvs
 	h = 0.0
