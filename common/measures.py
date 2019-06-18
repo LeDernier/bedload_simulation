@@ -150,16 +150,16 @@ def getProfiles():
 		hydroEngineTmp = HydroForceEngine(
 				densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
 				gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
-				lift = False, nCell = pM.n_z, vCell = pM.l * pM.w * pF.dz, 
-				radiusPart= pP.r, phiPart = pP.phi, vxFluid = pF.vx, 
-				vPart = pP.v, ids = partsIds, label = 'hydroEngine', dead = True)
-		hydroEngineTmp.ReynoldStresses = np.ones(pM.n_z) * 0.0
+				lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
+				phiPart = pP.phi, vxFluid = pF.vx, vPart = pP.v, 
+				ids = partsIds, label = 'hydroEngine', dead = True)
+		hydroEngineTmp.ReynoldStresses = np.ones(pN.n_z) * 0.0
 		hydroEngineTmp.turbulentFluctuation()
-		hydroEngineTmp.averageProfile()
+		hydroEngineTmp.newAverageProfile()
 		vxPart = []
-		for v in hydroEngine.vPart:
+		for v in hydroEngineTmp.vPart:
 			vxPart.append(v[0])
-		return [[i * pF.dz for i in range(pM.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1]]
+		return [[i * pF.dz for i in range(pN.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1]]
 
 #############################################################################################
 #############################################################################################
