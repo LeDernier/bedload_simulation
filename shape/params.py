@@ -117,7 +117,7 @@ class pF:
 	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
 	shields_d = pP.dvs
 	h = 0.0
-	if pM.alpha != 0 and pF.enable and rho != 0:
+	if pM.alpha != 0 and enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	dt = 1e-5
 	t = 1e-2
