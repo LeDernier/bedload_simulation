@@ -1,6 +1,8 @@
 import os
 import sys
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 
 #-------------------#
@@ -255,6 +257,34 @@ def post_process(dr):
 							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
 									markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
 									markersize=pP1D.ms/len(data["time"]))
+		# Contours
+		for key in pP1D.contours:
+			for xy in pP1D.contours[key][0]:
+				delta = data[xy[0]][1] - data[xy[0]][0]
+				for z in pP1D.contours[key][1]:
+					if len(xy) == 2:
+						X, Y = np.meshgrid(data[xy[0]], data[xy[1]])
+						axsC[key].plot_surface(X, Y, data[z], rstride=2, cstride=2, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+					elif len(xy) == 3:
+						U = []
+						V = []
+						W = []
+						C = []
+						n_max = data[z].max()
+						for k in range(data[z].shape[2]):
+							for i in range(data[z].shape[0]):
+								for j in range(data[z].shape[1]):
+									n = data[z][i,j,k]/n_max
+									if n > 0:
+										U.append(data[xy[0]][i])
+										V.append(data[xy[1]][j])
+										W.append(data[xy[2]][k])
+										C.append(n)
+						# Repeat for each body line and two head lines
+						C = np.concatenate((C, np.repeat(C, 2)))
+						#axsC[key].scatter3D(U, V, W, c=C)
+						tmp = axsC[key].quiver3D(U, V, W, U, V, W, cmap="Greys")
+						tmp.set_array(np.array(C))
 
 def plot_external_data():
 	for ext_key in pP1D.plotsExtPath:
@@ -298,6 +328,22 @@ if pP1D.plot_enable:
 		axsT[key] = plt.gca()
 		plt.xlabel(pPP.plots_names[pP1D.plotsT[key][0][0]])
 		plt.ylabel(pPP.plots_names[pP1D.plotsT[key][1][0]])
+	# Contours
+	figsC = {}
+	axsC = {}
+	for key in pP1D.contours:
+		figsC[key] = plt.figure()
+		axsC[key] = plt.gca(projection='3d')
+		axsC[key].set_aspect('equal', 'box')
+		#plt.xlabel(pPP.plots_names[pP1D.contours[key][0][0]])
+		#plt.ylabel(pPP.plots_names[pP1D.contours[key][1][0]])
+	for key in pP1D.alimsC:
+		if pP1D.alimsC[key][0]:
+			axsC[key].set_xlim(pP1D.alimsC[key][0][0], pP1D.alimsC[key][0][1])
+		if pP1D.alimsC[key][1]:
+			axsC[key].set_ylim(pP1D.alimsC[key][1][0], pP1D.alimsC[key][1][1])
+		if pP1D.alimsC[key][2]:
+			axsC[key].set_zlim(pP1D.alimsC[key][2][0], pP1D.alimsC[key][2][1])
 
 # Declaring batch data storage
 batch_data = {}
@@ -380,6 +426,8 @@ if pP1D.plot_enable:
 			figs[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf", bbox_inches="tight")
 		for key in figsT:
 			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf", bbox_inches="tight")
+		for key in figsC:
+			figsC[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"C.pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:

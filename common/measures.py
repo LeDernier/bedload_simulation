@@ -65,13 +65,12 @@ def getEulerHist():
 		if body.dynamic == True and body.isClump:
 			rot = body.state.rot()
 			#rotx.append(rot[0])
-			roty.append(rot[1])
-			rotz.append(rot[2])
+			roty.append(rot[1] + 0.375 * pi)
+			rotz.append(rot[2] - 0.25 * pi)
 			#rotz.append(math.fmod(2*math.pi + rot[2], 2*math.pi))
 	binsNb = 20
-	rots, bins = np.histogram2D(roty, rotz, bins=binsNb, normed=False)
-	bin_centers = 0.5*(bins[1:] + bins[:-1])
-	return [bin_centers, rots]
+	rots, y, z = np.histogram2d(roty, rotz, bins=binsNb, normed=False)
+	return [rots, y, z]
 
 #############################################################################################
 #############################################################################################
@@ -82,19 +81,17 @@ def getOrientationHist():
 	rotz = []
 	for body in O.bodies :
 		if body.dynamic == True and body.isClump:
-			u = body.state.ori * Vector3(1.0, 0.0, 0.0)
-			u_yOz = Vector3(0, u[1], u[2])
-			u_xOz = Vector3(u[0], 0, u[2])
-			u_xOy = Vector3(u[0], u[1], 0)
-			rotx.append(math.acos(u.dot(u_yOz)/(u.norm() * u_yOz.norm())))
-			roty.append(math.acos(u.dot(u_xOz)/(u.norm() * u_xOz.norm())))
-			rotz.append(math.acos(u.dot(u_xOy)/(u.norm() * u_xOy.norm())))
-	binsNb = 20
-	rotx, bins = np.histogram(rotx, bins=binsNb, normed=False)
-	roty, bins = np.histogram(roty, bins=binsNb, normed=False)
-	rotz, bins = np.histogram(rotz, bins=binsNb, normed=False)
-	bin_centers = 0.5*(bins[1:] + bins[:-1])
-	return [bin_centers, rotx, roty, rotz]
+			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
+			#u_yOz = Vector3(0, u[1], u[2])
+			#u_xOz = Vector3(u[0], 0, u[2])
+			#u_xOy = Vector3(u[0], u[1], 0)
+			#rotx.append(math.acos(u.dot(u_yOz)/(u.norm() * u_yOz.norm())))
+			rotx.append(u[0])
+			roty.append(u[1])
+			rotz.append(u[2])
+	binsNb = 3
+	rots, [x, y, z] = np.histogramdd((rotx, roty, rotz), bins=binsNb, normed=False)
+	return [rots, x, y, z]
 
 #############################################################################################
 #############################################################################################
