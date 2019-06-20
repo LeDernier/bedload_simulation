@@ -113,8 +113,7 @@ class pF:
 	## Physics
 	rho = 1e3
 	nu = 1e-6
-	init_shields = 0.8
-	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
+	init_shields = 0.7
 	shields_d = pP.dvs
 	h = 0.0
 	if pM.alpha != 0 and enable and rho != 0:
