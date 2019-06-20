@@ -75,21 +75,16 @@ def getEulerHist():
 #############################################################################################
 #############################################################################################
 
-def getOrientationHist():
+def getOrientationHist(binsNb=3, vMin=0.0):
 	rotx = []
 	roty = []
 	rotz = []
 	for body in O.bodies :
-		if body.dynamic == True and body.isClump:
+		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
-			#u_yOz = Vector3(0, u[1], u[2])
-			#u_xOz = Vector3(u[0], 0, u[2])
-			#u_xOy = Vector3(u[0], u[1], 0)
-			#rotx.append(math.acos(u.dot(u_yOz)/(u.norm() * u_yOz.norm())))
 			rotx.append(u[0])
 			roty.append(u[1])
 			rotz.append(u[2])
-	binsNb = 3
 	rots, [x, y, z] = np.histogramdd((rotx, roty, rotz), bins=binsNb, normed=False)
 	return [rots, x, y, z]
 

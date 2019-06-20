@@ -56,9 +56,13 @@ class pPP:
 			"shields":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
+			"rotx":r"$x$ (rad)",
 			"roty":r"$y$ (rad)",
 			"rotz":r"$z$ (rad)",
 			"occ":r"$P$",
+			"dirx":r"$x$ (flow direction)",
+			"diry":r"$y$",
+			"dirz":r"$z$ (vertical)",
 			}
 
 # 1D plot parameters
@@ -71,7 +75,7 @@ class pP1D:
 			#"profiles":"getProfiles()",
 			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
-			"dirs":"getOrientationHist()",
+			"dirs":"getOrientationHist(3, 2e-9)",
 			}
 	#-------------------#
 	# Post Processing
@@ -155,7 +159,7 @@ class pP1D:
 			}
 	alimsC = {
 			#"ori":[[-2*pi, 2*pi], [-2*pi, 2*pi], []],
-			"dirs":[[-1, 1], [-1, 1], [-1, 1]],
+			"dirs":[[-1.5, 1.5], [-1.5, 1.5], [-1.5, 1.5]],
 			}
 	contours = {
 			#"ori":[[["roty","rotz"]], ["occ"]],
