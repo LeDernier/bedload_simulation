@@ -110,7 +110,7 @@ venv.bak/
 data/
 .ids
 nohup.out
-test/
+test*
 
 # batchs
 *_*/
