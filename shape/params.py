@@ -91,7 +91,7 @@ class pM:
 	d_rug = pP.S
 	### Shake
 	shake_enable = True
-	shake_f = 80.0
+	shake_f = 20.0
 	shake_dt = 0.05/shake_f
 	shake_a = pP.dvs/2.0
 	shake_time = 0.6
