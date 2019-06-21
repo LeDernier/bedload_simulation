@@ -15,10 +15,26 @@ before changing them so that you do not need to define them all.
 
 import math
 
+def phi_max_A(A):
+	if A <= 1.5:
+		return 0.62
+	elif A <= 1.7:
+		return 0.615
+	elif A <= 1.9:
+		return 0.59
+	elif A <= 2.1:
+		return 0.57
+	elif A <= 2.3:
+		return 0.55
+	elif A <= 2.5:
+		return 0.535
+	else:
+		return 0.52
+
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 400.0
+	t_max = 1000.0
 	### Number of cells of the mesh
 	n_z = 900
 	### Verbose
@@ -63,7 +79,7 @@ class pP:
 	### Coefficient of restitution
 	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
-	phi_max = 0.61
+	phi_max = phi_max_A(A)
 	### Friction angle
 	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
@@ -73,7 +89,7 @@ class pP:
 ### Macroscopic Parameters
 class pM: 
 	### Sediment height
-	hs = 10.0 * pP.dvs
+	hs = 12.0 * pP.dvs
 	### Framework parameters
 	alpha = 0.05 
 	l = 30 * pP.dvs
@@ -118,6 +134,9 @@ class pF:
 	h = 0.0
 	if pM.alpha != 0 and enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
+	# Turbulent model
+	turb_phi_max = pP.phi_max
+	## Numeric
 	dt = 1e-5
 	t = 1e-2
 	## Fluid mesh

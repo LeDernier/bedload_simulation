@@ -15,19 +15,30 @@ before changing them so that you do not need to define them all.
 
 import math
 
+def phi_max_A(A):
+	if A <= 1.5:
+		return 0.62
+	elif A <= 1.7:
+		return 0.615
+	elif A <= 1.9:
+		return 0.59
+	elif A <= 2.1:
+		return 0.57
+	elif A <= 2.3:
+		return 0.55
+	elif A <= 2.5:
+		return 0.535
+	else:
+		return 0.52
+
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 400.0
+	t_max = 1000.0
 	### Number of cells of the mesh
 	n_z = 900
-	### Shake
-	shake_enable = True
-	shake_period = 0.04
-	shake_intensity = 0.2
-	shake_time = 0.6
 	### Verbose
-	verbose = False
+	verbose = True
 
 ### Particle Parameters
 class pP: 
@@ -35,9 +46,9 @@ class pP:
 	# Type : "clump" or "cylinder"
 	kind = "clump"
 	# Characteristic lengh taken for the adimensionalisation within the shields number.
-	dvs = 1.0e-2 
+	dvs = 6.0e-3 
 	# Shape factor 
-	A = 1.5
+	A = 3.0
 	# Small characteristic length 
 	S = (2.0 * pow(A - 1.0, 2) + 4.0)/(pow(A - 1.0, 3) + 4.0) * dvs
 	# Long Characteristic length
@@ -68,7 +79,7 @@ class pP:
 	### Coefficient of restitution
 	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
-	phi_max = 0.64
+	phi_max = phi_max_A(A)
 	### Friction angle
 	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
@@ -78,12 +89,12 @@ class pP:
 ### Macroscopic Parameters
 class pM: 
 	### Sediment height
-	hs = 10.0 * pP.dvs
+	hs = 12.0 * pP.dvs
 	### Framework parameters
 	alpha = 0.05 
 	l = 30 * pP.dvs
 	w = 30 * pP.dvs
-	h = 2.0
+	h = 200.0 * pP.dvs
 	z_ground = h/2.0
 	### Number of Particles
 	n = pP.phi_max * l * w * hs / pP.vol
@@ -94,6 +105,12 @@ class pM:
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
 	### Ground Rugosity
 	d_rug = pP.S
+	### Shake
+	shake_enable = True
+	shake_f = 20.0
+	shake_dt = 0.05/shake_f
+	shake_a = pP.dvs/2.0
+	shake_time = 0.6
 
 ### Param Save
 class pSave:
@@ -112,12 +129,14 @@ class pF:
 	## Physics
 	rho = 1e3
 	nu = 1e-6
-	init_shields = 0.55
-	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
+	init_shields = 1.5
 	shields_d = pP.dvs
-	h = 0
-	if pM.alpha != 0 and pF.enable and rho != 0:
+	h = 0.0
+	if pM.alpha != 0 and enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
+	# Turbulent model
+	phi_max = pP.phi_max
+	## Numeric
 	dt = 1e-5
 	t = 1e-2
 	## Fluid mesh
