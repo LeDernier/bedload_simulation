@@ -82,11 +82,39 @@ def getOrientationHist(binsNb=3, vMin=0.0):
 	for body in O.bodies :
 		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
+			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
+				u = -u
+			#if u[1] > 0.0:
+			#	u[1] = -u[1]
 			rotx.append(u[0])
 			roty.append(u[1])
 			rotz.append(u[2])
 	rots, [x, y, z] = np.histogramdd((rotx, roty, rotz), bins=binsNb, normed=False)
 	return [rots, x, y, z]
+
+#############################################################################################
+#############################################################################################
+
+def getMeanOrientation(vMin=0.0):
+	xs = []
+	ys = []
+	zs = []
+	for body in O.bodies :
+		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
+			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
+			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
+				u = -u
+			if u[1] > 0.0:
+				u[1] = -u[1]
+			xs.append(u[0])
+			ys.append(u[1])
+			zs.append(u[2])
+	xs = np.array(xs)
+	ys = np.array(ys)
+	zs = np.array(zs)
+	u_mean = Vector3(xs.mean(), ys.mean(), zs.mean())
+	u_var = Vector3(sqrt(xs.var()), sqrt(ys.var()), sqrt(zs.var()))
+	return [u_mean, u_var]
 
 #############################################################################################
 #############################################################################################

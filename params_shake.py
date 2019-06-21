@@ -146,9 +146,12 @@ class pP1D:
 #			"qsx":[["qsx"], ["z"]],
 			}
 
-	#contours = {
-	#		"ori":[["mean_vx"], ["z"]],
-	#		}
+	alimsO = {
+			
+			}
+	orientations = {
+			"ori":[["mean_vx"], ["z"]],
+			}
 
 class pP2D:
 	plot_enable = False

@@ -257,14 +257,13 @@ def post_process(dr):
 							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
 									markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
 									markersize=pP1D.ms/len(data["time"]))
-		# Contours
-		for key in pP1D.contours:
-			for xy in pP1D.contours[key][0]:
-				delta = data[xy[0]][1] - data[xy[0]][0]
-				for z in pP1D.contours[key][1]:
+		# Orientations
+		for key in pP1D.orientations:
+			for xy in pP1D.orientations[key][0]:
+				for z in pP1D.orientations[key][1]:
 					if len(xy) == 2:
 						X, Y = np.meshgrid(data[xy[0]], data[xy[1]])
-						axsC[key].plot_surface(X, Y, data[z], rstride=2, cstride=2, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+						axsO[key].plot_surface(X, Y, data[z], rstride=2, cstride=2, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 					elif len(xy) == 3:
 						X = []
 						Y = []
@@ -273,14 +272,14 @@ def post_process(dr):
 						V = []
 						W = []
 						C = []
-						n_max = data[z].max()
+						n_sum = data[z].sum()
 						for k in range(data[z].shape[2]):
 							for i in range(data[z].shape[0]):
 								for j in range(data[z].shape[1]):
-									n = data[z][i,j,k]/n_max
+									n = data[z][i,j,k]/n_sum
 									if n > 0:
-										X.append(data[xy[0]][i] * 1.5)
-										Y.append(data[xy[1]][j] * 1.5)
+										X.append(data[xy[0]][i] * 1.5 - 0.675)
+										Y.append(data[xy[1]][j] * 1.5 + 0.675)
 										Z.append(data[xy[2]][k] * 1.5)
 										U.append(data[xy[0]][i])
 										V.append(data[xy[1]][j])
@@ -289,8 +288,10 @@ def post_process(dr):
 						# Repeat for each body line and two head lines
 						C = np.concatenate((C, np.repeat(C, 2)))
 						#axsC[key].scatter3D(U, V, W, c=C)
-						tmp = axsC[key].quiver3D(X, Y, Z, U, V, W, cmap="Greys", linewidth=2.0)
+						tmp = axsO[key].quiver3D(X, Y, Z, U, V, W, cmap="Greys", linewidth=2.0)
 						tmp.set_array(np.array(C))
+						cb = figsO[key].colorbar(tmp)
+						cb.ax.set_ylabel('Probability')
 
 def plot_external_data():
 	for ext_key in pP1D.plotsExtPath:
@@ -334,23 +335,26 @@ if pP1D.plot_enable:
 		axsT[key] = plt.gca()
 		plt.xlabel(pPP.plots_names[pP1D.plotsT[key][0][0]])
 		plt.ylabel(pPP.plots_names[pP1D.plotsT[key][1][0]])
-	# Contours
-	figsC = {}
-	axsC = {}
-	for key in pP1D.contours:
-		figsC[key] = plt.figure()
-		axsC[key] = plt.gca(projection='3d')
-		axsC[key].set_aspect('equal', 'box')
-		axsC[key].set_xlabel(pPP.plots_names[pP1D.contours[key][0][0][0]])
-		axsC[key].set_ylabel(pPP.plots_names[pP1D.contours[key][0][0][1]])
-		axsC[key].set_zlabel(pPP.plots_names[pP1D.contours[key][0][0][2]])
-	for key in pP1D.alimsC:
-		if pP1D.alimsC[key][0]:
-			axsC[key].set_xlim(pP1D.alimsC[key][0][0], pP1D.alimsC[key][0][1])
-		if pP1D.alimsC[key][1]:
-			axsC[key].set_ylim(pP1D.alimsC[key][1][0], pP1D.alimsC[key][1][1])
-		if pP1D.alimsC[key][2]:
-			axsC[key].set_zlim(pP1D.alimsC[key][2][0], pP1D.alimsC[key][2][1])
+	# Orientations
+	figsO = {}
+	axsO = {}
+	for key in pP1D.orientations:
+		figsO[key] = plt.figure()
+		axsO[key] = plt.gca(projection='3d')
+		axsO[key].set_aspect('equal', 'box')
+		axsO[key].set_xlabel(pPP.plots_names[pP1D.orientations[key][0][0][0]])
+		axsO[key].set_ylabel(pPP.plots_names[pP1D.orientations[key][0][0][1]])
+		axsO[key].set_zlabel(pPP.plots_names[pP1D.orientations[key][0][0][2]])
+		axsO[key].set_xticklabels([])
+		axsO[key].set_yticklabels([])
+		axsO[key].set_zticklabels([])
+	for key in pP1D.alimsO:
+		if pP1D.alimsO[key][0]:
+			axsO[key].set_xlim(pP1D.alimsO[key][0][0], pP1D.alimsO[key][0][1])
+		if pP1D.alimsO[key][1]:
+			axsO[key].set_ylim(pP1D.alimsO[key][1][0], pP1D.alimsO[key][1][1])
+		if pP1D.alimsO[key][2]:
+			axsO[key].set_zlim(pP1D.alimsO[key][2][0], pP1D.alimsO[key][2][1])
 
 # Declaring batch data storage
 batch_data = {}
@@ -433,8 +437,8 @@ if pP1D.plot_enable:
 			figs[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf", bbox_inches="tight")
 		for key in figsT:
 			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf", bbox_inches="tight")
-		for key in figsC:
-			figsC[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"C.pdf", bbox_inches="tight")
+		for key in figsO:
+			figsO[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"C.pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:

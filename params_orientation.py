@@ -60,9 +60,12 @@ class pPP:
 			"roty":r"$y$ (rad)",
 			"rotz":r"$z$ (rad)",
 			"occ":r"$P$",
-			"dirx":r"$x$ (flow direction)",
+			"dirx":r"$x$",
 			"diry":r"$y$",
-			"dirz":r"$z$ (vertical)",
+			"dirz":r"$z$",
+			"mean_dirx":r"$x$",
+			"mean_diry":r"$y$",
+			"mean_dirz":r"$z$",
 			}
 
 # 1D plot parameters
@@ -75,7 +78,8 @@ class pP1D:
 			#"profiles":"getProfiles()",
 			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
-			"dirs":"getOrientationHist(3, 2e-9)",
+			"dirs":"getOrientationHist(3, 0e-1)",
+			#"mean_dir":"getMeanOrientation(0e-1)",
 			}
 	#-------------------#
 	# Post Processing
@@ -101,6 +105,10 @@ class pP1D:
 			"dirx":"(data['dirs']["+rot_i+"][1][:-1] + data['dirs']["+rot_i+"][1][1:]) / 2.0",
 			"diry":"(data['dirs']["+rot_i+"][2][:-1] + data['dirs']["+rot_i+"][2][1:]) / 2.0",
 			"dirz":"(data['dirs']["+rot_i+"][3][:-1] + data['dirs']["+rot_i+"][3][1:]) / 2.0",
+			#"mean_dirx":"[data['mean_dir']["+rot_i+"][0][0]]",
+			#"mean_diry":"[data['mean_dir']["+rot_i+"][0][1]]",
+			#"mean_dirz":"[data['mean_dir']["+rot_i+"][0][2]]",
+			#"col":"np.eye((1,1,1))",
 			},
 			{
 			# Adimentionalisation.
@@ -157,13 +165,13 @@ class pP1D:
 #			"phi":[["phi"], ["z"]],
 #			"qsx":[["qsx"], ["z"]],
 			}
-	alimsC = {
-			#"ori":[[-2*pi, 2*pi], [-2*pi, 2*pi], []],
+	alimsO = {
 			"dirs":[[-1.5, 1.5], [-1.5, 1.5], [-1.5, 1.5]],
+			#"mean_dir":[[-1.5, 1.5], [-1.5, 1.5], [-1.5, 1.5]],
 			}
-	contours = {
-			#"ori":[[["roty","rotz"]], ["occ"]],
+	orientations = {
 			"dirs":[[["dirx","diry","dirz"]], ["dirocc"]],
+			#"mean_dir":[[["mean_dirx","mean_diry","mean_dirz"]], ["col"]],
 			}
 
 class pP2D:

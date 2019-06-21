@@ -146,10 +146,10 @@ class pP1D:
 #			"phi":[["phi"], ["z"]],
 #			"qsx":[["qsx"], ["z"]],
 			}
-	alimsC = {
+	alimsO = {
 			
 			}
-	contours = {
+	orientations = {
 			#"ori":[["mean_vx"], ["z"]],
 			}
 
