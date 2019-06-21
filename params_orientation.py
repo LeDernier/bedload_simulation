@@ -56,16 +56,6 @@ class pPP:
 			"shields":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
-			"rotx":r"$x$ (rad)",
-			"roty":r"$y$ (rad)",
-			"rotz":r"$z$ (rad)",
-			"occ":r"$P$",
-			"dirx":r"$x$",
-			"diry":r"$y$",
-			"dirz":r"$z$",
-			"mean_dirx":r"$x$",
-			"mean_diry":r"$y$",
-			"mean_dirz":r"$z$",
 			}
 
 # 1D plot parameters
@@ -78,8 +68,8 @@ class pP1D:
 			#"profiles":"getProfiles()",
 			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
-			"dirs":"getOrientationHist(3, 0e-1)",
-			#"mean_dir":"getMeanOrientation(0e-1)",
+			"dirs":"getOrientationHist(10.0, 0.0)",
+			"mdirs":"getMeanOrientation(0.0)",
 			}
 	#-------------------#
 	# Post Processing
@@ -87,7 +77,7 @@ class pP1D:
 	# Time is dealt seperately but data['time'] can be accessed from here.
 	# Dictionaries are not sorted so it is an array of dictionaries.
 	# An element of the array can use all the previous elements results. 
-	rot_i = "len(data['time'])-1"
+	rot_i = "-1"
 	#rot_i = "0"
 	post_process = [
 			{
@@ -98,17 +88,14 @@ class pP1D:
 			# Averaging
 			#"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
 			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
-			#"roty":"(data['rots']["+rot_i+"][1][:-1] + data['rots']["+rot_i+"][1][1:]) / 2.0",
-			#"rotz":"(data['rots']["+rot_i+"][2][:-1] + data['rots']["+rot_i+"][2][1:]) / 2.0",
-			#"occ":"data['rots']["+rot_i+"][0]",
-			"dirocc":"data['dirs']["+rot_i+"][0]",
-			"dirx":"(data['dirs']["+rot_i+"][1][:-1] + data['dirs']["+rot_i+"][1][1:]) / 2.0",
-			"diry":"(data['dirs']["+rot_i+"][2][:-1] + data['dirs']["+rot_i+"][2][1:]) / 2.0",
-			"dirz":"(data['dirs']["+rot_i+"][3][:-1] + data['dirs']["+rot_i+"][3][1:]) / 2.0",
-			#"mean_dirx":"[data['mean_dir']["+rot_i+"][0][0]]",
-			#"mean_diry":"[data['mean_dir']["+rot_i+"][0][1]]",
-			#"mean_dirz":"[data['mean_dir']["+rot_i+"][0][2]]",
-			#"col":"np.eye((1,1,1))",
+			"dirocc":"data['dirs']["+rot_i+"][3]",
+			"dirx":"data['dirs']["+rot_i+"][0]",
+			"diry":"data['dirs']["+rot_i+"][1]",
+			"dirz":"data['dirs']["+rot_i+"][2]",
+			"mdirc":"data['mdirs']["+rot_i+"][3]",
+			"mdirx":"data['mdirs']["+rot_i+"][0]",
+			"mdiry":"data['mdirs']["+rot_i+"][1]",
+			"mdirz":"data['mdirs']["+rot_i+"][2]",
 			},
 			{
 			# Adimentionalisation.
@@ -166,12 +153,12 @@ class pP1D:
 #			"qsx":[["qsx"], ["z"]],
 			}
 	alimsO = {
-			"dirs":[[-1.5, 1.5], [-1.5, 1.5], [-1.5, 1.5]],
-			#"mean_dir":[[-1.5, 1.5], [-1.5, 1.5], [-1.5, 1.5]],
+			"dirs":[[-0.5, 1.5], [-1.0, 1.0], [-1.0, 1.0]],
+			"mdirs":[[-0.5, 1.5], [-1.0, 1.0], [-1.0, 1.0]],
 			}
 	orientations = {
-			"dirs":[[["dirx","diry","dirz"]], ["dirocc"]],
-			#"mean_dir":[[["mean_dirx","mean_diry","mean_dirz"]], ["col"]],
+			"dirs":[[["dirx", "diry", "dirz"]], ["dirocc"]],
+			"mdirs":[[["mdirx","mdiry","mdirz"]], ["mdirc"]],
 			}
 
 class pP2D:

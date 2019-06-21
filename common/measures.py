@@ -75,10 +75,54 @@ def getEulerHist():
 #############################################################################################
 #############################################################################################
 
+def cart2sph(x,y,z):
+	XsqPlusYsq = x**2 + y**2
+	r = sqrt(XsqPlusYsq + z**2)
+	theta = atan2(sqrt(XsqPlusYsq), z)
+	phi = atan2(y,x)
+	return r, theta, phi
+
 def getOrientationHist(binsNb=3, vMin=0.0):
-	rotx = []
-	roty = []
-	rotz = []
+	rs = []
+	thetas = []
+	phis = []
+	for body in O.bodies:
+		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
+			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
+			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
+				u = -u
+			#if u[1] > 0.0:
+			#	u[1] = -u[1]
+			r, theta, phi = cart2sph(u[0], u[1], u[2])
+			rs.append(r)
+			thetas.append(theta)
+			phis.append(phi)
+	rs, thetas, phis = np.histogram2d(thetas, phis, bins=binsNb, normed=False)
+	thetas = (thetas[:-1] + thetas[1:]) / 2.0
+	phis = (phis[:-1] + phis[1:]) / 2.0
+	X = []
+	Y = []
+	Z = []
+	C = []
+	n_sum = rs.sum()
+	n_max = rs.max()
+	for j in range(rs.shape[1]):
+		for i in range(rs.shape[0]):
+			n = rs[i,j]/n_sum
+			n2 = rs[i,j]/n_max
+			X.append(sin(thetas[i]) * cos(phis[j]) * n2)
+			Y.append(sin(thetas[i]) * sin(phis[j]) * n2)
+			Z.append(cos(thetas[i]) * n2)
+			C.append(n)
+	return [X, Y, Z, C]
+
+#############################################################################################
+#############################################################################################
+
+def getMeanOrientation(vMin=0.0):
+	rs = []
+	thetas = []
+	phis = []
 	for body in O.bodies :
 		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
@@ -86,35 +130,45 @@ def getOrientationHist(binsNb=3, vMin=0.0):
 				u = -u
 			#if u[1] > 0.0:
 			#	u[1] = -u[1]
-			rotx.append(u[0])
-			roty.append(u[1])
-			rotz.append(u[2])
-	rots, [x, y, z] = np.histogramdd((rotx, roty, rotz), bins=binsNb, normed=False)
-	return [rots, x, y, z]
-
-#############################################################################################
-#############################################################################################
-
-def getMeanOrientation(vMin=0.0):
-	xs = []
-	ys = []
-	zs = []
-	for body in O.bodies :
-		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
-			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
-			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
-				u = -u
-			if u[1] > 0.0:
-				u[1] = -u[1]
-			xs.append(u[0])
-			ys.append(u[1])
-			zs.append(u[2])
-	xs = np.array(xs)
-	ys = np.array(ys)
-	zs = np.array(zs)
-	u_mean = Vector3(xs.mean(), ys.mean(), zs.mean())
-	u_var = Vector3(sqrt(xs.var()), sqrt(ys.var()), sqrt(zs.var()))
-	return [u_mean, u_var]
+			r, theta, phi = cart2sph(u[0], u[1], u[2])
+			rs.append(r)
+			thetas.append(theta)
+			phis.append(phi)
+	theta_mean = np.array(thetas).mean()
+	theta_var = sqrt(np.array(thetas).var())
+	phi_mean = np.array(phis).mean()
+	phi_var = sqrt(np.array(phis).var())
+	X = []
+	Y = []
+	Z = []
+	C = []
+	tmp = Vector3()
+	tmp[0] = sin(theta_mean) * cos(phi_mean)
+	tmp[1] = sin(theta_mean) * sin(phi_mean)
+	tmp[2] = cos(theta_mean)
+	tmp = tmp.normalized()
+	X.append(tmp[0])
+	Y.append(tmp[1])
+	Z.append(tmp[2])
+	C.append(1.0)
+	tmp = Vector3()
+	tmp[0] = sin(theta_mean + theta_var) * cos(phi_mean)
+	tmp[1] = sin(theta_mean + theta_var) * sin(phi_mean)
+	tmp[2] = cos(theta_mean + theta_var)
+	tmp = tmp.normalized()
+	X.append(tmp[0])
+	Y.append(tmp[1])
+	Z.append(tmp[2])
+	C.append(0.5)
+	tmp[0] = sin(theta_mean) * cos(phi_mean + phi_var)
+	tmp[1] = sin(theta_mean) * sin(phi_mean + phi_var)
+	tmp[2] = cos(theta_mean)
+	tmp = tmp.normalized()
+	X.append(tmp[0])
+	Y.append(tmp[1])
+	Z.append(tmp[2])
+	C.append(0.5)
+	return [X, Y, Z, C]
 
 #############################################################################################
 #############################################################################################

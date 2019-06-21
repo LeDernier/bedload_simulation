@@ -259,39 +259,20 @@ def post_process(dr):
 									markersize=pP1D.ms/len(data["time"]))
 		# Orientations
 		for key in pP1D.orientations:
-			for xy in pP1D.orientations[key][0]:
-				for z in pP1D.orientations[key][1]:
-					if len(xy) == 2:
-						X, Y = np.meshgrid(data[xy[0]], data[xy[1]])
-						axsO[key].plot_surface(X, Y, data[z], rstride=2, cstride=2, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-					elif len(xy) == 3:
-						X = []
-						Y = []
-						Z = []
-						U = []
-						V = []
-						W = []
-						C = []
-						n_sum = data[z].sum()
-						for k in range(data[z].shape[2]):
-							for i in range(data[z].shape[0]):
-								for j in range(data[z].shape[1]):
-									n = data[z][i,j,k]/n_sum
-									if n > 0:
-										X.append(data[xy[0]][i] * 1.5 - 0.675)
-										Y.append(data[xy[1]][j] * 1.5 + 0.675)
-										Z.append(data[xy[2]][k] * 1.5)
-										U.append(data[xy[0]][i])
-										V.append(data[xy[1]][j])
-										W.append(data[xy[2]][k])
-										C.append(n)
-						# Repeat for each body line and two head lines
-						C = np.concatenate((C, np.repeat(C, 2)))
-						#axsC[key].scatter3D(U, V, W, c=C)
-						tmp = axsO[key].quiver3D(X, Y, Z, U, V, W, cmap="Greys", linewidth=2.0)
-						tmp.set_array(np.array(C))
-						cb = figsO[key].colorbar(tmp)
-						cb.ax.set_ylabel('Probability')
+			for xyz in pP1D.orientations[key][0]:
+				X = data[xyz[0]]
+				Y = data[xyz[1]]
+				Z = data[xyz[2]]
+				for C in pP1D.orientations[key][1]:
+					C = data[C]
+					for i in range(len(X)):
+						norm = min(Vector3(X[i], Y[i], Z[i]).norm(), 1.0)
+						axsO[key].quiver3D(X[i], Y[i], Z[i], X[i], Y[i], Z[i], 
+								colors=[(0, 0, 0, norm), (0, 0, 0, norm), (0, 0, 0, norm)], 
+								linewidth=2.0, length=norm)
+					tmp = axsO[key].scatter3D(X, Y, Z, c=C, s=[Vector3(X[j], Y[j], Z[j]).norm()*80.0 for j in range(len(C))], cmap="Greys")
+					tmp = figsO[key].colorbar(tmp)
+					tmp.ax.set_ylabel('Probability')
 
 def plot_external_data():
 	for ext_key in pP1D.plotsExtPath:
@@ -342,12 +323,15 @@ if pP1D.plot_enable:
 		figsO[key] = plt.figure()
 		axsO[key] = plt.gca(projection='3d')
 		axsO[key].set_aspect('equal', 'box')
-		axsO[key].set_xlabel(pPP.plots_names[pP1D.orientations[key][0][0][0]])
-		axsO[key].set_ylabel(pPP.plots_names[pP1D.orientations[key][0][0][1]])
-		axsO[key].set_zlabel(pPP.plots_names[pP1D.orientations[key][0][0][2]])
+		axsO[key].set_xlabel("$x$")
+		axsO[key].set_ylabel("$y$")
+		axsO[key].set_zlabel("$z$")
 		axsO[key].set_xticklabels([])
 		axsO[key].set_yticklabels([])
 		axsO[key].set_zticklabels([])
+		axsO[key].w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+		axsO[key].w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+		axsO[key].w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 	for key in pP1D.alimsO:
 		if pP1D.alimsO[key][0]:
 			axsO[key].set_xlim(pP1D.alimsO[key][0][0], pP1D.alimsO[key][0][1])
