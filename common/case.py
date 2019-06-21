@@ -28,6 +28,7 @@ if datas:
 	execfile('framework.py')
 	execfile('../common/simulationPyRunners.py')
 	O.load("data/"+str(datas[-1])+".yade")
+	execfile('params.py')
 	#O.run()
 else:
 	# import simulation

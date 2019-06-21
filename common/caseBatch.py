@@ -27,6 +27,8 @@ if datas:
 	# import PyRunners
 	execfile('../common/simulationPyRunners.py')
 	O.load("data/"+str(datas[-1])+".yade")
+	# Reload parameters
+	execfile('params.py')
 	O.run()
 else:
 	# import simulation
