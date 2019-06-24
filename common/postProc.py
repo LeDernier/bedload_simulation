@@ -14,7 +14,6 @@ sep = "---------------------- "
 #-------------------#
 # Variables
 #-------------------#
-colors = []
 d_ad = 0
 
 #-------------------#
@@ -263,16 +262,17 @@ def post_process(dr):
 				X = data[xyz[0]]
 				Y = data[xyz[1]]
 				Z = data[xyz[2]]
-				for C in pP1D.orientations[key][1]:
-					C = data[C]
+				for C_name in pP1D.orientations[key][1]:
+					C = data[C_name]
 					for i in range(len(X)):
 						norm = min(Vector3(X[i], Y[i], Z[i]).norm(), 1.0)
 						axsO[key].quiver3D(X[i], Y[i], Z[i], X[i], Y[i], Z[i], 
 								colors=[(0, 0, 0, norm), (0, 0, 0, norm), (0, 0, 0, norm)], 
 								linewidth=2.0, length=norm)
 					tmp = axsO[key].scatter3D(X, Y, Z, c=C, s=[Vector3(X[j], Y[j], Z[j]).norm()*80.0 for j in range(len(C))], cmap="Greys")
-					tmp = figsO[key].colorbar(tmp)
-					tmp.ax.set_ylabel('Probability')
+					if C_name in pPP.plots_names:
+						tmp = figsO[key].colorbar(tmp)
+						tmp.ax.set_ylabel(pPP.plots_names[C_name])
 
 def plot_external_data():
 	for ext_key in pP1D.plotsExtPath:
@@ -363,9 +363,6 @@ plot_external_data()
 # Post Processing 2D
 #-------------------#
 if pP2D.plot_enable:
-	### Computing Colors
-	color_gradient(len(sys.argv) - 1, pP2D)
-	
 	### Sorting data
 	params = []
 	params_val = []
@@ -373,23 +370,22 @@ if pP2D.plot_enable:
 		params.append(p)
 		params_val.append(v)
 	params, params_val = zip(*sorted(zip(params, params_val)))
-
 	for key in pP2D.plots:
 		plt.figure()
 		plt.xlabel(pPP.plots_names[pP2D.plots[key][0][0]])
 		plt.ylabel(pPP.plots_names[pP2D.plots[key][1][0]])
 		# Plotting
-		batch_colors = colors[:]
 		batch_markers = pP2D.markers[:]
+		color_gradient(len(sys.argv) - 1, pP2D)
 		for i in range(len(params)):
 			p = params[i]
 			v = params_val[i]
 			m = batch_markers.pop()
-			c = batch_colors.pop()
+			c = pP2D.colors.pop()
 			for x in pP2D.plots[key][0]:
 				me = int(max(1.0, pP2D.me * len(v[x])))
 				for y in pP2D.plots[key][1]:
-					plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms, label=r"$"+pPP.batch_param_name+"="+str(p)+"$")
+					plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms, label=r"$"+pP2D.param_name+"="+str(p)+"$")
 					plt.legend(fancybox=True, framealpha=0.5, loc=0)
 					if pPP.save_figs:
 						plt.savefig(pPP.save_fig_dir+name_case+"_"+pPP.batch_param_name+"_"+"qs(shields)"+".pdf")

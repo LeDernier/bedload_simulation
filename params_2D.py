@@ -54,6 +54,7 @@ class pPP:
 			"qs":r"${Q_s}$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
+			"sh":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			"mean_z_phi":r"$\phi_{max}$",
@@ -156,8 +157,8 @@ class pP1D:
 class pP2D:
 	plot_enable = True
 	# Plot param
-	param = "pM.l"
-	param_name = "l"
+	param = "pP.A"
+	param_name = "A"
 	# Measuring 2D data in the 1D data
 	measures = {
 			"qs":"average(data['qs'], data['time'])",

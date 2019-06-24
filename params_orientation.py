@@ -56,6 +56,7 @@ class pPP:
 			"shields":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
+			"dirocc":r"Probability",
 			}
 
 # 1D plot parameters
@@ -68,7 +69,7 @@ class pP1D:
 			#"profiles":"getProfiles()",
 			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
-			"dirs":"getOrientationHist(10.0, 0.0)",
+			"dirs":"getOrientationHist(5.0, 0.0)",
 			"mdirs":"getMeanOrientation(0.0)",
 			}
 	#-------------------#

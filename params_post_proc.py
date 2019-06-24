@@ -15,12 +15,12 @@ class pPP:
 	#-------------------#
 	# Plot Names
 	#-------------------#
-	show_figs = False
+	show_figs = True
 	#-------------------#
 	# Saving figures
 	#-------------------#
 	save_fig_dir = "/home/rmonthil/Documents/post_proc/"
-	save_figs = True
+	save_figs = False
 	#-------------------#
 	# Adimensionalisation
 	#-------------------#
@@ -37,7 +37,7 @@ class pPP:
 	r = [0.0, 0.5]
 	v = [0.5, 0.0]
 	b = [0.5, 0.0]
-	markers = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
+	markers = ["$\mathbf{H}$", "$\mathbf{G}$", "$\mathbf{F}$", "$\mathbf{E}$", "$\mathbf{D}$", "$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
 	me = 0.05 
 	mew = 0.3
 	ms = 7.0
@@ -54,6 +54,7 @@ class pPP:
 			"qs":r"${Q_s}$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
+			"sh":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			"mean_z_phi":r"$\phi_{max}$",
@@ -62,7 +63,7 @@ class pPP:
 
 # 1D plot parameters
 class pP1D:
-	plot_enable = True
+	plot_enable = False
 	#-------------------#
 	# Measures
 	#-------------------#
@@ -154,7 +155,7 @@ class pP1D:
 			}
 
 class pP2D:
-	plot_enable = False
+	plot_enable = True
 	# Plot param
 	param = "pP.A"
 	param_name = "A"
