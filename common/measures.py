@@ -119,7 +119,7 @@ def getOrientationHist(binsNb=3):
 #############################################################################################
 #############################################################################################
 
-def getMeanOrientation(z_min=pM.z_ground, z_max=pM.h):
+def getMeanOrientation(z_min, z_max):
 	rs = []
 	thetas = []
 	phis = []
@@ -144,7 +144,7 @@ def getMeanOrientation(z_min=pM.z_ground, z_max=pM.h):
 #############################################################################################
 
 def getVectorMeanOrientation():
-	[theta_mean, theta_var, phi_mean, phi_var] = getMeanOrientation()
+	[theta_mean, theta_var, phi_mean, phi_var] = getMeanOrientation(pM.z_ground, pM.h)
 	X = []
 	Y = []
 	Z = []
