@@ -388,7 +388,7 @@ if pP2D.plot_enable:
 					plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms, label=r"$"+pP2D.param_name+"="+str(p)+"$")
 					plt.legend(fancybox=True, framealpha=0.5, loc=0)
 					if pPP.save_figs:
-						plt.savefig(pPP.save_fig_dir+name_case+"_"+pP2D.param_name+"_"+"qs(shields)"+".pdf")
+						plt.savefig(pPP.save_fig_dir+name_case+"_"+pP2D.param_name+"_"+key+".pdf", bbox_inches="tight")
 	
 	##### Creating rectangular patch to show averaging
 	#if pPP.mean_over_time_enable:
