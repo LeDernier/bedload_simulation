@@ -82,12 +82,12 @@ def cart2sph(x,y,z):
 	phi = atan2(y,x)
 	return r, theta, phi
 
-def getOrientationHist(binsNb=3, vMin=0.0):
+def getOrientationHist(binsNb=3):
 	rs = []
 	thetas = []
 	phis = []
 	for body in O.bodies:
-		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
+		if body.dynamic == True and body.isClump:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
 			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
 				u = -u
@@ -119,12 +119,12 @@ def getOrientationHist(binsNb=3, vMin=0.0):
 #############################################################################################
 #############################################################################################
 
-def getMeanOrientation(vMin=0.0):
+def getMeanOrientation(z_min=pM.z_ground, z_max=pM.h):
 	rs = []
 	thetas = []
 	phis = []
 	for body in O.bodies :
-		if body.dynamic == True and body.isClump and body.state.vel.norm() > vMin:
+		if body.dynamic == True and body.isClump and body.state.pos[2] < z_max and body.state.pos[2] > z_min:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
 			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
 				u = -u
@@ -138,6 +138,13 @@ def getMeanOrientation(vMin=0.0):
 	theta_var = sqrt(np.array(thetas).var())
 	phi_mean = np.array(phis).mean()
 	phi_var = sqrt(np.array(phis).var())
+	return [theta_mean, theta_var, phi_mean, phi_var]
+
+#############################################################################################
+#############################################################################################
+
+def getVectorMeanOrientation():
+	[theta_mean, theta_var, phi_mean, phi_var] = getMeanOrientation()
 	X = []
 	Y = []
 	Z = []

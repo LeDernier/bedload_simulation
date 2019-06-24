@@ -70,7 +70,7 @@ class pP1D:
 			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
 			"dirs":"getOrientationHist(5.0, 0.0)",
-			"mdirs":"getMeanOrientation(0.0)",
+			"mdirs":"getVectorMeanOrientation(0.0)",
 			}
 	#-------------------#
 	# Post Processing
