@@ -15,12 +15,12 @@ class pPP:
 	#-------------------#
 	# Plot Names
 	#-------------------#
-	show_figs = True
+	show_figs = False
 	#-------------------#
 	# Saving figures
 	#-------------------#
 	save_fig_dir = "/home/rmonthil/Documents/post_proc/"
-	save_figs = False
+	save_figs = True
 	#-------------------#
 	# Adimensionalisation
 	#-------------------#
@@ -29,8 +29,8 @@ class pPP:
 	#-------------------#
 	# Mean operation 
 	#-------------------#
-	mean_begin_time = 50.0
-	mean_end_time = 500.0
+	mean_begin_time = 200.0
+	mean_end_time = 1000.0
 	#-------------------#
 	# Plot visuals
 	#-------------------#
