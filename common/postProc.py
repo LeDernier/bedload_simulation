@@ -376,7 +376,7 @@ if pP2D.plot_enable:
 		plt.ylabel(pPP.plots_names[pP2D.plots[key][1][0]])
 		# Plotting
 		batch_markers = pP2D.markers[:]
-		color_gradient(len(sys.argv) - 1, pP2D)
+		color_gradient(len(params), pP2D)
 		for i in range(len(params)):
 			p = params[i]
 			v = params_val[i]

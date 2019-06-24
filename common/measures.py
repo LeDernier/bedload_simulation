@@ -82,17 +82,19 @@ def cart2sph(x,y,z):
 	phi = atan2(y,x)
 	return r, theta, phi
 
-def getOrientationHist(binsNb=3):
+def getOrientationHist(binsNb=3, kind="half"):
 	rs = []
 	thetas = []
 	phis = []
 	for body in O.bodies:
 		if body.dynamic == True and body.isClump:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
-			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
-				u = -u
-			#if u[1] > 0.0:
-			#	u[1] = -u[1]
+			if kind != "full":
+				if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
+					u = -u
+				if kind == "quart":
+					if u[1] > 0.0:
+						u[1] = -u[1]
 			r, theta, phi = cart2sph(u[0], u[1], u[2])
 			rs.append(r)
 			thetas.append(theta)
@@ -119,17 +121,19 @@ def getOrientationHist(binsNb=3):
 #############################################################################################
 #############################################################################################
 
-def getMeanOrientation(z_min, z_max):
+def getMeanOrientation(z_min, z_max, kind="half"):
 	rs = []
 	thetas = []
 	phis = []
 	for body in O.bodies :
 		if body.dynamic == True and body.isClump and body.state.pos[2] < z_max and body.state.pos[2] > z_min:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
-			if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
-				u = -u
-			#if u[1] > 0.0:
-			#	u[1] = -u[1]
+			if kind != "full":
+				if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
+					u = -u
+				if kind == "quart":
+					if u[1] > 0.0:
+						u[1] = -u[1]
 			r, theta, phi = cart2sph(u[0], u[1], u[2])
 			rs.append(r)
 			thetas.append(theta)
@@ -143,8 +147,8 @@ def getMeanOrientation(z_min, z_max):
 #############################################################################################
 #############################################################################################
 
-def getVectorMeanOrientation():
-	[theta_mean, theta_var, phi_mean, phi_var] = getMeanOrientation(pM.z_ground, pM.h)
+def getVectorMeanOrientation(kind="half"):
+	[theta_mean, theta_var, phi_mean, phi_var] = getMeanOrientation(pM.z_ground, pM.h, kind)
 	X = []
 	Y = []
 	Z = []
@@ -176,6 +180,19 @@ def getVectorMeanOrientation():
 	Z.append(tmp[2])
 	C.append(0.5)
 	return [X, Y, Z, C]
+
+#############################################################################################
+#############################################################################################
+
+def getOrientationProfiles(dz, n_z):
+	zs = [(i+0.5)*dz for i in range(n_z)]
+	mean_theta = [0 for i in range(n_z)]
+	mean_phi = [0 for i in range(n_z)]
+	for i in range(n_z):
+		[t, t_var, p, p_var] = getMeanOrientation(pM.z_ground + i * dz, pM.z_ground + (i+1) * dz)
+		mean_theta[i] = t
+		mean_phi[i] = p
+	return [zs, mean_theta, mean_phi] 
 
 #############################################################################################
 #############################################################################################

@@ -57,6 +57,8 @@ class pPP:
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			"dirocc":r"Probability",
+			"atheta":r"$\theta (rad)$",
+			"aphi":r"$\phi$ (rad)",
 			}
 
 # 1D plot parameters
@@ -70,7 +72,8 @@ class pP1D:
 			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
 			"dirs":"getOrientationHist(5.0, 0.0)",
-			"mdirs":"getVectorMeanOrientation(0.0)",
+			"mdirs":"getVectorMeanOrientation()",
+			"ori":"getOrientationProfiles(pF.dz*50, int(pN.n_z/50))",
 			}
 	#-------------------#
 	# Post Processing
@@ -97,6 +100,9 @@ class pP1D:
 			"mdirx":"data['mdirs']["+rot_i+"][0]",
 			"mdiry":"data['mdirs']["+rot_i+"][1]",
 			"mdirz":"data['mdirs']["+rot_i+"][2]",
+			"z":"[z/d_ad for z in data['ori']["+rot_i+"][0]]",
+			"atheta":"data['ori']["+rot_i+"][1]",
+			"aphi":"data['ori']["+rot_i+"][2]",
 			},
 			{
 			# Adimentionalisation.
@@ -127,31 +133,18 @@ class pP1D:
 	# Plots
 	#-------------------#
 	alims = {
-			#"vx":[[], [4, 18]],
-			#"qsx":[[], [4, 18]],
-			#"phi":[[], [4, 18]],
-			#"qs":[[], []],
+			"atheta":[[-pi/2.0, pi/2.0], []],
+			"aphi":[[0.0, pi], []],
 			}
 	plots = {
-			#"vx":[["mean_vx"], ["z"]],
-			#"qsx":[["mean_qsx"], ["z"]],
-#			#"vfx":[["mean_vfx"], ["z"]],
-			#"phi":[["mean_phi"], ["z"]],
-			#"qs":[["time"], ["qs"]],
-#			"qf":[["time"], ["qf"]],
-#			"sh":[["time"], ["shields"]],
+			"atheta":[["atheta"], ["z"]],
+			"aphi":[["aphi"], ["z"]],
 			}
 	plotsT = {
-#			"vx":[["vx"], ["z"], 20.0],
-#			"vfx":[["vfx"], ["z"], 20.0],
 			}
 	plotsExtPath = {
-#			"Numerical data,\nMaurin et al. 2016":"num-data/DATAr2d6s2_Maurinetal2016.py"
 			}
 	plotsExt = {
-#			"vx":[["vx"], ["z"]],
-#			"phi":[["phi"], ["z"]],
-#			"qsx":[["qsx"], ["z"]],
 			}
 	alimsO = {
 			"dirs":[[-0.5, 1.5], [-1.0, 1.0], [-1.0, 1.0]],
