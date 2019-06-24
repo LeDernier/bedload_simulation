@@ -15,12 +15,12 @@ class pPP:
 	#-------------------#
 	# Plot Names
 	#-------------------#
-	show_figs = False
+	show_figs = True
 	#-------------------#
 	# Saving figures
 	#-------------------#
 	save_fig_dir = "/home/rmonthil/Documents/post_proc/"
-	save_figs = True
+	save_figs = False
 	#-------------------#
 	# Adimensionalisation
 	#-------------------#
@@ -62,7 +62,7 @@ class pPP:
 
 # 1D plot parameters
 class pP1D:
-	plot_enable = True
+	plot_enable = False
 	#-------------------#
 	# Measures
 	#-------------------#
@@ -154,10 +154,10 @@ class pP1D:
 			}
 
 class pP2D:
-	plot_enable = False
+	plot_enable = True
 	# Plot param
-	param = "pP.A"
-	param_name = "A"
+	param = "pM.l"
+	param_name = "l"
 	# Measuring 2D data in the 1D data
 	measures = {
 			"qs":"average(data['qs'], data['time'])",
