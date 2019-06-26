@@ -116,7 +116,7 @@ class pM:
 ### Param Save
 class pSave:
 	# Data will be saved all "yadeSavePeriod" simulation (virtual) time. Disable saving by setting it to 0.
-	yadeSavePeriod = 0.1 * 1.0/pM.shake_wait_f
+	yadeSavePeriod = 2.0
 	# Data will be saved as vtk (for Paraview for example) all "vtkRecorderIterPeriod" iterations. Disable saving by setting it to 0.
 	vtkRecorderIterPeriod = 0
 

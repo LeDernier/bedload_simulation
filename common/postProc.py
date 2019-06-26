@@ -429,7 +429,9 @@ if pP1D.plot_enable:
 		for key in figsT:
 			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf", bbox_inches="tight")
 		for key in figsO:
-			figsO[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"C.pdf", bbox_inches="tight")
+			for i in range(4):
+				axsO[key].view_init(i * 90.0 / 3.0, -90.0)
+				figsO[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:
