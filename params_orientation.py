@@ -57,8 +57,8 @@ class pPP:
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			"dirocc":r"Probability",
-			"atheta":r"$\theta (rad)$",
-			"aphi":r"$\phi$ (rad)",
+			"mtheta":r"$\theta (rad)$",
+			"mphi":r"$\phi (rad)$",
 			}
 
 # 1D plot parameters
@@ -73,7 +73,7 @@ class pP1D:
 			#"rots":"getEulerHist()",
 			"dirs":"getOrientationHist(5.0, 0.0)",
 			"mdirs":"getVectorMeanOrientation()",
-			"ori":"getOrientationProfiles(pF.dz*50, int(pN.n_z/50))",
+			"ori":"getOrientationProfiles(pF.dz*10, int(pN.n_z/10))",
 			}
 	#-------------------#
 	# Post Processing
@@ -101,8 +101,10 @@ class pP1D:
 			"mdiry":"data['mdirs']["+rot_i+"][1]",
 			"mdirz":"data['mdirs']["+rot_i+"][2]",
 			"z":"[z/d_ad for z in data['ori']["+rot_i+"][0]]",
-			"atheta":"data['ori']["+rot_i+"][1]",
-			"aphi":"data['ori']["+rot_i+"][2]",
+			"mtheta":"data['ori']["+rot_i+"][1]",
+			"vtheta":"[t/2.0 for t in data['ori']["+rot_i+"][2]]",
+			"mphi":"data['ori']["+rot_i+"][3]",
+			"vphi":"[p/2.0 for p in data['ori']["+rot_i+"][4]]",
 			},
 			{
 			# Adimentionalisation.
@@ -133,12 +135,12 @@ class pP1D:
 	# Plots
 	#-------------------#
 	alims = {
-			"atheta":[[-pi/2.0, pi/2.0], []],
-			"aphi":[[0.0, pi], []],
+			"mtheta":[[0.0, pi], []],
+			"mphi":[[-pi/2.0, pi/2.0], []],
 			}
 	plots = {
-			"atheta":[["atheta"], ["z"]],
-			"aphi":[["aphi"], ["z"]],
+			"mtheta":[["mtheta"], ["z"], ["vtheta", ""]],
+			"mphi":[["mphi"], ["z"], ["vphi", ""]],
 			}
 	plotsT = {
 			}

@@ -14,8 +14,6 @@ def frameworkCreation():
 
 	frCrea.defineMaterials()
 	frCrea.createPeriodicCell()
-#	frCrea.createWalls()
-#	frCrea.createGround()
 	frCrea.createRugosity()
 	frCrea.createParticles()
 	

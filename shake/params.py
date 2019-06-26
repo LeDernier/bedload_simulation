@@ -15,12 +15,28 @@ before changing them so that you do not need to define them all.
 
 import math
 
+def phi_max_A(A):
+	if A <= 1.5:
+		return 0.62
+	elif A <= 1.7:
+		return 0.615
+	elif A <= 1.9:
+		return 0.59
+	elif A <= 2.1:
+		return 0.57
+	elif A <= 2.3:
+		return 0.55
+	elif A <= 2.5:
+		return 0.535
+	else:
+		return 0.52
+
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 2.0
+	t_max = 250.0
 	### Number of cells of the mesh
-	n_z = 825
+	n_z = 900
 	### Verbose
 	verbose = True
 
@@ -63,27 +79,27 @@ class pP:
 	### Coefficient of restitution
 	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
-	phi_max = 0.61
+	phi_max = phi_max_A(A)
 	### Friction angle
-	mu = math.atan(0.4)
+	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
 	v = [Vector3(0,0,0)] * (pN.n_z - 1)
 	phi = [0] * (pN.n_z - 1)
 
 ### Macroscopic Parameters
 class pM: 
-	### Framework parameters
-	alpha = 0.0 
-	l = 20. * pP.dvs
-	w = 20. * pP.dvs
-	h = 200. * pP.dvs
-	z_ground = h/2.0
 	### Sediment height
 	hs = 10.0 * pP.dvs
+	### Framework parameters
+	alpha = 0.05 
+	l = 10 * pP.dvs
+	w = 10 * pP.dvs
+	h = 200.0 * pP.dvs
+	z_ground = h/2.0
 	### Number of Particles
 	n = pP.phi_max * l * w * hs / pP.vol
 	# Number of particles "layers"
-	n_l = n / (pP.phi_max * w * l * pP.S / pP.vol)
+	n_l = n / (pP.phi_max * l * w * pP.S / pP.vol)
 	### Gravity parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
@@ -92,14 +108,15 @@ class pM:
 	### Shake
 	shake_enable = True
 	shake_f = 50.0
-	shake_dt = 0.1/shake_f
+	shake_dt = 0.05/shake_f
 	shake_a = pP.dvs/2.0
+	shake_wait_f = 4.0 
 	shake_time = pN.t_max - 1.0
 
 ### Param Save
 class pSave:
 	# Data will be saved all "yadeSavePeriod" simulation (virtual) time. Disable saving by setting it to 0.
-	yadeSavePeriod = 0.1
+	yadeSavePeriod = 0.1 * 1.0/pM.shake_wait_f
 	# Data will be saved as vtk (for Paraview for example) all "vtkRecorderIterPeriod" iterations. Disable saving by setting it to 0.
 	vtkRecorderIterPeriod = 0
 
@@ -112,14 +129,15 @@ class pF:
 	solve_begin_time = 0.8
 	## Physics
 	rho = 0e3
-	nu = 0e-6
-	init_shields = 0.55
-	shields = 0.0 # Will be updated during the simulation. max(hydroEngine.ReynoldStresses)/((densPart-densFluidPY)*diameterPart*abs(gravityVector[2]))
+	nu = 1e-6
+	init_shields = 1.5
 	shields_d = pP.dvs
-	# Fluid heigth
 	h = 0.0
-	if pM.alpha != 0 and enable:
+	if pM.alpha != 0 and enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
+	# Turbulent model
+	turb_phi_max = pP.phi_max
+	## Numeric
 	dt = 1e-5
 	t = 1e-2
 	## Fluid mesh

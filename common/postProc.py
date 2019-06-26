@@ -235,10 +235,17 @@ def post_process(dr):
 		print(sep + "Ploting data.")
 		# Plots
 		for key in pP1D.plots:
+			errx = None
+			erry = None
+			if len(pP1D.plots[key]) > 2:
+				if pP1D.plots[key][2][0] != "":
+					errx = data[pP1D.plots[key][2][0]]
+				if pP1D.plots[key][2][1] != "":
+					erry = data[pP1D.plots[key][2][1]]
 			for x in pP1D.plots[key][0]:
 				me = int(max(1.0, pP1D.me * len(data[x])))
 				for y in pP1D.plots[key][1]:
-					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
+					axs[key].errorbar(data[x], data[y], xerr=errx, yerr=erry, color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP1D.mew, 
 							markersize=pP1D.ms, label=r"$"+name_param+"="+name_value+"$")
 		# PlotsT
@@ -374,6 +381,10 @@ if pP2D.plot_enable:
 		plt.figure()
 		plt.xlabel(pPP.plots_names[pP2D.plots[key][0][0]])
 		plt.ylabel(pPP.plots_names[pP2D.plots[key][1][0]])
+		if pP2D.alims[key][0]:
+			plt.xlim(pP2D.alims[key][0][0], pP2D.alims[key][0][1])
+		if pP2D.alims[key][1]:
+			plt.ylim(pP2D.alims[key][1][0], pP2D.alims[key][1][1])
 		# Plotting
 		batch_markers = pP2D.markers[:]
 		color_gradient(len(params), pP2D)

@@ -34,7 +34,7 @@ def phi_max_A(A):
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 1000.0
+	t_max = 400.0
 	### Number of cells of the mesh
 	n_z = 900
 	### Verbose
@@ -93,7 +93,7 @@ class pM:
 	### Framework parameters
 	alpha = 0.05 
 	l = 30 * pP.dvs
-	w = 30 * pP.dvs
+	w = l
 	h = 200.0 * pP.dvs
 	z_ground = h/2.0
 	### Number of Particles

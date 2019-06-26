@@ -163,16 +163,32 @@ def getVectorMeanOrientation(kind="half"):
 	Z.append(tmp[2])
 	C.append(1.0)
 	tmp = Vector3()
-	tmp[0] = sin(theta_mean + theta_var) * cos(phi_mean)
-	tmp[1] = sin(theta_mean + theta_var) * sin(phi_mean)
-	tmp[2] = cos(theta_mean + theta_var)
+	tmp[0] = sin(theta_mean + theta_var/2.0) * cos(phi_mean)
+	tmp[1] = sin(theta_mean + theta_var/2.0) * sin(phi_mean)
+	tmp[2] = cos(theta_mean + theta_var/2.0)
 	tmp = tmp.normalized()
 	X.append(tmp[0])
 	Y.append(tmp[1])
 	Z.append(tmp[2])
 	C.append(0.5)
-	tmp[0] = sin(theta_mean) * cos(phi_mean + phi_var)
-	tmp[1] = sin(theta_mean) * sin(phi_mean + phi_var)
+	tmp[0] = sin(theta_mean - theta_var/2.0) * cos(phi_mean)
+	tmp[1] = sin(theta_mean - theta_var/2.0) * sin(phi_mean)
+	tmp[2] = cos(theta_mean - theta_var/2.0)
+	tmp = tmp.normalized()
+	X.append(tmp[0])
+	Y.append(tmp[1])
+	Z.append(tmp[2])
+	C.append(0.5)
+	tmp[0] = sin(theta_mean) * cos(phi_mean + phi_var/2.0)
+	tmp[1] = sin(theta_mean) * sin(phi_mean + phi_var/2.0)
+	tmp[2] = cos(theta_mean)
+	tmp = tmp.normalized()
+	X.append(tmp[0])
+	Y.append(tmp[1])
+	Z.append(tmp[2])
+	C.append(0.5)
+	tmp[0] = sin(theta_mean) * cos(phi_mean - phi_var/2.0)
+	tmp[1] = sin(theta_mean) * sin(phi_mean - phi_var/2.0)
 	tmp[2] = cos(theta_mean)
 	tmp = tmp.normalized()
 	X.append(tmp[0])
@@ -187,12 +203,16 @@ def getVectorMeanOrientation(kind="half"):
 def getOrientationProfiles(dz, n_z):
 	zs = [(i+0.5)*dz for i in range(n_z)]
 	mean_theta = [0 for i in range(n_z)]
+	var_theta = [0 for i in range(n_z)]
 	mean_phi = [0 for i in range(n_z)]
+	var_phi = [0 for i in range(n_z)]
 	for i in range(n_z):
 		[t, t_var, p, p_var] = getMeanOrientation(pM.z_ground + i * dz, pM.z_ground + (i+1) * dz)
 		mean_theta[i] = t
+		var_theta[i] = t_var
 		mean_phi[i] = p
-	return [zs, mean_theta, mean_phi] 
+		var_phi[i] = p_var
+	return [zs, mean_theta, var_theta, mean_phi, var_phi] 
 
 #############################################################################################
 #############################################################################################

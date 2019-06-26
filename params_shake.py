@@ -1,7 +1,7 @@
 #-------------------#
 # Setting latex
 #-------------------#
-#plt.rc('text', usetex=True)
+plt.rc('text', usetex=True)
 #-------------------#
 # Setting Font
 #-------------------#
@@ -19,7 +19,7 @@ class pPP:
 	#-------------------#
 	# Saving figures
 	#-------------------#
-	save_fig_dir = "./post_proc/"
+	save_fig_dir = "/home/rmonthil/Documents/post_proc/"
 	save_figs = True
 	#-------------------#
 	# Adimensionalisation
@@ -30,14 +30,14 @@ class pPP:
 	# Mean operation 
 	#-------------------#
 	mean_begin_time = 50.0
-	mean_end_time = 300.0
+	mean_end_time = 500.0
 	#-------------------#
 	# Plot visuals
 	#-------------------#
 	r = [0.0, 0.5]
 	v = [0.5, 0.0]
 	b = [0.5, 0.0]
-	markers = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
+	markers = ["$\mathbf{H}$", "$\mathbf{G}$", "$\mathbf{F}$", "$\mathbf{E}$", "$\mathbf{D}$", "$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
 	me = 0.05 
 	mew = 0.3
 	ms = 7.0
@@ -118,9 +118,10 @@ class pP1D:
 	# Plots
 	#-------------------#
 	alims = {
-			"phi":[[], []],
-			"mean_z_phi":[[], [0.4, 0.65]],
-			"var_z_phi":[[], [0.0, 0.02]],
+#			"vx":[[], [4, 18]],
+#			"qsx":[[], [4, 18]],
+#			"phi":[[], [4, 18]],
+#			"qs":[[], []],
 			}
 	plots = {
 			#"vx":[["mean_vx"], ["z"]],
@@ -145,12 +146,11 @@ class pP1D:
 #			"phi":[["phi"], ["z"]],
 #			"qsx":[["qsx"], ["z"]],
 			}
-
 	alimsO = {
 			
 			}
 	orientations = {
-			"ori":[["mean_vx"], ["z"]],
+			#"ori":[["mean_vx"], ["z"]],
 			}
 
 class pP2D:
