@@ -115,9 +115,9 @@ class pyRuns:
 				mult = pF.display_mult
 			for i in range(pF.display_n):
 				z = pM.z_ground + i * dz
-				b = 1.0 - vx[i]/vmax
-				v = 0.5
-				r = 1.0 - b
+				b = vx[i]/vmax
+				v = b/2
+				r = 0.0
 				pyRuns.fluidDisplayIds.append(
 						frCrea.createBox(
 							center = (max(pM.l/100.0, vx[i] * mult/2.0), pM.w/2.0, z),

@@ -219,13 +219,13 @@ def post_process(dr):
 	
 	### Storing 2D data
 	if pP2D.plot_enable:
-		batch_val = eval(pP2D.param)
-		if not (batch_val in batch_data):
-			batch_data[batch_val] = {}
+		bval = eval(pP2D.param)
+		if not (bval in bdata):
+			bdata[bval] = {}
 			for key in pP2D.measures:
-				batch_data[batch_val][key] = []
+				bdata[bval][key] = []
 		for key in pP2D.measures:
-			batch_data[batch_val][key].append(eval(pP2D.measures[key]))
+			bdata[bval][key].append(eval(pP2D.measures[key]))
 	
 	### Ploting 1D data
 	if pP1D.plot_enable:
@@ -242,44 +242,47 @@ def post_process(dr):
 					errx = data[pP1D.plots[key][2][0]]
 				if pP1D.plots[key][2][1] != "":
 					erry = data[pP1D.plots[key][2][1]]
-			for x in pP1D.plots[key][0]:
+			for i in range(len(pP1D.plots[key][0])):
+				x = pP1D.plots[key][0][i]
+				y = pP1D.plots[key][1][i]
 				me = int(max(1.0, pP1D.me * len(data[x])))
-				for y in pP1D.plots[key][1]:
-					axs[key].errorbar(data[x], data[y], xerr=errx, yerr=erry, color=c, marker=m, markevery=me,
-							markerfacecolor=c, markeredgewidth=pP1D.mew, 
-							markersize=pP1D.ms, label=r"$"+name_param+"="+name_value+"$")
+				axs[key].errorbar(data[x], data[y], xerr=errx, yerr=erry, color=c, marker=m, markevery=me,
+						markerfacecolor=c, markeredgewidth=pP1D.mew, 
+						markersize=pP1D.ms, label=r"$"+name_param+"="+name_value+"$")
 		# PlotsT
 		for key in pP1D.plotsT:
 			space = pP1D.plotsT[key][2]
 			for i in range(len(data["time"])):
-				for x in pP1D.plotsT[key][0]:
+				for j in range(len(pP1D.plotsT[key][0])):
+					x = pP1D.plotsT[key][0][j]
+					y = pP1D.plotsT[key][1][j]
 					me = int(max(1.0, pP1D.me * len(data[x])))
-					for y in pP1D.plotsT[key][1]:
-						if i < 1:
-							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
-									markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
-									markersize=pP1D.ms/len(data["time"]), label=r"$"+name_param+"="+name_value+"$")
-						else:
-							axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
-									markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
-									markersize=pP1D.ms/len(data["time"]))
+					if i < 1:
+						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
+								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
+								markersize=pP1D.ms/len(data["time"]), label=r"$"+name_param+"="+name_value+"$")
+					else:
+						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
+								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
+								markersize=pP1D.ms/len(data["time"]))
 		# Orientations
 		for key in pP1D.orientations:
-			for xyz in pP1D.orientations[key][0]:
+			for j in range(len(pP1D.orientations[key][0])):
+				xyz = pP1D.orientations[key][0][j]
 				X = data[xyz[0]]
 				Y = data[xyz[1]]
 				Z = data[xyz[2]]
-				for C_name in pP1D.orientations[key][1]:
-					C = data[C_name]
-					for i in range(len(X)):
-						norm = min(Vector3(X[i], Y[i], Z[i]).norm(), 1.0)
-						axsO[key].quiver3D(X[i], Y[i], Z[i], X[i], Y[i], Z[i], 
-								colors=[(0, 0, 0, norm), (0, 0, 0, norm), (0, 0, 0, norm)], 
-								linewidth=2.0, length=norm)
-					tmp = axsO[key].scatter3D(X, Y, Z, c=C, s=[Vector3(X[j], Y[j], Z[j]).norm()*80.0 for j in range(len(C))], cmap="Greys")
-					if C_name in pPP.plots_names:
-						tmp = figsO[key].colorbar(tmp)
-						tmp.ax.set_ylabel(pPP.plots_names[C_name])
+				C_name = pP1D.orientations[key][1][j]
+				C = data[C_name]
+				for i in range(len(X)):
+					norm = min(Vector3(X[i], Y[i], Z[i]).norm(), 1.0)
+					axsO[key].quiver3D(X[i], Y[i], Z[i], X[i], Y[i], Z[i], 
+							colors=[(0, 0, 0, norm), (0, 0, 0, norm), (0, 0, 0, norm)], 
+							linewidth=2.0, length=norm)
+				tmp = axsO[key].scatter3D(X, Y, Z, c=C, s=[Vector3(X[j], Y[j], Z[j]).norm()*80.0 for j in range(len(C))], cmap="Greys")
+				if C_name in pPP.plots_names:
+					tmp = figsO[key].colorbar(tmp)
+					tmp.ax.set_ylabel(pPP.plots_names[C_name])
 
 def plot_external_data():
 	for ext_key in pP1D.plotsExtPath:
@@ -292,12 +295,13 @@ def plot_external_data():
 		execfile(path)
 		# Plots Ext
 		for key in pP1D.plotsExt:
-			for x in pP1D.plotsExt[key][0]:
+			for i in range(len(pP1D.plotsExt[key][0])):
+				x = pP1D.plotsExt[key][0][i]
+				y = pP1D.plotsExt[key][1][i]
 				me = int(max(1.0, pP1D.me * len(data[x])))
-				for y in pP1D.plotsExt[key][1]:
-					axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
-							markerfacecolor=c, markeredgewidth=pP1D.mew, 
-							markersize=pP1D.ms, label=ext_key)
+				axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
+						markerfacecolor=c, markeredgewidth=pP1D.mew, 
+						markersize=pP1D.ms, label=ext_key)
 #-------------------#
 # Creating 1D Figures
 #-------------------#
@@ -348,7 +352,7 @@ if pP1D.plot_enable:
 			axsO[key].set_zlim(pP1D.alimsO[key][2][0], pP1D.alimsO[key][2][1])
 
 # Declaring batch data storage
-batch_data = {}
+bdata = {}
 
 #-------------------#
 # Post Processing 1D
@@ -370,10 +374,15 @@ plot_external_data()
 # Post Processing 2D
 #-------------------#
 if pP2D.plot_enable:
+	### Post processing
+	for bval in bdata:
+		for p in pP2D.post_process:
+			for key in p:
+				bdata[bval][key] = eval(p[key])
 	### Sorting data
 	params = []
 	params_val = []
-	for p, v in batch_data.items():
+	for p, v in bdata.items():
 		params.append(p)
 		params_val.append(v)
 	params, params_val = zip(*sorted(zip(params, params_val)))
@@ -393,13 +402,22 @@ if pP2D.plot_enable:
 			v = params_val[i]
 			m = batch_markers.pop()
 			c = pP2D.colors.pop()
-			for x in pP2D.plots[key][0]:
+			for j in range(len(pP2D.plots[key][0])):
+				x = pP2D.plots[key][0][j]
+				y = pP2D.plots[key][1][j]
 				me = int(max(1.0, pP2D.me * len(v[x])))
-				for y in pP2D.plots[key][1]:
-					plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms, label=r"$"+pP2D.param_name+"="+str(p)+"$")
-					plt.legend(fancybox=True, framealpha=0.5, loc=0)
-					if pPP.save_figs:
-						plt.savefig(pPP.save_fig_dir+name_case+"_"+pP2D.param_name+"_"+key+".pdf", bbox_inches="tight")
+				lab = ""
+				if pP2D.param_name != "":
+					lab += r'$'+pP2D.param_name+"="+str(p)+"$"
+				if len(pP2D.plots[key]) > 2:
+					if lab != "":
+						lab += " "
+					lab += pP2D.plots[key][2][j]
+				
+				plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+				if pPP.save_figs:
+					plt.savefig(pPP.save_fig_dir+name_case+"_"+pP2D.param_name+"_"+key+".pdf", bbox_inches="tight")
 	
 	##### Creating rectangular patch to show averaging
 	#if pPP.mean_over_time_enable:

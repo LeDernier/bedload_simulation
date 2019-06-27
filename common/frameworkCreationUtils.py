@@ -94,7 +94,7 @@ class frCrea: # Framework Creation
 								z + random.uniform(-1,1) * randRangeZ
 								),
 							radius = pM.d_rug/2.0,
-							color = (0.0, 0.3, 0.0),
+							color = (0.0, 0.0, 0.0),
 							fixed = True,
 							material = 'mat',
 							wire = False
@@ -197,10 +197,10 @@ class frCrea: # Framework Creation
 		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
 		ds = kwargs.get('ds', [1.0e-6])
 		iter_vects = kwargs.get('iter_vects', [Vector3(ds[0], 0, 0)])
+		color = kwargs.get('color', [Vector3(0.5, 0.0, 0.0)])
 
 		# Sphere list
 		ss = []
-		col = (random.uniform(0.0, 0.5), random.uniform(0.0, 0.5), random.uniform(0.0, 0.5))
 		d_tot = sum(ds)
 		for iter_vect in iter_vects:
 			pos = center - d_tot/2.0 * iter_vect 
@@ -210,7 +210,7 @@ class frCrea: # Framework Creation
 						sphere(
 							center = pos,
 							radius = d/2.0, 
-							color = col,
+							color = color,
 							fixed = False,
 							material = 'mat'
 							)
@@ -226,7 +226,7 @@ class frCrea: # Framework Creation
 		return result
 
 	@staticmethod
-	def createParticles():
+	def createParticles(colors = [Vector3(0.0, 0.0, 0.0), Vector3(1.0, 0.0, 0.0)]):
 		"""Creates a simple clump cloud.
 		
 		"""
@@ -245,8 +245,9 @@ class frCrea: # Framework Creation
 			while x < pM.l/2.0 + cell_center[0] - d_eff/2.0 and n_i < pM.n:
 				y = -pM.w/2.0 + cell_center[1] + d_eff/2.0
 				while y < pM.w/2.0 + cell_center[1] - d_eff/2.0 and n_i < pM.n:
+					col = random.uniform(0.0, 1.0)
+					col = col * colors[0] + (1.0 - col) * colors[1]
 					if pP.kind == "sphere":
-						col = (random.uniform(0.0, 0.5), random.uniform(0.0, 0.5), random.uniform(0.0, 0.5))
 						O.bodies.append(
 							sphere(
 								center = Vector3(x, y, z),
@@ -261,6 +262,7 @@ class frCrea: # Framework Creation
 							center = Vector3(x, y, z),
 							ds = pP.ds,
 							iter_vects = iter_vects,
+							color = col
 							)
 					n_i += 1
 					#d_eff = frCrea.computeOutD(id_clump, ids_clumped)

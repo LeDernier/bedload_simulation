@@ -92,8 +92,8 @@ class pM:
 	hs = 12.0 * pP.dvs
 	### Framework parameters
 	alpha = 0.05 
-	l = 30 * pP.dvs
-	w = l
+	l = 10 * pP.dvs
+	w = 10 * pP.dvs
 	h = 200.0 * pP.dvs
 	z_ground = h/2.0
 	### Number of Particles
@@ -110,6 +110,7 @@ class pM:
 	shake_f = 20.0
 	shake_dt = 0.05/shake_f
 	shake_a = pP.dvs/2.0
+	shake_wait_f = 0.0
 	shake_time = 0.6
 
 ### Param Save
