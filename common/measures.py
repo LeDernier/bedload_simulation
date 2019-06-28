@@ -258,7 +258,7 @@ def getProfiles():
 		elif pF.method == "old":
 			for i in range(0, len(hydroEngine.vxPart)):
 				vxPart.append(hydroEngine.vxPart[i])
-		return [[i * pF.dz for i in range(pN.n_z)], hydroEngine.phiPart, vxPart, hydroEngine.vxFluid[0:-1]]
+		return [[i * pF.dz for i in range(pN.n_z)], hydroEngine.phiPart, vxPart, hydroEngine.vxFluid[0:-1], hydroEngine.ReynoldStresses]
 	else:
 		partsIds = []
 		for i in range(len(O.bodies)):
@@ -277,7 +277,7 @@ def getProfiles():
 		vxPart = []
 		for v in hydroEngineTmp.vPart:
 			vxPart.append(v[0])
-		return [[i * pF.dz for i in range(pN.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1]]
+		return [[i * pF.dz for i in range(pN.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1], hydroEngine.ReynoldStresses]
 
 #############################################################################################
 #############################################################################################
