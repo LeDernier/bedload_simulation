@@ -277,7 +277,7 @@ def getProfiles():
 		vxPart = []
 		for v in hydroEngineTmp.vPart:
 			vxPart.append(v[0])
-		return [[i * pF.dz for i in range(pN.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1], hydroEngine.ReynoldStresses]
+		return [[i * pF.dz for i in range(pN.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1], hydroEngineTmp.ReynoldStresses]
 
 #############################################################################################
 #############################################################################################

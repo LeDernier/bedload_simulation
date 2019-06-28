@@ -29,8 +29,8 @@ class pPP:
 	#-------------------#
 	# Mean operation 
 	#-------------------#
-	mean_begin_time = 200.0
-	mean_end_time = 1000.0
+	mean_begin_time = 10.0
+	mean_end_time = 50.0
 	#-------------------#
 	# Plot visuals
 	#-------------------#
@@ -54,22 +54,22 @@ class pPP:
 			"qs":r"${Q_s}$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
-			"sh":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			"mean_z_phi":r"$\phi_{max}$",
 			"var_z_phi":r"$\sigma_\phi$",
+			"alpha":r"$\alpha$",
 			}
 
 # 1D plot parameters
 class pP1D:
-	plot_enable = False
+	plot_enable = True
 	#-------------------#
 	# Measures
 	#-------------------#
 	measures = {
 			"profiles":"getProfiles()",
-			"shields":"getShields()",
+			#"shields":"getShields()",
 			#"rots":"getEulerHist()",
 			}
 	#-------------------#
@@ -83,7 +83,7 @@ class pP1D:
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
 			"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
-			"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
+			#"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
 			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
@@ -93,15 +93,15 @@ class pP1D:
 			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
 			"mean_phi":"data['mean_profiles'][1]",
 			"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
-			"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
+			#"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
 			},
 			{
 			# Flows
 			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
 			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
-			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz) for i in range(len(data['profiles']))]",
-			"mean_z_phi":"[np.mean(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)]) for i in range(len(data['profiles']))]",
-			"var_z_phi":"[sqrt(np.var(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)])) for i in range(len(data['profiles']))]",
+			#"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz) for i in range(len(data['profiles']))]",
+			#"mean_z_phi":"[np.mean(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)]) for i in range(len(data['profiles']))]",
+			#"var_z_phi":"[sqrt(np.var(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)])) for i in range(len(data['profiles']))]",
 			}
 			]
 	#-------------------#
@@ -127,13 +127,13 @@ class pP1D:
 	plots = {
 			"vx":[["mean_vx"], ["z"]],
 			"qsx":[["mean_qsx"], ["z"]],
-			"vfx":[["mean_vfx"], ["z"]],
+			#"vfx":[["mean_vfx"], ["z"]],
 			"phi":[["mean_phi"], ["z"]],
 			"qs":[["time"], ["qs"]],
-			"qf":[["time"], ["qf"]],
-			"sh":[["time"], ["shields"]],
-			"mean_z_phi":[["time"], ["mean_z_phi"]],
-			"var_z_phi":[["time"], ["var_z_phi"]],
+			#"qf":[["time"], ["qf"]],
+			#"sh":[["time"], ["shields"]],
+			#"mean_z_phi":[["time"], ["mean_z_phi"]],
+			#"var_z_phi":[["time"], ["var_z_phi"]],
 			}
 	plotsT = {
 #			"vx":[["vx"], ["z"], 20.0],
@@ -155,15 +155,15 @@ class pP1D:
 			}
 
 class pP2D:
-	plot_enable = True
+	plot_enable = False
 	# Plot param
 	param = "pP.A"
 	param_name = "A"
 	# Measuring 2D data in the 1D data
 	measures = {
-			"qs":"average(data['qs'], data['time'])",
-			"qf":"average(data['qf'], data['time'])",
-			"sh":"average(data['shields'], data['time'])",
+			#"qs":"average(data['qs'], data['time'])",
+			#"qf":"average(data['qf'], data['time'])",
+			#"sh":"average(data['shields'], data['time'])",
 			}
 	post_process = []
 	#-------------------#
@@ -180,11 +180,7 @@ class pP2D:
 	#-------------------#
 	# Plots
 	#-------------------#
-	alims = {
-			"qs(qf)":[[], []],
-			"qs(sh)":[[0, 1.0], [0, 0.04]],
-			}
 	plots = {
-			"qs(qf)":[["qf"], ["qs"]],
-			"qs(sh)":[["sh"], ["qs"]],
+			#"qs(qf)":[["qf"], ["qs"]],
+			#"qs(sh)":[["sh"], ["qs"]],
 			}

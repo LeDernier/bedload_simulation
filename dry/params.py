@@ -16,20 +16,14 @@ before changing them so that you do not need to define them all.
 import numpy as np
 import math
 
-m_A_1 = [1.0,  1.2,  1.4,  1.6,  1.8,  2.0,  2.2,  2.4,   2.6,  2.8,   3.0]
+m_A = [1.0,  1.2,  1.4,  1.6,  1.8,  2.0,  2.2,  2.4,   2.6,  2.8,   3.0]
 m_phi = [0.61, 0.61, 0.62, 0.61, 0.60, 0.58, 0.56, 0.545, 0.54, 0.535, 0.54]
-phi_max_A = np.polynomial.polynomial.Polynomial(np.polynomial.polynomial.polyfit(m_A_1, m_phi, 3))
-
-m_A_2 =       [1.0,   1.4,   1.8,   2.2,   2.6,   3.0]
-m_alpha =   [0.375, 0.445, 0.545, 0.595, 0.595, 0.595]
-m_mu =      [tan(0.375), tan(0.445), tan(0.545), tan(0.595), tan(0.595), tan(0.595)]
-alpha_A = np.polynomial.polynomial.Polynomial(np.polynomial.polynomial.polyfit(m_A_2, m_alpha, 3))
-mu_A = np.polynomial.polynomial.Polynomial(np.polynomial.polynomial.polyfit(m_A_2, m_mu, 3))
+phi_max_A = np.polynomial.polynomial.Polynomial(np.polynomial.polynomial.polyfit(m_A, m_phi, 3))
 
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 400.0
+	t_max = 50.0
 	### Number of cells of the mesh
 	n_z = 900
 	### Verbose
@@ -101,11 +95,11 @@ class pM:
 	### Ground Rugosity
 	d_rug = pP.S
 	### Shake
-	shake_enable = True
+	shake_enable = False
 	shake_f = 20.0
 	shake_dt = 0.05/shake_f
 	shake_a = pP.dvs/2.0
-	shake_wait_f = 19.0
+	shake_wait_f = 0.0
 	shake_time = 0.6
 
 ### Param Save
@@ -117,8 +111,8 @@ class pSave:
 
 ### Param Fluid
 class pF: 
-	enable = True
-	solve = True
+	enable = False
+	solve = False
 	# Can be "old" or "new"
 	method = "new"
 	solve_begin_time = 0.8

@@ -29,8 +29,8 @@ class pPP:
 	#-------------------#
 	# Mean operation 
 	#-------------------#
-	mean_begin_time = 50.0
-	mean_end_time = 500.0
+	mean_begin_time = 200.0
+	mean_end_time = 1000.0
 	#-------------------#
 	# Plot visuals
 	#-------------------#
@@ -164,6 +164,7 @@ class pP2D:
 			"qf":"average(data['qf'], data['time'])",
 			"sh":"average(data['shields'], data['time'])",
 			}
+	post_process = []
 	#-------------------#
 	# Plot visuals
 	#-------------------#
