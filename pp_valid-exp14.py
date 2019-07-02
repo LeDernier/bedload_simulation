@@ -30,7 +30,7 @@ class pPP:
 	# Mean operation 
 	#-------------------#
 	mean_begin_time = 50.0
-	mean_end_time = 300.0
+	mean_end_time = 100.0
 	#-------------------#
 	# Plot visuals
 	#-------------------#
@@ -47,14 +47,10 @@ class pPP:
 	plots_names = {
 			"mean_phi":r"$\bar{\phi}$",
 			"mean_vx":r"$\bar{U^p_x}$",
-			"vx":r"${U^p_x}^* = \frac{U^p_x}{\sqrt{(\rho_s/\rho_f - 1) g"+d_ad_name+"}}$",
-			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
-			"vfx":r"${U^f_x}^* = \frac{U^p_x}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
+			"vx":r"${U^p_x}$",
 			"mean_qsx":r"$\bar{Q_s}$",
-			"qs":r"${Q_s}$",
-			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
-			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
+			"z":r"$z^* =  \frac{z}{d}$",
 			"time":r"$t$ (s)",
 			}
 
@@ -62,43 +58,25 @@ class pPP:
 class pP1D:
 	plot_enable = True
 	#-------------------#
-	# Measures
-	#-------------------#
-	measures = {
-			"profiles":"getProfiles()",
-			"shields":"getShields()",
-			#"rots":"getEulerHist()",
-			}
-	#-------------------#
 	# Post Processing
 	#-------------------#
-	# Time is dealt seperately but data['time'] can be accessed from here.
-	# Dictionaries are not sorted so it is an array of dictionaries.
-	# An element of the array can use all the previous elements results. 
 	post_process = [
 			{
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
-			#"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
 			"vx":"[l[2] for l in data['profiles']]",
-#			"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
-			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
 			},
 			{
 			# Adimentionalisation.
-			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
+			"z":"[z/pP.S for z in data['mean_profiles'][0]]",
 			"mean_phi":"data['mean_profiles'][1]",
-#			"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
 			"mean_vx":"data['mean_profiles'][2]", 
-#			"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
 			},
 			{
 			# Flows
 			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
-			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
-#			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pN.dz) for i in range(len(data['profiles']))]",
 			}
 			]
 	#-------------------#
@@ -116,36 +94,25 @@ class pP1D:
 	# Plots
 	#-------------------#
 	alims = {
-			"vx":[[], [4, 18]],
-			"qsx":[[], [4, 18]],
-			"phi":[[], [4, 18]],
-			"qs":[[], []],
+			"vx":[[], [4, 9]],
+			"qsx":[[], [4, 9]],
+			"phi":[[], [4, 9]],
 			}
 	plots = {
 			"vx":[["mean_vx"], ["z"]],
 			"qsx":[["mean_qsx"], ["z"]],
-#			"vfx":[["mean_vfx"], ["z"]],
 			"phi":[["mean_phi"], ["z"]],
-			"qs":[["time"], ["qs"]],
-#			"qf":[["time"], ["qf"]],
-#			"sh":[["time"], ["shields"]],
 			}
 	plotsT = {
-#			"vx":[["vx"], ["z"], 20.0],
-#			"vfx":[["vfx"], ["z"], 20.0],
 			}
 	plotsExtPath = {
-#			"Numerical data,\nMaurin et al. 2016":"num-data/DATAr2d6s2_Maurinetal2016.py"
+			"Experimental data: 14,\nFrey et al. 2014":"./exp-data/Frey2014_EXP14.py"
 			}
 	plotsExt = {
-#			"vx":[["vx"], ["z"]],
-#			"phi":[["phi"], ["z"]],
-#			"qsx":[["qsx"], ["z"]],
+			"vx":[["vx"], ["z"]],
+			"qsx":[["qsx"], ["z"]],
+			"phi":[["phi"], ["z"]],
 			}
-
-	#contours = {
-	#		"ori":[["mean_vx"], ["z"]],
-	#		}
 
 class pP2D:
 	plot_enable = False
@@ -154,9 +121,6 @@ class pP2D:
 	param_name = "A"
 	# Measuring 2D data in the 1D data
 	measures = {
-			"qs":"average(data['qs'], data['time'])",
-			"qf":"average(data['qf'], data['time'])",
-			"sh":"average(data['shields'], data['time'])",
 			}
 	#-------------------#
 	# Plot visuals
@@ -173,6 +137,4 @@ class pP2D:
 	# Plots
 	#-------------------#
 	plots = {
-			"qs(qf)":[["qf"], ["qs"]],
-			"qs(sh)":[["sh"], ["qs"]],
 			}

@@ -29,15 +29,15 @@ class pPP:
 	#-------------------#
 	# Mean operation 
 	#-------------------#
-	mean_begin_time = 50.0
-	mean_end_time = 100.0
+	mean_begin_time = 200.0
+	mean_end_time = 1000.0
 	#-------------------#
 	# Plot visuals
 	#-------------------#
 	r = [0.0, 0.5]
 	v = [0.5, 0.0]
 	b = [0.5, 0.0]
-	markers = ["$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
+	markers = ["$\mathbf{H}$", "$\mathbf{G}$", "$\mathbf{F}$", "$\mathbf{E}$", "$\mathbf{D}$", "$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
 	me = 0.05 
 	mew = 0.3
 	ms = 7.0
@@ -46,59 +46,54 @@ class pPP:
 	#-------------------#
 	plots_names = {
 			"mean_phi":r"$\bar{\phi}$",
-			"mean_vx":r"$\bar{U^p_x}$",
+			"mean_vx":r"$\bar{U^p_x}^* = \frac{\bar{U^p_x}}{\sqrt{(\rho_s/\rho_f - 1) g "+d_ad_name+"}}$",
 			"vx":r"${U^p_x}^* = \frac{U^p_x}{\sqrt{(\rho_s/\rho_f - 1) g"+d_ad_name+"}}$",
-			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
-			"vfx":r"${U^f_x}^* = \frac{U^p_x}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
-			"mean_qsx":r"$\bar{Q_s}$",
-			"qs":r"${Q_s}$",
+			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^f_x}}{\sqrt{(\rho_s/\rho_f - 1) g "+d_ad_name+"}}$",
+			"vfx":r"${U^f_x}^* = \frac{U^p_x}{\sqrt{(\rho_s/\rho_f - 1) g "+d_ad_name+"}}$",
+			"mean_qsx":r"$\bar{Q_s}^*$",
+			"qs":r"${Q_s}^*$",
 			"qf":r"${Q_f}^*$",
 			"shields":r"$\theta$",
+			"sh":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
+			"mean_z_phi":r"$\phi_{max}$",
+			"var_z_phi":r"$\sigma_\phi$",
 			}
+	# Plot params
+	name_case = "shape"
+	param = "pP.A"
+	name_param = "A"
 
 # 1D plot parameters
 class pP1D:
-	plot_enable = True
-	#-------------------#
-	# Measures
-	#-------------------#
-	measures = {
-			"profiles":"getProfiles()",
-			"shields":"getShields()",
-			#"rots":"getEulerHist()",
-			}
+	plot_enable = False
 	#-------------------#
 	# Post Processing
 	#-------------------#
-	# Time is dealt seperately but data['time'] can be accessed from here.
-	# Dictionaries are not sorted so it is an array of dictionaries.
-	# An element of the array can use all the previous elements results. 
 	post_process = [
 			{
 			# Exporting profiles
 			"phi":"[l[1] for l in data['profiles']]",
-			#"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
-			"vx":"[l[2] for l in data['profiles']]",
-#			"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
+			"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
+			"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
 			# Averaging
 			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
-			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
 			},
 			{
 			# Adimentionalisation.
 			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
 			"mean_phi":"data['mean_profiles'][1]",
-#			"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
-			"mean_vx":"data['mean_profiles'][2]", 
-#			"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
+			"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
+			"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
 			},
 			{
 			# Flows
 			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
 			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
-#			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pN.dz) for i in range(len(data['profiles']))]",
+			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz) for i in range(len(data['profiles']))]",
+			"mean_z_phi":"[np.mean(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)]) for i in range(len(data['profiles']))]",
+			"var_z_phi":"[sqrt(np.var(data['phi'][i][int(pM.hs/pF.dz*0.25):int(pM.hs/pF.dz*0.75)])) for i in range(len(data['profiles']))]",
 			}
 			]
 	#-------------------#
@@ -116,46 +111,29 @@ class pP1D:
 	# Plots
 	#-------------------#
 	alims = {
-			"vx":[[], [4, 9]],
-			"qsx":[[], [4, 9]],
-			"phi":[[], [4, 9]],
-			"qs":[[], []],
 			}
 	plots = {
-			"vx":[["mean_vx"], ["z"]],
-			"qsx":[["mean_qsx"], ["z"]],
-#			"vfx":[["mean_vfx"], ["z"]],
-			"phi":[["mean_phi"], ["z"]],
-			"qs":[["time"], ["qs"]],
-#			"qf":[["time"], ["qf"]],
-#			"sh":[["time"], ["shields"]],
 			}
 	plotsT = {
-#			"vx":[["vx"], ["z"], 20.0],
-#			"vfx":[["vfx"], ["z"], 20.0],
 			}
-	plotsExtPath = {"Experimental data: 20,\nFrey et al. 2014":"./exp-data/Frey2014_EXP20.py"}
+	plotsExtPath = {
+			}
 	plotsExt = {
-			"vx":[["vx"], ["z"]],
-			"phi":[["phi"], ["z"]],
-			"qsx":[["qsx"], ["z"]],
 			}
-
-	#contours = {
-	#		"ori":[["mean_vx"], ["z"]],
-	#		}
+	alimsO = {
+			}
+	orientations = {
+			}
 
 class pP2D:
-	plot_enable = False
-	# Plot param
-	param = "pP.A"
-	param_name = "A"
+	plot_enable = True
 	# Measuring 2D data in the 1D data
 	measures = {
 			"qs":"average(data['qs'], data['time'])",
 			"qf":"average(data['qf'], data['time'])",
 			"sh":"average(data['shields'], data['time'])",
 			}
+	post_process = []
 	#-------------------#
 	# Plot visuals
 	#-------------------#
@@ -170,7 +148,11 @@ class pP2D:
 	#-------------------#
 	# Plots
 	#-------------------#
+	alims = {
+			#"qs(qf)":[[], []],
+			"qs(sh)":[[], []],
+			}
 	plots = {
-			"qs(qf)":[["qf"], ["qs"]],
+			#"qs(qf)":[["qf"], ["qs"]],
 			"qs(sh)":[["sh"], ["qs"]],
 			}

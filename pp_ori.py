@@ -45,53 +45,27 @@ class pPP:
 	# Plot Names
 	#-------------------#
 	plots_names = {
-			"mean_phi":r"$\bar{\phi}$",
-			"mean_vx":r"$\bar{U^p_x}$",
-			"vx":r"${U^p_x}^* = \frac{U^p_x}{\sqrt{(\rho_s/\rho_f - 1) g"+d_ad_name+"}}$",
-			"mean_vfx":r"$\bar{U^f_x}^* = \frac{\bar{U^p_x}}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
-			"vfx":r"${U^f_x}^* = \frac{U^p_x}{(\rho_s/\rho_f - 1) \sqrt{g"+d_ad_name+"}}$",
-			"mean_qsx":r"$\bar{Q_s}$",
-			"qs":r"${Q_s}$",
-			"qf":r"${Q_f}^*$",
-			"shields":r"$\theta$",
 			"z":r"$z^* =  \frac{z}{"+d_ad_name+"}$",
 			"time":r"$t$ (s)",
 			"dirocc":r"Probability",
 			"mtheta":r"$\theta (rad)$",
 			"mphi":r"$\phi (rad)$",
 			}
+	# Plot params
+	name_case = "ori"
+	param = "pP.A"
+	name_param = "A"
 
 # 1D plot parameters
 class pP1D:
 	plot_enable = True
 	#-------------------#
-	# Measures
-	#-------------------#
-	measures = {
-			#"profiles":"getProfiles()",
-			#"shields":"getShields()",
-			#"rots":"getEulerHist()",
-			"dirs":"getOrientationHist(5.0, 0.0)",
-			"mdirs":"getVectorMeanOrientation()",
-			"ori":"getOrientationProfiles(pF.dz*10, int(pN.n_z/10))",
-			}
-	#-------------------#
 	# Post Processing
 	#-------------------#
-	# Time is dealt seperately but data['time'] can be accessed from here.
-	# Dictionaries are not sorted so it is an array of dictionaries.
-	# An element of the array can use all the previous elements results. 
 	rot_i = "-1"
 	#rot_i = "0"
 	post_process = [
 			{
-			# Exporting profiles
-			#"phi":"[l[1] for l in data['profiles']]",
-			#"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
-			#"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
-			# Averaging
-			#"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
-			#"mean_rots":"average_profile(data['rots'], data['time'], True)",
 			"dirocc":"data['dirs']["+rot_i+"][3]",
 			"dirx":"data['dirs']["+rot_i+"][0]",
 			"diry":"data['dirs']["+rot_i+"][1]",
@@ -105,19 +79,6 @@ class pP1D:
 			"vtheta":"[t/2.0 for t in data['ori']["+rot_i+"][2]]",
 			"mphi":"data['ori']["+rot_i+"][3]",
 			"vphi":"[p/2.0 for p in data['ori']["+rot_i+"][4]]",
-			},
-			{
-			# Adimentionalisation.
-			#"z":"[z/d_ad for z in data['mean_profiles'][0]]",
-			#"mean_phi":"data['mean_profiles'][1]",
-			#"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
-			#"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
-			},
-			{
-			# Flows
-			#"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
-			#"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
-			#"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pN.dz) for i in range(len(data['profiles']))]",
 			}
 			]
 	#-------------------#
@@ -159,14 +120,8 @@ class pP1D:
 
 class pP2D:
 	plot_enable = False
-	# Plot param
-	param = "pP.A"
-	param_name = "A"
 	# Measuring 2D data in the 1D data
 	measures = {
-			"qs":"average(data['qs'], data['time'])",
-			"qf":"average(data['qf'], data['time'])",
-			"sh":"average(data['shields'], data['time'])",
 			}
 	#-------------------#
 	# Plot visuals
@@ -183,6 +138,4 @@ class pP2D:
 	# Plots
 	#-------------------#
 	plots = {
-			"qs(qf)":[["qf"], ["qs"]],
-			"qs(sh)":[["sh"], ["qs"]],
 			}

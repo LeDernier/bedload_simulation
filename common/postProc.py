@@ -1,5 +1,6 @@
 import os
 import sys
+import pickle
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -15,21 +16,6 @@ sep = "---------------------- "
 # Variables
 #-------------------#
 d_ad = 0
-
-#-------------------#
-# Getting names
-#-------------------#
-name_list = sys.argv[1]
-name_list = name_list.split("_")
-name_case = name_list[0]
-for s in name_list[1:-2]:
-	name_case += "-" + s
-if len(name_list) > 2:
-	name_param = name_list[-2]
-	name_value = name_list[-1]
-else:
-	name_param = ""
-	name_value = ""
 
 #-------------------#
 # Defining utils
@@ -105,7 +91,7 @@ def average_phi_u_profile(qT, t):
 	for k in range(len(q[2])):
 		if q[1][k] > 0:
 			q[2][k] /= q[1][k]
-	q[2] = [v/(i - i_deb) for v in q[2]]
+	q[3] = [v/(i - i_deb) for v in q[3]]
 	
 	return q
 
@@ -173,58 +159,25 @@ color_gradient(len(sys.argv) + len(pP1D.plotsExtPath) - 1, pP1D)
 execfile("common/simulationPyRunners.py")
 execfile("common/measures.py")
 
-def read_ids(dr):
-	print(sep + "Reading ids.")
-	f = open(dr + '/.ids','r')
-	ids = eval(f.read())
-	f.close()
-	return ids
-
-def read_data(dr):
-	print(sep + "Loading data.")
-	stime = []
-	data = {}
-	for key in pP1D.measures:
-		data[key] = []
-	for f in os.listdir(dr+"/data"):
-		print("Loading file: "+dr+"/data/" + f)
-		### Loading data.
-		O.load(dr+"/data/" + f)
-		### Getting time.
-		stime.append(O.time)
-		### Measure data.
-		for key in pP1D.measures: 
-			data[key].append(eval(pP1D.measures[key]))
-	return stime, data
-
-def sort_data(stime, data):
-	print(sep + "Sorting data.")
-	for key in data:
-		sstime, data[key] = zip(*sorted(zip(stime, data[key])))
-	return sstime, data
-
 def post_process(dr):
 	# Update name_value
-	name_value = dr.split("_")[-1]
+	name_value = str(eval(pPP.param))
 
-	ids = read_ids(dr)
-	stime, data = read_data(dr)
-	stime, data = sort_data(stime, data)
-	# Adding time to data
-	data["time"] = stime
 	# Post Processing
 	for p in pP1D.post_process:
 		for key in p:
+			print(p[key])
 			data[key] = eval(p[key])
 	
 	### Storing 2D data
 	if pP2D.plot_enable:
-		bval = eval(pP2D.param)
+		bval = eval(pPP.param)
 		if not (bval in bdata):
 			bdata[bval] = {}
 			for key in pP2D.measures:
 				bdata[bval][key] = []
 		for key in pP2D.measures:
+			print(pP2D.measures[key])
 			bdata[bval][key].append(eval(pP2D.measures[key]))
 	
 	### Ploting 1D data
@@ -248,7 +201,7 @@ def post_process(dr):
 				me = int(max(1.0, pP1D.me * len(data[x])))
 				axs[key].errorbar(data[x], data[y], xerr=errx, yerr=erry, color=c, marker=m, markevery=me,
 						markerfacecolor=c, markeredgewidth=pP1D.mew, 
-						markersize=pP1D.ms, label=r"$"+name_param+"="+name_value+"$")
+						markersize=pP1D.ms, label=r"$"+pPP.name_param+"="+name_value+"$")
 		# PlotsT
 		for key in pP1D.plotsT:
 			space = pP1D.plotsT[key][2]
@@ -260,7 +213,7 @@ def post_process(dr):
 					if i < 1:
 						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
 								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
-								markersize=pP1D.ms/len(data["time"]), label=r"$"+name_param+"="+name_value+"$")
+								markersize=pP1D.ms/len(data["time"]), label=r"$"+pPP.name_param+"="+name_value+"$")
 					else:
 						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
 								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
@@ -363,6 +316,9 @@ for dr in sys.argv[1:]:
 	execfile("params.py")
 	os.chdir("..")
 	d_ad = eval(pPP.d_ad)
+	with open(dr+'/data.pkl', 'rb') as f:
+		data = pickle.load(f)
+	print(sep + "Post processing 1D.")
 	post_process(dr)
 
 #-------------------#
@@ -374,10 +330,12 @@ plot_external_data()
 # Post Processing 2D
 #-------------------#
 if pP2D.plot_enable:
+	print(sep + "Post processing 2D, Plotting and Saving.")
 	### Post processing
 	for bval in bdata:
 		for p in pP2D.post_process:
 			for key in p:
+				print(p[key])
 				bdata[bval][key] = eval(p[key])
 	### Sorting data
 	params = []
@@ -407,8 +365,8 @@ if pP2D.plot_enable:
 				y = pP2D.plots[key][1][j]
 				me = int(max(1.0, pP2D.me * len(v[x])))
 				lab = ""
-				if pP2D.param_name != "":
-					lab += r'$'+pP2D.param_name+"="+str(p)+"$"
+				if pPP.name_param != "":
+					lab += r'$'+pPP.name_param+"="+str(p)+"$"
 				if len(pP2D.plots[key]) > 2:
 					if lab != "":
 						lab += " "
@@ -417,7 +375,7 @@ if pP2D.plot_enable:
 				plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 				if pPP.save_figs:
-					plt.savefig(pPP.save_fig_dir+name_case+"_"+pP2D.param_name+"_"+key+".pdf", bbox_inches="tight")
+					plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
 	
 	##### Creating rectangular patch to show averaging
 	#if pPP.mean_over_time_enable:
@@ -434,6 +392,13 @@ if pP1D.plot_enable:
 		axs[key].legend(fancybox=True, framealpha=0.5, loc=0)
 	for key in axsT:
 		axsT[key].legend(fancybox=True, framealpha=0.5, loc=0)
+	
+	## Adding Patchs
+	for key in pP1D.patchs:
+		p = pP1D.patchs[key]
+		rect = plt.Rectangle(eval(p['pos']), eval(p['w']), eval(p['h']), facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
+		axs[key].add_patch(rect)
+		print("Patch : "+key)
 
 	### Converting xlabel with radian writing
 	#axs["rotx"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["rotx"].get_xticks()])
@@ -442,14 +407,15 @@ if pP1D.plot_enable:
 	
 	### Saving figures
 	if pPP.save_figs:
+		print(sep + "Saving figures.")
 		for key in figs:
-			figs[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+".pdf", bbox_inches="tight")
+			figs[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
 		for key in figsT:
-			figsT[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+"T.pdf", bbox_inches="tight")
+			figsT[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+"T.pdf", bbox_inches="tight")
 		for key in figsO:
 			for i in range(4):
 				axsO[key].view_init(i * 90.0 / 3.0, -90.0)
-				figsO[key].savefig(pPP.save_fig_dir+name_case+"_"+name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
+				figsO[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:

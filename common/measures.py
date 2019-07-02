@@ -50,7 +50,7 @@ def getShields():
 	
 	"""
 	if pF.enable:
-		return max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * eval(pPP.d_ad) * abs(pM.g[2])) # pF.shields_d * abs(pM.g[2]))
+		return max(hydroEngine.ReynoldStresses)/((pP.rho-pF.rho) * pP.dvs * abs(pM.g[2]))
 	else:
 		return 0
 
