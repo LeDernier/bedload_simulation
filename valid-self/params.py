@@ -29,9 +29,9 @@ mu_A = np.polynomial.polynomial.Polynomial(np.polynomial.polynomial.polyfit(m_A_
 ### Numerical Parameters
 class pN:
 	### Time of the simulation 
-	t_max = 100.0
+	t_max = 400.0
 	### Number of cells of the mesh
-	n_z = 301
+	n_z = 900
 	### Verbose
 	verbose = True
 
@@ -74,9 +74,9 @@ class pP:
 	### Coefficient of restitution
 	c_r = 0.5
 	### Maximum volume fraction (value set after some simulations) 
-	phi_max = 0.51
+	phi_max = phi_max_A(A)
 	### Friction angle
-	mu = math.atan(0.4)
+	mu = math.atan(0.5)
 	### Initial particle velocity and volume fraction that are given to the HydroEngine
 	v = [Vector3(0,0,0)] * (pN.n_z - 1)
 	phi = [0] * (pN.n_z - 1)
@@ -84,25 +84,24 @@ class pP:
 ### Macroscopic Parameters
 class pM: 
 	### Sediment height
-	hs = 7.37 * pP.dvs
+	hs = 12.0 * pP.dvs
 	### Framework parameters
-	alpha = 0.1 
-	l = 1000. * pP.dvs
-	w = 6.5/6. * pP.dvs
-	h = 5.0 * 5.7e-2
+	alpha = 0.05 
+	l = 10 * pP.dvs
+	w = 10 * pP.dvs
+	h = 200.0 * pP.dvs
 	z_ground = h/2.0
 	### Number of Particles
-	#n = pP.phi_max * l * w * hs / pP.vol
-	n = l/pP.dvs * hs/pP.dvs
+	n = pP.phi_max * l * w * hs / pP.vol
 	# Number of particles "layers"
-	n_l = n / (pP.phi_max * w * l * pP.S / pP.vol)
+	n_l = n / (pP.phi_max * l * w * pP.S / pP.vol)
 	### Gravity parameters
 	g_scale = 9.81
 	g = Vector3(g_scale * math.sin(alpha), 0, -g_scale * math.cos(alpha))
 	### Ground Rugosity
 	d_rug = pP.S
 	### Shake
-	shake_enable = False
+	shake_enable = True
 	shake_f = 20.0
 	shake_dt = 0.05/shake_f
 	shake_a = pP.dvs/2.0
@@ -127,13 +126,13 @@ class pF:
 	## Physics
 	rho = 1e3
 	nu = 1e-6
-	init_shields = 0.55
+	init_shields = 0.5
 	shields_d = pP.dvs
-	h = 5.7e-2 - pM.hs
-	#if pM.alpha != 0:
-	#	h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
+	h = 0.0
+	if pM.alpha != 0 and enable and rho != 0:
+		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	# Turbulent model
-	turbulence_model_type = 3
+	turbulence_model_type = 2
 	turb_phi_max = pP.phi_max
 	## Numeric
 	dt = 1e-5
@@ -151,13 +150,13 @@ class pF:
 	display_n = 100
 	display_mult = 0
 	# Mostly useless parameters
-	enable_wall_friction = True
-	enable_fluctuations = True
+	enable_wall_friction = False
+	enable_fluctuations = False
 	t_fluct = 1e-1
 
 if pN.verbose:
 	print("\n")
-	
+
 	print("INFO: A : " +  str(pP.A))
 	print("INFO: phi_max(A) : " +  str(pP.phi_max))
 

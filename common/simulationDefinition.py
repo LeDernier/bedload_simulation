@@ -36,6 +36,8 @@ class sim: # Simulation
 			hydroEngine.ids = partsIds
 			hydroEngine.ReynoldStresses = np.ones(pN.n_z) * 0.0
 			hydroEngine.turbulentFluctuation()
+			if pF.method == "new":
+				hydroEngine.newInit()
 
 	####---------------####
 	#### Engines Def 
@@ -138,7 +140,8 @@ class sim: # Simulation
 						gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
 						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
 						phiPart = pP.phi, vxFluid = pF.vx, vPart = pP.v, ids = [],
-						phiMax = pF.turb_phi_max, 
+						phiMax = pF.turb_phi_max, ilm = pF.turbulence_model_type, 
+						enablePolyAverage = pF.enable_poly_average, 
 						fluidWallFriction = pF.enable_wall_friction,
 						dead = True, label = 'hydroEngine')
 					)
@@ -150,7 +153,7 @@ class sim: # Simulation
 						lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
 						radiusPart = pP.S/2.0, phiPart = pP.phi, 
 						vxFluid = pF.vx, vxPart = [0.0] * (pN.n_z-1), ids = [],
-						phiMax = pF.phi_max, 
+						phiMax = pF.turb_phi_max, 
 						fluidWallFriction = pF.enable_wall_friction,
 						dead = True, label = 'hydroEngine')
 					)

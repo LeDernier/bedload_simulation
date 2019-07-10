@@ -58,6 +58,8 @@ class pPP:
 			"time":r"$t$ (s)",
 			"mean_z_phi":r"$\phi_{max}$",
 			"var_z_phi":r"$\sigma_\phi$",
+			"lm":r"${l_{m}}^* = \frac{l_{m}}{"+d_ad_name+"}$",
+			"mean_lm":r"${\bar{l_{m}}}^* = \frac{\bar{l_{m}}}{"+d_ad_name+"}$",
 			}
 	# Plot params
 	name_case = "shape"
@@ -71,33 +73,32 @@ class pP1D:
 	# Variable Utils
 	#-------------------#
 	z_av_min = "pM.hs*0.1"
-	z_av_max = "pM.hs*0.5"
+	z_av_max = "pM.hs*0.4"
 	#-------------------#
 	# Post Processing
 	#-------------------#
 	post_process = [
 			{
-			# Exporting profiles
-			"phi":"[l[1] for l in data['profiles']]",
-			"vx":"[adim(l[2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
-			"vfx":"[adim(l[3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['profiles']]",
-			# Averaging
-			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
+			# Adimentionalisation.
+			"z":"[i * pF.dz/d_ad for i in range(pN.n_z)]",
+			"vx":"[adim(l, sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['vx']]",
+			"vfx":"[adim(l, sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad)) for l in data['vfx']]",
+			"lm":"[adim(l, d_ad) for l in data['lm']]",
 			},
 			{
-			# Adimentionalisation.
-			"z":"[z/d_ad for z in data['mean_profiles'][0]]",
-			"mean_phi":"data['mean_profiles'][1]",
-			"mean_vx":"adim(data['mean_profiles'][2], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))", 
-			"mean_vfx":"adim(data['mean_profiles'][3], sqrt((pP.rho/pF.rho - 1.0) * -pM.g[2] * d_ad))",
+			# Averaging.
+			"mean_phi":"average_profile(data['phi'], data['time'])",
+			"mean_vx":"ponderate_average_profile(data['phi'], data['vx'], data['time'])", 
+			"mean_vfx":"average_profile(data['vfx'], data['time'])",
+			"mean_lm":"average_profile(data['lm'], data['time'])",
 			},
 			{
 			# Flows
 			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
-			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
-			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz) for i in range(len(data['profiles']))]",
-			"mean_z_phi":"[np.mean(data['phi'][i][int("+z_av_min+"/pF.dz):int("+z_av_max+"/pF.dz)]) for i in range(len(data['profiles']))]",
-			"var_z_phi":"[sqrt(np.var(data['phi'][i][int("+z_av_min+"/pF.dz):int("+z_av_max+"/pF.dz)])) for i in range(len(data['profiles']))]",
+			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz/d_ad) for i in range(len(data['time']))]",
+			"qf":"[integration([1.0 - p for p in data['phi'][i]], data['vfx'][i], pF.dz/d_ad) for i in range(len(data['time']))]",
+			"mean_z_phi":"[np.mean(data['phi'][i][int("+z_av_min+"/pF.dz):int("+z_av_max+"/pF.dz)]) for i in range(len(data['time']))]",
+			"var_z_phi":"[sqrt(np.var(data['phi'][i][int("+z_av_min+"/pF.dz):int("+z_av_max+"/pF.dz)])) for i in range(len(data['time']))]",
 			}
 			]
 	#-------------------#
@@ -128,6 +129,7 @@ class pP1D:
 			"qs":[["time"], ["qs"]],
 			"qf":[["time"], ["qf"]],
 			"sh":[["time"], ["shields"]],
+			"lm":[["mean_lm"], ["z"]],
 			"mean_z_phi":[["time"], ["mean_z_phi"]],
 			"var_z_phi":[["time"], ["var_z_phi"]],
 			}
@@ -144,8 +146,14 @@ class pP1D:
 	orientations = {
 			}
 	patchs = {
-			"qs":{"pos":"(pPP.mean_begin_time, 0.0)", "w":"pPP.mean_end_time - pPP.mean_begin_time", "h":"10"},
-			"phi":{"pos":"(0.0, "+z_av_min+"/d_ad)", "w":"1.0", "h":"("+z_av_max+"-"+z_av_min+")/d_ad"},
+			"qs":{"pos":"(pPP.mean_begin_time, -500)", "w":"pPP.mean_end_time - pPP.mean_begin_time", "h":"1000"},
+			"qf":{"pos":"(pPP.mean_begin_time, -500)", "w":"pPP.mean_end_time - pPP.mean_begin_time", "h":"1000"},
+			"mean_z_phi":{"pos":"(pPP.mean_begin_time, -500)", "w":"pPP.mean_end_time - pPP.mean_begin_time", "h":"1000"},
+			"var_z_phi":{"pos":"(pPP.mean_begin_time, -500)", "w":"pPP.mean_end_time - pPP.mean_begin_time", "h":"1000"},
+			"sh":{"pos":"(pPP.mean_begin_time, 0.0)", "w":"pPP.mean_end_time - pPP.mean_begin_time", "h":"1000"},
+			"phi":{"pos":"(-500, "+z_av_min+"/d_ad)", "w":"1000", "h":"("+z_av_max+"-"+z_av_min+")/d_ad"},
+			"vx":{"pos":"(-500, "+z_av_min+"/d_ad)", "w":"1000", "h":"("+z_av_max+"-"+z_av_min+")/d_ad"},
+			"qsx":{"pos":"(-500, "+z_av_min+"/d_ad)", "w":"1000", "h":"("+z_av_max+"-"+z_av_min+")/d_ad"},
 			}
 
 class pP2D:

@@ -69,22 +69,14 @@ class pP1D:
 	#-------------------#
 	post_process = [
 			{
-			# Exporting profiles
-			"phi":"[l[1] for l in data['profiles']]",
-			"vx":"[l[2] for l in data['profiles']]",
 			# Averaging
-			"mean_profiles":"average_phi_u_profile(data['profiles'], data['time'])",
-			},
-			{
-			# Adimentionalisation.
-			"z":"[z for z in data['mean_profiles'][0]]",
-			"mean_phi":"data['mean_profiles'][1]",
-			"mean_vx":"data['mean_profiles'][2]", 
+			"mean_vx":"ponderate_average_profile(data['phi'], data['vx'], data['time'])",
+			"mean_phi":"average_profile(data['profiles'], data['time'])",
 			},
 			{
 			# Flows
 			"mean_qsx":"[data['mean_phi'][i] * data['mean_vx'][i] for i in range(len(data['mean_phi']))]",
-			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['profiles']))]",
+			"qs":"[integration(data['phi'][i], data['vx'][i], pF.dz) for i in range(len(data['time']))]",
 			}
 			]
 	#-------------------#

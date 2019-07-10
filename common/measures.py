@@ -10,40 +10,9 @@
 
 import numpy as np
 
-#############################################################################################
-#############################################################################################
-           
-def getMeanPos():
-	"""Returns the current mean position value of the dynamic objects as a Vector3
-	
-	"""
-	vect = Vector3(0,0,0)
-	n=0.0
-	for body in O.bodies :
-		if body.dynamic == True and not body.isClump:
-			vect += body.state.pos
-			n+=1.0
-	vect /= n
-	return vect
-
-#############################################################################################
-#############################################################################################
-
-def getMeanVel():
-	"""Returns the current mean velocity value of the dynamic objects as a Vector3
-	
-	"""
-	vect = Vector3(0,0,0)
-	n=0.0
-	for body in O.bodies :
-		if body.dynamic == True and not body.isClump:
-			vect += body.state.vel
-			n+=1.0
-	vect /= n
-	return vect
-
-#############################################################################################
-#############################################################################################
+# --------------------------------- #
+# Shields
+# --------------------------------- #
 
 def getShields():
 	"""Returns the current shields number.
@@ -54,26 +23,9 @@ def getShields():
 	else:
 		return 0
 
-#############################################################################################
-#############################################################################################
-
-def getEulerHist():
-	rotx = []
-	roty = []
-	rotz = []
-	for body in O.bodies :
-		if body.dynamic == True and body.isClump:
-			rot = body.state.rot()
-			#rotx.append(rot[0])
-			roty.append(rot[1] + 0.375 * pi)
-			rotz.append(rot[2] - 0.25 * pi)
-			#rotz.append(math.fmod(2*math.pi + rot[2], 2*math.pi))
-	binsNb = 20
-	rots, y, z = np.histogram2d(roty, rotz, bins=binsNb, normed=False)
-	return [rots, y, z]
-
-#############################################################################################
-#############################################################################################
+# --------------------------------- #
+# Orientation
+# --------------------------------- #
 
 def cart2sph(x,y,z):
 	XsqPlusYsq = x**2 + y**2
@@ -118,15 +70,12 @@ def getOrientationHist(binsNb=3, kind="half"):
 			C.append(n)
 	return [X, Y, Z, C]
 
-#############################################################################################
-#############################################################################################
-
-def getMeanOrientation(z_min, z_max, kind="half"):
+def getMeanOrientation(kind="half"):
 	rs = []
 	thetas = []
 	phis = []
 	for body in O.bodies :
-		if body.dynamic == True and body.isClump and body.state.pos[2] < z_max and body.state.pos[2] > z_min:
+		if body.dynamic == True and body.isClump:
 			u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
 			if kind != "full":
 				if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
@@ -144,11 +93,8 @@ def getMeanOrientation(z_min, z_max, kind="half"):
 	phi_var = sqrt(np.array(phis).var())
 	return [theta_mean, theta_var, phi_mean, phi_var]
 
-#############################################################################################
-#############################################################################################
-
 def getVectorMeanOrientation(kind="half"):
-	[theta_mean, theta_var, phi_mean, phi_var] = getMeanOrientation(pM.z_ground, pM.h, kind)
+	[theta_mean, theta_var, phi_mean, phi_var] = getMeanOrientation(kind)
 	X = []
 	Y = []
 	Z = []
@@ -197,57 +143,64 @@ def getVectorMeanOrientation(kind="half"):
 	C.append(0.5)
 	return [X, Y, Z, C]
 
-#############################################################################################
-#############################################################################################
-
-def getOrientationProfiles(dz, n_z):
+def getOrientationProfiles(z_ground, dz, n_z, kind="half"):
 	zs = [(i+0.5)*dz for i in range(n_z)]
+	thetas = [[] for i in range(n_z)]
+	phis = [[] for i in range(n_z)]
 	mean_theta = [0 for i in range(n_z)]
 	var_theta = [0 for i in range(n_z)]
 	mean_phi = [0 for i in range(n_z)]
 	var_phi = [0 for i in range(n_z)]
+	
+	for body in O.bodies:
+		if body.dynamic == True and body.isClump:
+			i_pos = int((body.state.pos[2] - z_ground)/dz)
+			if i_pos > pN.n_z and i_pos > 0:
+				u = (O.bodies[body.id - 1].state.pos - O.bodies[body.id - 3].state.pos).normalized()
+				if kind != "full":
+					if u.dot(Vector3(1.0, 0.0, 0.0)) < 0.0:
+						u = -u
+					if kind == "quart":
+						if u[1] > 0.0:
+							u[1] = -u[1]
+				r, theta, phi = cart2sph(u[0], u[1], u[2])
+				thetas[i_pos].append(theta)
+				phis[i_pos].append(phi)
+	
 	for i in range(n_z):
-		[t, t_var, p, p_var] = getMeanOrientation(pM.z_ground + i * dz, pM.z_ground + (i+1) * dz)
-		mean_theta[i] = t
-		var_theta[i] = t_var
-		mean_phi[i] = p
-		var_phi[i] = p_var
+		mean_theta[i] = np.array(thetas[i]).mean()
+		var_theta[i] = sqrt(np.array(thetas[i]).var())
+		mean_phi[i] = np.array(phis[i]).mean()
+		var_phi[i] = sqrt(np.array(phis[i]).var())
+
 	return [zs, mean_theta, var_theta, mean_phi, var_phi] 
 
-#############################################################################################
-#############################################################################################
+# --------------------------------- #
+# Get profiles utils.
+# --------------------------------- #
 
-def getOldProfiles():
-	dz = h/float(n_z)
-	zs = [dz * i for i in range(n_z)]
-	phi = [0 for i in range(n_z)]
-	vpx = [0 for i in range(n_z)]
-	for body in O.bodies :
-		if body.dynamic == True and not body.isClump:
-			z = body.state.pos[2]
-			r = body.shape.radius
-			z_min = z - r
-			z_max = z + r
-			n_min = int(z_min*n_z/h)
-			n_max = int(z_max*n_z/h)
-			vel = body.state.vel
-			for i in range(n_min, n_max+1):
-				z_inf = max(zs[i], z_min) - z
-				z_sup = min(zs[i+1], z_max) - z
-				vol = math.pi * pow(r, 2) * ((z_sup - z_inf) + (pow(z_inf,3) - pow(z_sup, 3))/(3*pow(r, 2)))
-				phi[i] += vol
-				vpx[i] += vol * vel[0]
-	for i in range(n_z):
-		if(phi[i] > 0):
-			vpx[i] /= phi[i]
-			phi[i] /= dz * l * w
-	return [zs, phi, vpx] 
+def getDryProfile(prop):
+	"""Should be removed at the end.
+	
+	"""
+	partsIds = []
+	for i in range(len(O.bodies)):
+		b = O.bodies[i]
+		if not b.isClump:
+			partsIds.append(i)
+	hydroEngineTmp = HydroForceEngine(
+			densFluid = pF.rho, viscoDyn = pF.nu * pF.rho, zRef = pM.z_ground, 
+			gravity = pM.g, deltaZ = pF.dz, expoRZ = pF.expoDrag, 
+			lift = False, nCell = pN.n_z, vCell = pM.l * pM.w * pF.dz, 
+			phiPart = pP.phi, vxFluid = pF.vx, vPart = pP.v, 
+			ids = partsIds, label = 'hydroEngine', dead = True)
+	hydroEngineTmp.ReynoldStresses = np.ones(pN.n_z) * 0.0
+	hydroEngineTmp.turbulentFluctuation()
+	hydroEngineTmp.newAverageProfile()
+	return eval("hydroEngineTmp."+prop)
 
-#############################################################################################
-#############################################################################################
-
-def getProfiles():
-	"""Returns the current mean velocity value of the dynamic objects as a Vector3
+def getVxPartProfile():
+	"""Get the average velocity profile.
 	
 	"""
 	if(pF.enable):
@@ -258,7 +211,7 @@ def getProfiles():
 		elif pF.method == "old":
 			for i in range(0, len(hydroEngine.vxPart)):
 				vxPart.append(hydroEngine.vxPart[i])
-		return [[i * pF.dz for i in range(pN.n_z)], hydroEngine.phiPart, vxPart, hydroEngine.vxFluid[0:-1], hydroEngine.ReynoldStresses]
+		return vxPart
 	else:
 		partsIds = []
 		for i in range(len(O.bodies)):
@@ -277,10 +230,7 @@ def getProfiles():
 		vxPart = []
 		for v in hydroEngineTmp.vPart:
 			vxPart.append(v[0])
-		return [[i * pF.dz for i in range(pN.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1], hydroEngineTmp.ReynoldStresses]
-
-#############################################################################################
-#############################################################################################
+		return vxPart
 
 def getInertialProfile():
 	"""Returns the current mean velocity value of the dynamic objects as a Vector3
@@ -328,83 +278,33 @@ def getInertialProfile():
 			vxPart.append(v[0])
 		return [[i * pF.dz for i in range(pM.n_z)], hydroEngineTmp.phiPart, vxPart, hydroEngineTmp.vxFluid[0:-1]]
 
-#############################################################################################
-#############################################################################################
+# --------------------------------- #
+# Get Old profile : Should be useless.
+# --------------------------------- #
 
-def getMaxVel():
-	"""Returns the current max velocity value of the dynamic objects as a Vector3
-	
-	"""
-	maxVel = Vector3(0,0,0)
+def getOldProfiles():
+	dz = h/float(n_z)
+	zs = [dz * i for i in range(n_z)]
+	phi = [0 for i in range(n_z)]
+	vpx = [0 for i in range(n_z)]
 	for body in O.bodies :
-		if body.dynamic == True and not body.isClump and body.state.vel.norm > maxVel.norm:
-			maxVel = body.state.vel
-	return maxVel
+		if body.dynamic == True and not body.isClump:
+			z = body.state.pos[2]
+			r = body.shape.radius
+			z_min = z - r
+			z_max = z + r
+			n_min = int(z_min*n_z/h)
+			n_max = int(z_max*n_z/h)
+			vel = body.state.vel
+			for i in range(n_min, n_max+1):
+				z_inf = max(zs[i], z_min) - z
+				z_sup = min(zs[i+1], z_max) - z
+				vol = math.pi * pow(r, 2) * ((z_sup - z_inf) + (pow(z_inf,3) - pow(z_sup, 3))/(3*pow(r, 2)))
+				phi[i] += vol
+				vpx[i] += vol * vel[0]
+	for i in range(n_z):
+		if(phi[i] > 0):
+			vpx[i] /= phi[i]
+			phi[i] /= dz * l * w
+	return [zs, phi, vpx] 
 
-#############################################################################################
-#############################################################################################
-
-def _getMaxPos(i):
-	"""Returns the current max of th i component of the position of the dynamic objects as a float
-	
-	"""
-	max_i = None
-	for body in O.bodies :
-		if max_i == None or (body.dynamic == True and not body.isClump and body.state.pos[i] > max_i):
-			max_i = body.state.pos[i]
-	return max_i
-
-#############################################################################################
-#############################################################################################
-
-def getMaxX():
-	"""Returns the current max x position value of the dynamic objects as a float
-	
-	"""
-	return _getMaxPos(0)
-
-#############################################################################################
-#############################################################################################
-
-def getMaxY():
-	"""Returns the current max y position value of the dynamic objects as a float
-	
-	"""
-	return _getMaxPos(1)
-
-#############################################################################################
-#############################################################################################
-
-def getMaxZ():
-	"""Returns the current max y position value of the dynamic objects as a float
-	
-	"""
-	return _getMaxPos(2)
-
-#############################################################################################
-#############################################################################################
-
-def getObjPos(idObject):
-	"""Returns the total current applied force on an object
-	
-	Parameter:
-	- idObject -- The id of the object
-	
-	"""
-	return O.bodies[idObject].state.pos
-
-#############################################################################################
-#############################################################################################
-
-def getObjForce(idObject):
-	"""Returns the total current applied force on an object
-	
-	Parameter:
-	- idObject -- The id of the object
-	
-	"""
-	vect = Vector3(0,0,0)
-	for intr in O.bodies[idObject].intrs():
-		vect += intr.phys.normalForce
-		vect += intr.phys.shearForce
-	return vect

@@ -51,56 +51,11 @@ def average(qT, t):
 	q /= (i - i_deb)
 	return q
 
-def average_phi_u_profile(qT, t):
-	""" Average qT profiles over time.
-
-	Parameters:
-	- qT : Contains all the profiles. : List of lists.
-	qT[k][0] corresponds to z.
-	qT[k][1] corresponds to phi.
-	qT[k][2] corresponds to vxPart.
-	qT[k][3] corresponds to vxf.
-	"""
-	n_time = len(t) - 1
-	# Finding the first value to take into account.
-	i_deb = 0
-	while i_deb < len(t) and t[i_deb] < pPP.mean_begin_time:
-		i_deb += 1
-	if i_deb > n_time - 1:
-		print('WARNING average_profile: End of simulation before start of averaging.')
-		print('WARNING average_profile: Taking only last profile.')
-		i_deb = n_time - 1
-	# Initialisation
-	q = []
-	q.append(qT[i_deb][0])
-	q.append([0] * len(qT[i_deb][1]))
-	q.append([0] * len(qT[i_deb][2]))
-	q.append([0] * len(qT[i_deb][3]))
-	# Averaging
-	i = i_deb
-	while i < n_time + 1 and t[i] < pPP.mean_end_time:
-		for k in range(len(q[1])):
-			q[1][k] += qT[i][1][k]
-		for k in range(len(q[2])):
-			q[2][k] += qT[i][1][k] * qT[i][2][k]
-		for k in range(len(q[3])):
-			q[3][k] += qT[i][3][k]
-		i += 1
-	
-	q[1] = [v/(i - i_deb) for v in q[1]]
-	for k in range(len(q[2])):
-		if q[1][k] > 0:
-			q[2][k] /= q[1][k]
-	q[3] = [v/(i - i_deb) for v in q[3]]
-	
-	return q
-
 def average_profile(qT, t, n=False):
 	""" Average qT profiles over time.
 
 	Parameters:
-	- qT : Contains all the profiles. : List of lists.
-	qT[k][0] should correspond to the abscissa.
+	- qT : Contains all the profiles in the time. : List of lists of floats.
 	- n : Enable normalise (for histograms) : bool
 	"""
 	n_time = len(t) - 1
@@ -113,23 +68,51 @@ def average_profile(qT, t, n=False):
 		print('WARNING average_profile: Taking only last profile.')
 		i_deb = n_time - 1
 	# Initialisation
-	q = []
-	for l in qT[i_deb]:
-		q.append(l[:])
+	q = qT[i_deb][:]
 	# Averaging
 	i = i_deb + 1
 	while i < n_time + 1 and t[i] < pPP.mean_end_time:
-		for j in range(1, len(q)):
-			for k in range(len(q[j])):
-				q[j][k] += qT[i][j][k]
+		for j in range(0, len(q)):
+			q[j] += qT[i][j]
 		i += 1
 	if n:
-		for j in range(1, len(q)):
-			summ = sum(q[j])
-			q[j] = [v/summ for v in q[j]]
+		summ = sum(q)
+		q = [v/summ for v in q]
 	else:
-		for j in range(1, len(q)):
-			q[j] = [v/(i - i_deb) for v in q[j]]
+		q = [v/(i - i_deb) for v in q]
+	return q
+
+def ponderate_average_profile(pT, qT, t):
+	""" Average qT profiles over time.
+
+	Parameters:
+	- qT : Contains all the profiles in the time. : List of lists of floats.
+	- n : Enable normalise (for histograms) : bool
+	"""
+	n_time = len(t) - 1
+	# Finding the first value to take into account.
+	i_deb = 0
+	while i_deb < len(t) and t[i_deb] < pPP.mean_begin_time:
+		i_deb += 1
+	if i_deb > n_time - 1:
+		print('WARNING average_profile: End of simulation before start of averaging.')
+		print('WARNING average_profile: Taking only last profile.')
+		i_deb = n_time - 1
+	# Initialisation
+	q = qT[i_deb][:]
+	p = pT[i_deb][:]
+	# Averaging
+	i = i_deb + 1
+	while i < n_time + 1 and t[i] < pPP.mean_end_time:
+		for j in range(0, len(q)):
+			q[j] += pT[i][j] * qT[i][j]
+			p[j] += pT[i][j]
+		i += 1
+	
+	for j in range(len(q)):
+		if p[j] > 0.0:
+			q[j] /= p[j]
+	
 	return q
 
 def adim(q, star):
@@ -376,15 +359,6 @@ if pP2D.plot_enable:
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 				if pPP.save_figs:
 					plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
-	
-	##### Creating rectangular patch to show averaging
-	#if pPP.mean_over_time_enable:
-	#	rect = plt.Rectangle((pPP.mean_begin_time, 0.0), pPP.mean_end_time - pPP.mean_begin_time, 1000, facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
-	#	axs["qs"].add_patch(rect)
-	#	rect2 = plt.Rectangle((pPP.mean_begin_time, 0.0), pPP.mean_end_time - pPP.mean_begin_time, 1000, facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
-	#	axs["sh"].add_patch(rect2)
-	#	rect3 = plt.Rectangle((pPP.mean_begin_time, 0.0), pPP.mean_end_time - pPP.mean_begin_time, 1000, facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
-	#	axs["qf"].add_patch(rect3)
 
 if pP1D.plot_enable:
 	## Adding legends
@@ -398,7 +372,6 @@ if pP1D.plot_enable:
 		p = pP1D.patchs[key]
 		rect = plt.Rectangle(eval(p['pos']), eval(p['w']), eval(p['h']), facecolor='w', edgecolor='k', hatch='/', alpha=0.3)
 		axs[key].add_patch(rect)
-		print("Patch : "+key)
 
 	### Converting xlabel with radian writing
 	#axs["rotx"].set_xticklabels([r"$" + format(r/np.pi, ".2g")+ r"\pi$" for r in axs["rotx"].get_xticks()])
@@ -407,7 +380,7 @@ if pP1D.plot_enable:
 	
 	### Saving figures
 	if pPP.save_figs:
-		print(sep + "Saving figures.")
+		print(bigSep + "Saving figures.")
 		for key in figs:
 			figs[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
 		for key in figsT:
