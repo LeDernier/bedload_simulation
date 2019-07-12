@@ -403,7 +403,7 @@ if pP2D.plot_enable:
 				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 				if pPP.save_figs:
-					plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
+					plt.savefig(pPP.save_fig_dir+pPP.name_case+"-loglog"+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
 
 if pP1D.plot_enable:
 	## Adding legends
@@ -433,7 +433,7 @@ if pP1D.plot_enable:
 		for key in figsO:
 			for i in range(4):
 				axsO[key].view_init(i * 90.0 / 3.0, -90.0)
-				figsO[key].savefig(pPP.save_fig_dir+pPP.name_case+"-loglog"+"_"+pPP.name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
+				figsO[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:
