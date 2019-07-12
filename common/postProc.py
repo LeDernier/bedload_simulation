@@ -1,6 +1,7 @@
 import os
 import sys
 import pickle
+import csv
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -228,7 +229,19 @@ def plot_external_data():
 		c = pP1D.colors.pop()
 		# Getting data
 		data = {}
-		execfile(path)
+		# Getting the extension
+		ext = path.split(".")[-1]
+		if ext == "py":
+			execfile(path)
+		elif ext == "csv":
+			with open(path) as f:
+				dialect = csv.Sniffer().sniff(f.read(1024), delimiters=';')
+				f.seek(0)
+				reader = csv.DictReader(f, dialect=dialect)
+				data = {key:[] for key in reader.fieldnames}
+				for row in reader:
+					for key in reader.fieldnames:
+						data[key].append(float(row[key].replace(",", ".")))
 		# Plots Ext
 		for key in pP1D.plotsExt:
 			for i in range(len(pP1D.plotsExt[key][0])):

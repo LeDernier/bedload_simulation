@@ -38,9 +38,9 @@ class pPP:
 	v = [0.5, 0.0]
 	b = [0.5, 0.0]
 	markers = ["$\mathbf{H}$", "$\mathbf{G}$", "$\mathbf{F}$", "$\mathbf{E}$", "$\mathbf{D}$", "$\mathbf{C}$", "$\mathbf{B}$", "$\mathbf{A}$", "d", "*", "s", "v", "o"]
-	me = 0.05 
+	me = 0.01 
 	mew = 0.3
-	ms = 7.0
+	ms = 5.0
 	#-------------------#
 	# Plot Names
 	#-------------------#
@@ -62,9 +62,9 @@ class pPP:
 			"mean_lm":r"${\bar{l_{m}}}^* = \frac{\bar{l_{m}}}{"+d_ad_name+"}$",
 			}
 	# Plot params
-	name_case = "shape"
-	param = "pP.A"
-	name_param = "A"
+	name_case = "valid-self"
+	param = "pF.tubulence_model_type"
+	name_param = "model"
 
 # 1D plot parameters
 class pP1D:
