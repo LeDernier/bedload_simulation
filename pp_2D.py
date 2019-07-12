@@ -137,7 +137,16 @@ class pP2D:
 			"qf":"average(data['qf'], data['time'])",
 			"sh":"average(data['shields'], data['time'])",
 			}
-	post_process = []
+	post_process = [
+			{
+			},
+			]
+	add = [
+			{
+			"sh":"bdata[bdata.keys()[0]]['sh']",
+			"theta3/2":"[s**(3.0/2.0) for s in badata['sh']]"
+			},
+			]
 	#-------------------#
 	# Plot visuals
 	#-------------------#
@@ -160,4 +169,7 @@ class pP2D:
 			}
 	loglogs = {
 			"qs(sh)":[["sh"], ["qs"]],
+			}
+	plot_adds = {
+			"qs(sh)":[["sh"], ["theta3/2"], [r"$\theta^{\frac{3}{2}}$"]],
 			}

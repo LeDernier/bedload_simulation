@@ -302,6 +302,7 @@ if pP1D.plot_enable:
 
 # Declaring batch data storage
 bdata = {}
+badata = {}
 
 #-------------------#
 # Post Processing 1D
@@ -333,6 +334,11 @@ if pP2D.plot_enable:
 			for key in p:
 				print(p[key])
 				bdata[bval][key] = eval(p[key])
+	### Additional data
+	for p in pP2D.add:
+		for key in p:
+			print(p[key])
+			badata[key] = eval(p[key])
 	### Sorting data
 	params = []
 	params_val = []
@@ -350,7 +356,8 @@ if pP2D.plot_enable:
 			plt.ylim(pP2D.alims[key][1][0], pP2D.alims[key][1][1])
 		# Plotting
 		batch_markers = pP2D.markers[:]
-		color_gradient(len(params), pP2D)
+		color_gradient(len(params) + len(pP2D.plot_adds.keys()), pP2D)
+		# Normal plots
 		for i in range(len(params)):
 			p = params[i]
 			v = params_val[i]
@@ -370,8 +377,28 @@ if pP2D.plot_enable:
 				
 				plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
-				if pPP.save_figs:
-					plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
+		
+		if (key in pP2D.plot_adds):
+			# Additional data plots
+			m = batch_markers.pop()
+			c = pP2D.colors.pop()
+			for j in range(len(pP2D.plot_adds[key][0])):
+				x = pP2D.plot_adds[key][0][j]
+				y = pP2D.plot_adds[key][1][j]
+				me = int(max(1.0, pP2D.me * len(v[x])))
+				lab = ""
+				if len(pP2D.plot_adds[key]) > 2:
+					if lab != "":
+						lab += " "
+					lab += pP2D.plot_adds[key][2][j]
+				
+				plt.plot(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+
+		# Saving figure
+		if pPP.save_figs:
+			plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
+	
 	for key in pP2D.loglogs:
 		plt.figure()
 		plt.xlabel(pPP.plots_names[pP2D.loglogs[key][0][0]])
@@ -382,7 +409,8 @@ if pP2D.plot_enable:
 			plt.ylim(pP2D.alims[key][1][0], pP2D.alims[key][1][1])
 		# Plotting
 		batch_markers = pP2D.markers[:]
-		color_gradient(len(params), pP2D)
+		color_gradient(len(params) + len(pP2D.plot_adds.keys()), pP2D)
+		# Normal plots
 		for i in range(len(params)):
 			p = params[i]
 			v = params_val[i]
@@ -402,8 +430,27 @@ if pP2D.plot_enable:
 				
 				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
-				if pPP.save_figs:
-					plt.savefig(pPP.save_fig_dir+pPP.name_case+"-loglog"+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
+		
+		if (key in pP2D.plot_adds):
+			# Additional data plots
+			m = batch_markers.pop()
+			c = pP2D.colors.pop()
+			for j in range(len(pP2D.plot_adds[key][0])):
+				x = pP2D.plot_adds[key][0][j]
+				y = pP2D.plot_adds[key][1][j]
+				me = int(max(1.0, pP2D.me * len(v[x])))
+				lab = ""
+				if len(pP2D.plot_adds[key]) > 2:
+					if lab != "":
+						lab += " "
+					lab += pP2D.plot_adds[key][2][j]
+				
+				plt.loglog(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+
+		# Saving figure
+		if pPP.save_figs:
+			plt.savefig(pPP.save_fig_dir+pPP.name_case+"-loglog"+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
 
 if pP1D.plot_enable:
 	## Adding legends
