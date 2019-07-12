@@ -132,8 +132,10 @@ class pF:
 	if pM.alpha != 0 and enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	# Turbulent model
-	turbulence_model_type = 2
+	turbulence_model_type = 5
 	turb_phi_max = pP.phi_max
+	phi_bed = 0.08
+	nb_average_over_time = 10
 	## Numeric
 	dt = 1e-5
 	t = 1e-2
