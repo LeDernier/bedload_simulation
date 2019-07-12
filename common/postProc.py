@@ -372,6 +372,38 @@ if pP2D.plot_enable:
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 				if pPP.save_figs:
 					plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
+	for key in pP2D.loglogs:
+		plt.figure()
+		plt.xlabel(pPP.plots_names[pP2D.loglogs[key][0][0]])
+		plt.ylabel(pPP.plots_names[pP2D.loglogs[key][1][0]])
+		if pP2D.alims[key][0]:
+			plt.xlim(pP2D.alims[key][0][0], pP2D.alims[key][0][1])
+		if pP2D.alims[key][1]:
+			plt.ylim(pP2D.alims[key][1][0], pP2D.alims[key][1][1])
+		# Plotting
+		batch_markers = pP2D.markers[:]
+		color_gradient(len(params), pP2D)
+		for i in range(len(params)):
+			p = params[i]
+			v = params_val[i]
+			m = batch_markers.pop()
+			c = pP2D.colors.pop()
+			for j in range(len(pP2D.loglogs[key][0])):
+				x = pP2D.loglogs[key][0][j]
+				y = pP2D.loglogs[key][1][j]
+				me = int(max(1.0, pP2D.me * len(v[x])))
+				lab = ""
+				if pPP.name_param != "":
+					lab += r'$'+pPP.name_param+"="+str(p)+"$"
+				if len(pP2D.loglogs[key]) > 2:
+					if lab != "":
+						lab += " "
+					lab += pP2D.loglogs[key][2][j]
+				
+				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+				if pPP.save_figs:
+					plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
 
 if pP1D.plot_enable:
 	## Adding legends
@@ -401,7 +433,7 @@ if pP1D.plot_enable:
 		for key in figsO:
 			for i in range(4):
 				axsO[key].view_init(i * 90.0 / 3.0, -90.0)
-				figsO[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
+				figsO[key].savefig(pPP.save_fig_dir+pPP.name_case+"-loglog"+"_"+pPP.name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:

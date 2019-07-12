@@ -153,10 +153,11 @@ class pP2D:
 	# Plots
 	#-------------------#
 	alims = {
-			#"qs(qf)":[[], []],
 			"qs(sh)":[[], []],
 			}
 	plots = {
-			#"qs(qf)":[["qf"], ["qs"]],
+			"qs(sh)":[["sh"], ["qs"]],
+			}
+	loglogs = {
 			"qs(sh)":[["sh"], ["qs"]],
 			}
