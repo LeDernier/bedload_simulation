@@ -63,7 +63,7 @@ class pPP:
 			}
 	# Plot params
 	name_case = "valid-self"
-	param = "pF.tubulence_model_type"
+	param = "pF.turbulence_model_type"
 	name_param = "model"
 
 # 1D plot parameters
