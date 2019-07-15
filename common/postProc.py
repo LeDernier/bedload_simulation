@@ -100,8 +100,10 @@ def ponderate_average_profile(pT, qT, t):
 		print('WARNING average_profile: Taking only last profile.')
 		i_deb = n_time - 1
 	# Initialisation
-	q = qT[i_deb][:]
 	p = pT[i_deb][:]
+	q = []
+	for j in range(len(p)):
+		q.append(p[j] * qT[i_deb][j])
 	# Averaging
 	i = i_deb + 1
 	while i < n_time + 1 and t[i] < pPP.mean_end_time:
