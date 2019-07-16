@@ -141,7 +141,7 @@ def integration(phi, y, dx):
 # Import measures functions
 #-------------------#
 execfile("params_post_proc.py")
-color_gradient(len(sys.argv) + len(pP1D.plotsExtPath) - 1, pP1D)
+color_gradient(len(sys.argv) - 1, pP1D)
 execfile("common/simulationPyRunners.py")
 execfile("common/measures.py")
 
@@ -186,7 +186,7 @@ def post_process(dr):
 				y = pP1D.plots[key][1][i]
 				me = int(max(1.0, pP1D.me * len(data[x])))
 				axs[key].errorbar(data[x], data[y], xerr=errx, yerr=erry, color=c, marker=m, markevery=me,
-						markerfacecolor=c, markeredgewidth=pP1D.mew, 
+						markerfacecolor=c, markeredgewidth=pP1D.mew, markeredgecolor=pP1D.mec,  
 						markersize=pP1D.ms, label=r"$"+pPP.name_param+"="+name_value+"$")
 		# PlotsT
 		for key in pP1D.plotsT:
@@ -198,11 +198,11 @@ def post_process(dr):
 					me = int(max(1.0, pP1D.me * len(data[x])))
 					if i < 1:
 						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
-								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
+								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), markeredgecolor=pP1D.mec, 
 								markersize=pP1D.ms/len(data["time"]), label=r"$"+pPP.name_param+"="+name_value+"$")
 					else:
 						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
-								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), 
+								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), markeredgecolor=pP1D.mec, 
 								markersize=pP1D.ms/len(data["time"]))
 		# Orientations
 		for key in pP1D.orientations:
@@ -244,6 +244,14 @@ def plot_external_data():
 				for row in reader:
 					for key in reader.fieldnames:
 						data[key].append(float(row[key].replace(",", ".")))
+		elif ext == "txt":
+		       with open(path) as f:
+		       	lines = [line.rstrip().split() for line in f.readlines()]
+		       	keys = lines[0]
+		       	data = {key:[] for key in keys}
+		       	for line in lines[1:]:
+		       		for i in range(len(keys)):
+		       			data[keys[i]].append(float(line[i]))
 		# Plots Ext
 		for key in pP1D.plotsExt:
 			for i in range(len(pP1D.plotsExt[key][0])):
@@ -251,8 +259,8 @@ def plot_external_data():
 				y = pP1D.plotsExt[key][1][i]
 				me = int(max(1.0, pP1D.me * len(data[x])))
 				axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
-						markerfacecolor=c, markeredgewidth=pP1D.mew, 
-						markersize=pP1D.ms, label=ext_key)
+						markerfacecolor=c, markeredgewidth=pP1D.mew, markeredgecolor=pP1D.mec, 
+						markersize=pP1D.ms, label=ext_key, linestyle='None')
 #-------------------#
 # Creating 1D Figures
 #-------------------#
@@ -323,6 +331,10 @@ for dr in sys.argv[1:]:
 #-------------------#
 # Post Processing External
 #-------------------#
+pP1D.r = pPP.ext_r
+pP1D.b = pPP.ext_b
+pP1D.v = pPP.ext_v
+color_gradient(len(pP1D.plotsExtPath), pP1D)
 plot_external_data()
 
 #-------------------#
@@ -358,7 +370,10 @@ if pP2D.plot_enable:
 			plt.ylim(pP2D.alims[key][1][0], pP2D.alims[key][1][1])
 		# Plotting
 		batch_markers = pP2D.markers[:]
-		color_gradient(len(params) + len(pP2D.plot_adds.keys()), pP2D)
+		pP2D.r = pPP.n_r
+		pP2D.v = pPP.n_v
+		pP2D.b = pPP.n_b
+		color_gradient(len(params), pP2D)
 		# Normal plots
 		for i in range(len(params)):
 			p = params[i]
@@ -377,9 +392,13 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plots[key][2][j]
 				
-				plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		
+		pP2D.r = pPP.add_r
+		pP2D.v = pPP.add_v
+		pP2D.b = pPP.add_b
+		color_gradient(len(pP2D.plot_adds.keys()), pP2D)
 		if (key in pP2D.plot_adds):
 			# Additional data plots
 			m = batch_markers.pop()
@@ -394,9 +413,50 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plot_adds[key][2][j]
 				
-				plt.plot(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.plot(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 
+		pP2D.r = pPP.ext_r
+		pP2D.v = pPP.ext_v
+		pP2D.b = pPP.ext_b
+		color_gradient(len(pP2D.plotsExtPath.keys()), pP2D)
+		if (key in pP2D.plotsExt):
+			for key_path in pP2D.plotsExtPath:
+				path = pP2D.plotsExtPath[key_path]
+				# Selecting marker and color
+				m = batch_markers.pop()
+				c = pP2D.colors.pop()
+				# Getting data
+				data = {}
+				# Getting the extension
+				ext = path.split(".")[-1]
+				if ext == "py":
+					execfile(path)
+				elif ext == "csv":
+					with open(path) as f:
+						dialect = csv.Sniffer().sniff(f.read(1024), delimiters=';')
+						f.seek(0)
+						reader = csv.DictReader(f, dialect=dialect)
+						data = {k:[] for k in reader.fieldnames}
+						for row in reader:
+							for k in reader.fieldnames:
+								data[k].append(float(row[k].replace(",", ".")))
+				elif ext == "txt":
+					with open(path) as f:
+						lines = [line.rstrip().split() for line in f.readlines()]
+						keys = lines[0]
+						data = {key:[] for key in keys}
+						for line in lines[1:]:
+							for i in range(len(keys)):
+								data[keys[i]].append(float(line[i]))
+				for i in range(len(pP2D.plotsExt[key][0])):
+					x = pP2D.plotsExt[key][0][i]
+					y = pP2D.plotsExt[key][1][i]
+					me = int(max(1.0, pP2D.me * len(data[x])))
+					plt.plot(data[x], data[y], color=c, marker=m, markevery=me,
+							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, 
+							markersize=pP2D.ms, label=key_path, linestyle='None')
+					plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		# Saving figure
 		if pPP.save_figs:
 			plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
@@ -411,7 +471,10 @@ if pP2D.plot_enable:
 			plt.ylim(pP2D.alims[key][1][0], pP2D.alims[key][1][1])
 		# Plotting
 		batch_markers = pP2D.markers[:]
-		color_gradient(len(params) + len(pP2D.plot_adds.keys()), pP2D)
+		pP2D.r = pPP.n_r
+		pP2D.v = pPP.n_v
+		pP2D.b = pPP.n_b
+		color_gradient(len(params), pP2D)
 		# Normal plots
 		for i in range(len(params)):
 			p = params[i]
@@ -430,9 +493,13 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.loglogs[key][2][j]
 				
-				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		
+		pP2D.r = pPP.add_r
+		pP2D.v = pPP.add_v
+		pP2D.b = pPP.add_b
+		color_gradient(len(pP2D.plot_adds.keys()), pP2D)
 		if (key in pP2D.plot_adds):
 			# Additional data plots
 			m = batch_markers.pop()
@@ -447,12 +514,54 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plot_adds[key][2][j]
 				
-				plt.loglog(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.loglog(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 
+		pP2D.r = pPP.ext_r
+		pP2D.v = pPP.ext_v
+		pP2D.b = pPP.ext_b
+		color_gradient(len(pP2D.plotsExtPath.keys()), pP2D)
+		if (key in pP2D.loglogsExt):
+			for key_path in pP2D.plotsExtPath:
+				path = pP2D.plotsExtPath[key_path]
+				# Selecting marker and color
+				m = batch_markers.pop()
+				c = pP2D.colors.pop()
+				# Getting data
+				data = {}
+				# Getting the extension
+				ext = path.split(".")[-1]
+				if ext == "py":
+					execfile(path)
+				elif ext == "csv":
+					with open(path) as f:
+						dialect = csv.Sniffer().sniff(f.read(1024), delimiters=';')
+						f.seek(0)
+						reader = csv.DictReader(f, dialect=dialect)
+						data = {key:[] for key in reader.fieldnames}
+						for row in reader:
+							for k in reader.fieldnames:
+								data[k].append(float(row[k].replace(",", ".")))
+				elif ext == "txt":
+					with open(path) as f:
+						lines = [line.rstrip().split() for line in f.readlines()]
+						keys = lines[0]
+						data = {key:[] for key in keys}
+						for line in lines[1:]:
+							for i in range(len(keys)):
+								data[keys[i]].append(float(line[i]))
+				for i in range(len(pP2D.loglogsExt[key][0])):
+					x = pP2D.loglogsExt[key][0][i]
+					y = pP2D.loglogsExt[key][1][i]
+					me = int(max(1.0, pP2D.me * len(data[x])))
+					plt.loglog(data[x], data[y], color=c, marker=m, markevery=me,
+							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, 
+							markersize=pP2D.ms, label=key_path, linestyle='None')
+					plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		# Saving figure
 		if pPP.save_figs:
 			plt.savefig(pPP.save_fig_dir+pPP.name_case+"-loglog"+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
+	
 
 if pP1D.plot_enable:
 	## Adding legends
