@@ -137,6 +137,30 @@ def integration(phi, y, dx):
 	
 	return q
 
+def computeTransportLayerThickness(qsz, dz):
+	""" Computes the thickness of the transport layer based on the law proposed by Duran et al 2012. 
+
+	"""
+	
+	# Computing qsat
+	qsat = 0
+	for j in range(len(qsz)):
+		qsat += qsz[j] * dz 
+	
+	# Computing zbar
+	zbar = 0
+	for j in range(len(qsz)):
+		zbar += qsz[j] * (j*dz) * dz 
+	zbar /= qsat
+	
+	# Computing zbar
+	l = 0
+	for j in range(len(qsz)):
+		l += pow((j*dz) - zbar, 2) * qsz[j] * dz
+	l = sqrt(l/qsat)
+
+	return l
+
 #-------------------#
 # Import measures functions
 #-------------------#

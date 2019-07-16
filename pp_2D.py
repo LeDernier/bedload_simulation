@@ -59,6 +59,7 @@ class pPP:
 			"time":r"$t$ (s)",
 			"mean_z_phi":r"$\phi_{max}$",
 			"var_z_phi":r"$\sigma_\phi$",
+			"lt":r"$\lambda$",
 			}
 	# Plot params
 	name_case = "valid-self"
@@ -134,7 +135,8 @@ class pP2D:
 	# Measuring 2D data in the 1D data
 	measures = {
 			"qs":"average(data['qs'], data['time'])",
-			"qf":"average(data['qf'], data['time'])",
+			"lt":"computeTransportLayerThickness(data['mean_qsx'], pF.dz)",
+			#"qf":"average(data['qf'], data['time'])",
 			"sh":"average(data['shields'], data['time'])",
 			}
 	post_process = [
@@ -143,8 +145,8 @@ class pP2D:
 			]
 	add = [
 			{
-			"sh":"bdata[bdata.keys()[0]]['sh']",
-			"theta3/2":"[s**(3.0/2.0) for s in badata['sh']]"
+			#"sh":"bdata[bdata.keys()[0]]['sh']",
+			#"theta3/2":"[s**(3.0/2.0) for s in badata['sh']]"
 			},
 			]
 	#-------------------#
@@ -163,13 +165,21 @@ class pP2D:
 	#-------------------#
 	alims = {
 			"qs(sh)":[[], []],
+			"lt(sh)":[[], []],
 			}
 	plots = {
+			"lt(sh)":[["sh"], ["lt"]],
 			"qs(sh)":[["sh"], ["qs"]],
 			}
 	loglogs = {
 			"qs(sh)":[["sh"], ["qs"]],
 			}
 	plot_adds = {
-			"qs(sh)":[["sh"], ["theta3/2"], [r"$\theta^{\frac{3}{2}}$"]],
+			#"qs(sh)":[["sh"], ["theta3/2"], [r"$\theta^{\frac{3}{2}}$"]],
+			}
+	plotsExtPath = {
+			}
+	plotsExt = {
+			}
+	loglogsExt = {
 			}
