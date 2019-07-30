@@ -25,10 +25,17 @@ if datas:
 		datas[i] = float(datas[i].split(".yade")[0])
 	datas.sort()
 	# import PyRunners
+	execfile('framework.py')
 	execfile('../common/simulationPyRunners.py')
 	O.load("data/"+str(datas[-1])+".yade")
 	# Reload parameters
 	execfile('params.py')
+	if pN.enable_new_engines:
+		execfile('../common/simulationDefinition.py')
+		sim.engineCreation()
+		sim.init()
+		O.resetTime()
+		O.saveTmp()
 	O.run()
 else:
 	# import simulation

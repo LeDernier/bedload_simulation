@@ -29,6 +29,12 @@ if datas:
 	execfile('../common/simulationPyRunners.py')
 	O.load("data/"+str(datas[-1])+".yade")
 	execfile('params.py')
+	if pN.enable_new_engines:
+		execfile('../common/simulationDefinition.py')
+		sim.engineCreation()
+		sim.init()
+		O.resetTime()
+		O.saveTmp()
 	#O.run()
 else:
 	# import simulation
