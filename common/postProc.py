@@ -145,19 +145,22 @@ def computeTransportLayerThickness(qsz, dz):
 	# Computing qsat
 	qsat = 0
 	for j in range(len(qsz)):
-		qsat += qsz[j] * dz 
+		qsat += max(0.0, qsz[j]) * dz 
 	
 	# Computing zbar
 	zbar = 0
 	for j in range(len(qsz)):
-		zbar += qsz[j] * (j*dz) * dz 
+		zbar += max(0.0, qsz[j]) * (j*dz) * dz 
 	zbar /= qsat
 	
 	# Computing zbar
 	l = 0
 	for j in range(len(qsz)):
-		l += pow((j*dz) - zbar, 2) * qsz[j] * dz
-	l = sqrt(l/qsat)
+		l += pow((j*dz) - zbar, 2) * max(0.0, qsz[j]) * dz
+	if qsat > 0.0:
+		l = sqrt(l/qsat)
+	else:
+		l = 0.0
 
 	return l
 
@@ -237,15 +240,15 @@ def post_process(dr):
 				Z = data[xyz[2]]
 				C_name = pP1D.orientations[key][1][j]
 				C = data[C_name]
+				#tmp = axsO[key].scatter3D(X, Y, Z, c=C, s=[Vector3(X[j], Y[j], Z[j]).norm()*80.0 for j in range(len(C))], cmap="Greys")
+				#if C_name in pPP.plots_names:
+				#	tmp = figsO[key].colorbar(tmp)
+				#	tmp.ax.set_ylabel(pPP.plots_names[C_name])
 				for i in range(len(X)):
 					norm = min(Vector3(X[i], Y[i], Z[i]).norm(), 1.0)
-					axsO[key].quiver3D(X[i], Y[i], Z[i], X[i], Y[i], Z[i], 
+					axsO[key].quiver3D(0.0, 0.0, 0.0, X[i], Y[i], Z[i], 
 							colors=[(0, 0, 0, norm), (0, 0, 0, norm), (0, 0, 0, norm)], 
 							linewidth=2.0, length=norm)
-				tmp = axsO[key].scatter3D(X, Y, Z, c=C, s=[Vector3(X[j], Y[j], Z[j]).norm()*80.0 for j in range(len(C))], cmap="Greys")
-				if C_name in pPP.plots_names:
-					tmp = figsO[key].colorbar(tmp)
-					tmp.ax.set_ylabel(pPP.plots_names[C_name])
 
 def plot_external_data():
 	for ext_key in pP1D.plotsExtPath:
@@ -416,7 +419,10 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plots[key][2][j]
 				
-				plt.plot(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				style = "-"
+				if j > 0:
+					style = ":"
+				plt.plot(v[x], v[y], color=(c[0]/(j+1), c[1]/(j+1), c[2]/(j+1)), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab, linestyle=style)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		
 		pP2D.r = pPP.add_r
@@ -437,7 +443,7 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plot_adds[key][2][j]
 				
-				plt.plot(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.plot(badata[x], badata[y], color=c/(j+1), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 
 		pP2D.r = pPP.ext_r
@@ -616,6 +622,8 @@ if pP1D.plot_enable:
 			for i in range(4):
 				axsO[key].view_init(i * 90.0 / 3.0, -90.0)
 				figsO[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+str(i)+".pdf", bbox_inches="tight")
+			axsO[key].view_init(45, -45.0)
+			figsO[key].savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+"4"+".pdf", bbox_inches="tight")
 
 ### Showing figures
 if pPP.show_figs:
