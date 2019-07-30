@@ -212,8 +212,12 @@ def post_process(dr):
 				x = pP1D.plots[key][0][i]
 				y = pP1D.plots[key][1][i]
 				me = int(max(1.0, pP1D.me * len(data[x])))
+				if pP1D.mec == None:
+					mec = c
+				else:
+					mec = pP1D.mec
 				axs[key].errorbar(data[x], data[y], xerr=errx, yerr=erry, color=c, marker=m, markevery=me,
-						markerfacecolor=c, markeredgewidth=pP1D.mew, markeredgecolor=pP1D.mec,  
+						markerfacecolor=c, markeredgewidth=pP1D.mew, markeredgecolor=mec,  
 						markersize=pP1D.ms, label=r"$"+pPP.name_param+"="+name_value+"$")
 		# PlotsT
 		for key in pP1D.plotsT:
@@ -223,13 +227,17 @@ def post_process(dr):
 					x = pP1D.plotsT[key][0][j]
 					y = pP1D.plotsT[key][1][j]
 					me = int(max(1.0, pP1D.me * len(data[x])))
+					if pP1D.mec == None:
+						mec = c
+					else:
+						mec = pP1D.mec
 					if i < 1:
 						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
-								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), markeredgecolor=pP1D.mec, 
+								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), markeredgecolor=mec, 
 								markersize=pP1D.ms/len(data["time"]), label=r"$"+pPP.name_param+"="+name_value+"$")
 					else:
 						axsT[key].plot([v+i*space for v in data[x][i]], data[y], color=c, marker=m, markevery=me,
-								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), markeredgecolor=pP1D.mec, 
+								markerfacecolor=c, markeredgewidth=pP1D.mew/len(data["time"]), markeredgecolor=mec, 
 								markersize=pP1D.ms/len(data["time"]))
 		# Orientations
 		for key in pP1D.orientations:
@@ -285,8 +293,12 @@ def plot_external_data():
 				x = pP1D.plotsExt[key][0][i]
 				y = pP1D.plotsExt[key][1][i]
 				me = int(max(1.0, pP1D.me * len(data[x])))
+				if pP1D.mec == None:
+					mec = c
+				else:
+					mec = pP1D.mec
 				axs[key].plot(data[x], data[y], color=c, marker=m, markevery=me,
-						markerfacecolor=c, markeredgewidth=pP1D.mew, markeredgecolor=pP1D.mec, 
+						markerfacecolor=c, markeredgewidth=pP1D.mew, markeredgecolor=mec, 
 						markersize=pP1D.ms, label=ext_key, linestyle='None')
 #-------------------#
 # Creating 1D Figures
@@ -419,10 +431,14 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plots[key][2][j]
 				
+				if pP2D.mec == None:
+					mec = c
+				else:
+					mec = pP2D.mec
 				style = "-"
 				if j > 0:
 					style = ":"
-				plt.plot(v[x], v[y], color=(c[0]/(j+1), c[1]/(j+1), c[2]/(j+1)), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab, linestyle=style)
+				plt.plot(v[x], v[y], color=(c[0]/(j+1), c[1]/(j+1), c[2]/(j+1)), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab, linestyle=style)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		
 		pP2D.r = pPP.add_r
@@ -443,7 +459,11 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plot_adds[key][2][j]
 				
-				plt.plot(badata[x], badata[y], color=c/(j+1), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				if pP2D.mec == None:
+					mec = c
+				else:
+					mec = pP2D.mec
+				plt.plot(badata[x], badata[y], color=c/(j+1), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 
 		pP2D.r = pPP.ext_r
@@ -483,8 +503,12 @@ if pP2D.plot_enable:
 					x = pP2D.plotsExt[key][0][i]
 					y = pP2D.plotsExt[key][1][i]
 					me = int(max(1.0, pP2D.me * len(data[x])))
+					if pP2D.mec == None:
+						mec = c
+					else:
+						mec = pP2D.mec
 					plt.plot(data[x], data[y], color=c, marker=m, markevery=me,
-							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, 
+							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=mec, 
 							markersize=pP2D.ms, label=key_path, linestyle='None')
 					plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		# Saving figure
@@ -523,7 +547,11 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.loglogs[key][2][j]
 				
-				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				if pP2D.mec == None:
+					mec = c
+				else:
+					mec = pP2D.mec
+				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		
 		pP2D.r = pPP.add_r
@@ -544,7 +572,11 @@ if pP2D.plot_enable:
 						lab += " "
 					lab += pP2D.plot_adds[key][2][j]
 				
-				plt.loglog(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				if pP2D.mec == None:
+					mec = c
+				else:
+					mec = pP2D.mec
+				plt.loglog(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 
 		pP2D.r = pPP.ext_r
@@ -584,8 +616,12 @@ if pP2D.plot_enable:
 					x = pP2D.loglogsExt[key][0][i]
 					y = pP2D.loglogsExt[key][1][i]
 					me = int(max(1.0, pP2D.me * len(data[x])))
+					if pP2D.mec == None:
+						mec = c
+					else:
+						mec = pP2D.mec
 					plt.loglog(data[x], data[y], color=c, marker=m, markevery=me,
-							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=pP2D.mec, 
+							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=mec, 
 							markersize=pP2D.ms, label=key_path, linestyle='None')
 					plt.legend(fancybox=True, framealpha=0.5, loc=0)
 		# Saving figure

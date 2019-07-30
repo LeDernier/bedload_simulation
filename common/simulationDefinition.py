@@ -226,9 +226,9 @@ class sim: # Simulation
 				PyRunner(command='pyRuns.shaker()', virtPeriod = pM.shake_dt, label = 'shaker')
 				)
 		### Recorder
-		if pSave.vtkRecorderIterPeriod > 0:
+		if pSave.vtkRecorderVirtPeriod > 0:
 			engines.append(
-				VTKRecorder(iterPeriod=pSave.vtkRecorderIterPeriod,recorders=['spheres', 'velocity', 'force', 'stress'],fileName='./vtk/sim-')
+				VTKRecorder(virtPeriod=pSave.vtkRecorderVirtPeriod,recorders=['spheres', 'velocity', 'colors'],fileName='./vtk/sim-')
 				)
 		### Adding engines to Omega
 		O.engines = engines
