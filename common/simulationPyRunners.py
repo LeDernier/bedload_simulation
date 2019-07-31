@@ -22,7 +22,10 @@ class pyRuns:
 		elif pyRuns.count < 1 and O.time < pSave.yadeSavePeriod:
 			print("INFO: Starting to apply fluid.\n")
 			pyRuns.count = 1
-			hydroEngine.dead = False
+			for e in O.engines:
+				if e.label == "hydroEngine":
+					e.dead = False
+					break
 			if pF.method == "new":
 				hydroEngine.newAverageProfile()
 				hydroEngine.newFluidResolution(1., pF.dt)
@@ -79,7 +82,10 @@ class pyRuns:
 				if not b.dynamic:
 					b.state.vel[2] = 0.0
 			if O.time > pM.shake_time:
-				shaker.dead = True
+				for e in O.engines:
+					if e.label == "shaker":
+						e.dead = True
+						break
 			if pM.shake_wait_f != 0.0:
 				pyRuns.stop = True
 		elif not pyRuns.stop:

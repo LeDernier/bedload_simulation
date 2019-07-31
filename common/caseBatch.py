@@ -33,7 +33,7 @@ if datas:
 	if pN.enable_new_engines:
 		execfile('../common/simulationDefinition.py')
 		sim.engineCreation()
-		sim.init()
+		#sim.init()
 		O.resetTime()
 		O.saveTmp()
 	O.run()
