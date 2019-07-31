@@ -102,6 +102,7 @@ def ponderate_average_profile(pT, qT, t):
 	# Initialisation
 	p = pT[i_deb][:]
 	q = []
+	print(len(p), " ", len(qT[i_deb]))
 	for j in range(len(p)):
 		q.append(p[j] * qT[i_deb][j])
 	# Averaging
