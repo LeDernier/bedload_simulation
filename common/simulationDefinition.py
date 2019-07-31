@@ -233,5 +233,115 @@ class sim: # Simulation
 		### Adding engines to Omega
 		O.engines = engines
 
+	@staticmethod
+	def resetEngine():
+		"""Creates the engine.
+		
+		"""
+		#### Apply hydrodynamic forces
+		if pF.enable:
+			if 'hydroEngine' in globals():
+				hydroEngine.dead = False
+				# Creating Hydro Engine
+				if pF.method == "new":
+					hydroEngine.densFluid = pF.rho
+					hydroEngine.viscoDyn = pF.nu * pF.rho
+					hydroEngine.zRef = pM.z_ground
+					hydroEngine.gravity = pM.g
+					hydroEngine.deltaZ = pF.dz
+					hydroEngine.expoRZ = pF.expoDrag 
+					hydroEngine.lift = False
+					hydroEngine.nCell = pN.n_z
+					hydroEngine.vCell = pM.l * pM.w * pF.dz 
+					hydroEngine.phiPart = pP.phi
+					hydroEngine.vxFluid = pF.vx
+					hydroEngine.vPart = pP.v
+					hydroEngine.ids = []
+					hydroEngine.phiMax = pF.turb_phi_max
+					hydroEngine.ilm = pF.turbulence_model_type
+					hydroEngine.nbAverageT = pF.nb_average_over_time 
+					hydroEngine.phiBed = pF.phi_bed 
+					hydroEngine.enablePolyAverage = pF.enable_poly_average 
+					hydroEngine.fluidWallFriction = pF.enable_wall_friction
+					hydroEngine.dead = True
+				elif pF.method == "old":
+					hydroEngine.densFluid = pF.rho
+					hydroEngine.viscoDyn = pF.nu * pF.rho
+					hydroEngine.zRef = pM.z_ground 
+					hydroEngine.gravity = pM.g
+					hydroEngine.deltaZ = pF.dz
+					hydroEngine.expoRZ = pF.expoDrag
+					hydroEngine.lift = False
+					hydroEngine.nCell = pN.n_z
+					hydroEngine.vCell = pM.l * pM.w * pF.dz 
+					hydroEngine.radiusPart = pP.S/2.0
+					hydroEngine.phiPart = pP.phi 
+					hydroEngine.vxFluid = pF.vx
+					hydroEngine.vxPart = [0.0] * (pN.n_z-1)
+					hydroEngine.ids = []
+					hydroEngine.phiMax = pF.turb_phi_max 
+					hydroEngine.fluidWallFriction = pF.enable_wall_friction
+					hydroEngine.dead = True
+				# Fluid resolution
+				if pF.solve:
+					if 'fluidSolve' in globals():
+						fluidSolve.dead = False
+						fluidSolve.virtPeriod = pF.t
+					else:
+						print("fluidSolve engine does not already exist and can't be added")
+				else:
+					if 'fluidSolve' in globals():
+						fluidSolve.dead = True
+				# Turbulent fluctuations
+				if pF.enable_fluctuations:
+					if 'turbFluct' in globals():
+						turbFluct.dead = False
+						turbFluct.virtPeriod = pF.t_fluct
+					else:
+						print("turbFluct engine does not already exist and can't be added")
+				else:
+					if 'turbFluct' in globals():
+						turbFluct.dead = True
+				# Display fluid velocity profile
+				if pF.display_enable:
+					if 'fluidDisplay' in globals():
+						fluidDisplay.dead = False
+						fluidDisplay.virtPeriod = pF.t
+					else:
+						print("fluidDisplay engine does not already exist and can't be added")
+				else:
+					if 'fluidDisplay' in globals():
+						fluidDisplay.dead = True
+			else:
+				print("hydroEngine engine does not already exist and can't be added")
+		else:
+			if 'hydroEngine' in globals():
+				hydroEngine.dead = True
+		### Newton Integrator
+		newtonIntegr.gravity = pM.g
+		### PyRunner Calls
+		# End of simulation
+		exit.dead = False
+		# Save data
+		if pSave.yadeSavePeriod:
+			if 'save' in globals():
+				save.dead = False
+				save.virtPeriod = pSave.yadeSavePeriod
+			else:
+				print("save engine does not already exist and can't be added")
+		else:
+			if 'save' in globals():
+				save.dead = True
+		# Shaker
+		if pM.shake_enable:
+			if 'shaker' in globals():
+				shaker.dead = False
+				shaker.virtPeriod = pM.shake_dt
+			else:
+				print("shaker engine does not already exist and can't be added")
+		else:
+			if 'shaker' in globals():
+				shaker.dead = True
+
 ### Reading pyRunners
 execfile("../common/simulationPyRunners.py")
