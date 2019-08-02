@@ -196,6 +196,7 @@ def getDryProfile(prop):
 			ids = partsIds, label = 'hydroEngine', dead = True)
 	hydroEngineTmp.ReynoldStresses = np.ones(pN.n_z) * 0.0
 	hydroEngineTmp.turbulentFluctuation()
+	hydroEngineTmp.newInit()
 	hydroEngineTmp.newAverageProfile()
 	return eval("hydroEngineTmp."+prop)
 

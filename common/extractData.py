@@ -50,7 +50,7 @@ def extract(dr):
 	# Update name_value
 	name_value = dr.split("_")[-1]
 
-	ids = read_ids(dr)
+	#ids = read_ids(dr)
 	stime, data = read_data(dr)
 	stime, data = sort_data(stime, data)
 	# Adding time to data

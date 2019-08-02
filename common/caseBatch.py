@@ -32,6 +32,8 @@ if datas:
 	execfile('params.py')
 	if pN.enable_new_engines:
 		execfile('../common/simulationDefinition.py')
+		for e in O.engines:
+			del e
 		sim.engineCreation()
 		#sim.init()
 		O.resetTime()
