@@ -228,6 +228,7 @@ def getVxPartProfile():
 		hydroEngineTmp.ReynoldStresses = np.ones(pN.n_z) * 0.0
 		hydroEngineTmp.turbulentFluctuation()
 		hydroEngineTmp.newInit()
+		hydroEngineTmp.newAverageProfile()
 		vxPart = []
 		for v in hydroEngineTmp.vPart:
 			vxPart.append(v[0])
