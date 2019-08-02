@@ -148,17 +148,17 @@ def computeTransportLayerThickness(qsz, dz):
 	for j in range(len(qsz)):
 		qsat += max(0.0, qsz[j]) * dz 
 	
-	# Computing zbar
-	zbar = 0
-	for j in range(len(qsz)):
-		zbar += max(0.0, qsz[j]) * (j*dz) * dz 
-	zbar /= qsat
-	
-	# Computing zbar
-	l = 0
-	for j in range(len(qsz)):
-		l += pow((j*dz) - zbar, 2) * max(0.0, qsz[j]) * dz
-	if qsat > 0.0:
+	if qsat > 1e-7:
+		# Computing zbar
+		zbar = 0
+		for j in range(len(qsz)):
+			zbar += max(0.0, qsz[j]) * (j*dz) * dz 
+		zbar /= qsat
+		
+		# Computing zbar
+		l = 0
+		for j in range(len(qsz)):
+			l += pow((j*dz) - zbar, 2) * max(0.0, qsz[j]) * dz
 		l = sqrt(l/qsat)
 	else:
 		l = 0.0
@@ -512,6 +512,8 @@ if pP2D.plot_enable:
 							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=mec, 
 							markersize=pP2D.ms, label=key_path, linestyle='None')
 					plt.legend(fancybox=True, framealpha=0.5, loc=0)
+		# Adding grid
+		plt.grid()
 		# Saving figure
 		if pPP.save_figs:
 			plt.savefig(pPP.save_fig_dir+pPP.name_case+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
@@ -625,6 +627,8 @@ if pP2D.plot_enable:
 							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=mec, 
 							markersize=pP2D.ms, label=key_path, linestyle='None')
 					plt.legend(fancybox=True, framealpha=0.5, loc=0)
+		# Adding grid
+		plt.grid()
 		# Saving figure
 		if pPP.save_figs:
 			plt.savefig(pPP.save_fig_dir+pPP.name_case+"-loglog"+"_"+pPP.name_param+"_"+key+".pdf", bbox_inches="tight")
@@ -636,7 +640,13 @@ if pP1D.plot_enable:
 		axs[key].legend(fancybox=True, framealpha=0.5, loc=0)
 	for key in axsT:
 		axsT[key].legend(fancybox=True, framealpha=0.5, loc=0)
-	
+
+	## Adding grids
+	for key in axs:
+		axs[key].grid()
+	for key in axsT:
+		axsT[key].grid()
+
 	## Adding Patchs
 	for key in pP1D.patchs:
 		p = pP1D.patchs[key]
