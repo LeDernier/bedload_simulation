@@ -43,10 +43,10 @@ class pP:
 	# Characteristic lengh taken for the adimensionalisation within the shields number.
 	dvs = 6.0e-3 
 	# Aspect ratio 
-	A = 3.0
-	B = 3.0
+	A = 5.0
+	B = 2.0
 	## Number of spheres
-	na = 3
+	na = 5
 	nb = 3
 	# Small characteristic length 
 	#va = ((na - 1) * pow((A - 1.0)/int(na/2), 2) + 4.0)
@@ -62,11 +62,12 @@ class pP:
 	### Clump parameters
 	if kind == "clump":
 		### Creating a row :
-		# Diameter of the small spheres
-		ca = ((2.0 * int(na/2) + 1) * S - L)/(int(na/2)*(int(na/2)+1))
 		# List of the diameters of the spheres in the clump
 		dsa = []
 		if L > S:
+			# Computing diameter slope
+			ca = ((2.0 * int(na/2) + 1) * S - L)/(int(na/2)*(int(na/2)+1))
+			# Creating diameter row
 			for i in range(int(na/2)):
 				dsa.append(S - ca * (int(na/2) - i))
 			dsa.append(S)
@@ -75,11 +76,12 @@ class pP:
 		else:
 			dsa = [S]
 		### Creating columns
-		# Diameter of the small spheres
-		cb = ((2.0 * int(nb/2) + 1) * S - I)/(int(nb/2)*(int(nb/2)+1))
 		# List of the diameters of the spheres in the clump
 		ds = []
 		if I > S:
+			# Computing diameter slope
+			cb = ((2.0 * int(nb/2) + 1) * S - I)/(int(nb/2)*(int(nb/2)+1))
+			# Creating diameters columns
 			for i in range(int(nb/2)):
 				d = S - cb * (int(nb/2) - i)
 				ds.append([d/S * da for da in dsa])
@@ -211,10 +213,12 @@ class pF:
 	if pM.alpha != 0 and enable and rho != 0:
 		h = init_shields * (pP.rho/rho - 1) * shields_d / math.sin(pM.alpha)
 	# Turbulent model
-	turbulence_model_type = 5
+	turbulence_model_type = 3
+	# Model 2
 	turb_phi_max = pP.phi_max
+	# Model 5
 	phi_bed = 0.08
-	nb_average_over_time = 100
+	nb_average_over_time = 0
 	## Numeric
 	dt = 1e-5
 	t = 1e-2
