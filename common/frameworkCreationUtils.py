@@ -196,16 +196,20 @@ class frCrea: # Framework Creation
 		# Parameters
 		center =  kwargs.get('center', Vector3(0.0, 0.0, 0.0))
 		ds = kwargs.get('ds', [1.0e-6])
-		iter_vects = kwargs.get('iter_vects', [Vector3(ds[0], 0, 0)])
+		iter_vects = kwargs.get('iter_vects', [Vector3(1.0, 0, 0), Vector3(0, 1.0, 0)])
 		color = kwargs.get('color', [Vector3(0.5, 0.0, 0.0)])
 
 		# Sphere list
 		ss = []
-		d_tot = sum(ds)
-		for iter_vect in iter_vects:
-			pos = center - d_tot/2.0 * iter_vect 
-			for d in ds:
-				pos += d/2.0 * iter_vect
+		d_max_tot = sum([max(row) for row in ds])
+		center = center - d_max_tot/2.0 * iter_vects[1]
+		for row in ds:
+			d_tot = sum(row)
+			d_max = max(row)
+			center += d_max/2.0 * iter_vects[1]
+			pos = center - d_tot/2.0 * iter_vects[0] 
+			for d in row:
+				pos += d/2.0 * iter_vects[0]
 				ss.append(
 						sphere(
 							center = pos,
@@ -215,7 +219,8 @@ class frCrea: # Framework Creation
 							material = 'mat'
 							)
 						)
-				pos += d/2.0 * iter_vect
+				pos += d/2.0 * iter_vects[0]
+			center += d_max/2.0 * iter_vects[1]
 		# Adding clump to simulation
 		result = O.bodies.appendClumped(ss)
 		(id_clump, ids_clumped) = result
@@ -232,11 +237,10 @@ class frCrea: # Framework Creation
 		"""
 		cell_center = O.cell.size/2.0
 		
-		d_eff = pP.L 
-		r_eff = pP.L
+		d_eff = sqrt(pow(pP.L, 2.0) + pow(pP.I, 2.0)) 
 		n_i = 0
 
-		iter_vects = [Vector3(1.0, 0.0, 0.0)]
+		iter_vects = [Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0)]
 
 		# Create particles
 		z = pM.z_ground + d_eff + d_eff/2.0
