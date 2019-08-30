@@ -464,7 +464,7 @@ if pP2D.plot_enable:
 					mec = c
 				else:
 					mec = pP2D.mec
-				plt.plot(badata[x], badata[y], color=c/(j+1), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
+				plt.plot(badata[x], badata[y], color=(c[0]/(j+1), c[1]/(j+1), c[2]/(j+1)), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
 				plt.legend(fancybox=True, framealpha=0.5, loc=0)
 
 		pP2D.r = pPP.ext_r

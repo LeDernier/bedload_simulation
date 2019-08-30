@@ -43,11 +43,11 @@ class pP:
 	# Characteristic lengh taken for the adimensionalisation within the shields number.
 	dvs = 6.0e-3 
 	# Aspect ratio 
-	A = 5.0
-	B = 2.0
+	A = 1.0
+	B = 1.0
 	## Number of spheres
-	na = 5
-	nb = 3
+	na = 3
+	nb = 1
 	# Small characteristic length 
 	#va = ((na - 1) * pow((A - 1.0)/int(na/2), 2) + 4.0)
 	#sa = (0.5 * (na - 1) * pow((A - 1.0)/int(na/2), 3) + 4.0) 
