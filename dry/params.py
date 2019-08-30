@@ -183,12 +183,12 @@ class pM:
 	d_rug = pP.S
 	### Shake
 	shake_enable = True
-	shake_f = 20.0
+	shake_f = 400.0
 	shake_dt = 0.05/shake_f
 	shake_a = pP.dvs/10.0
-	shake_wait_f = shake_f/5.0
+	shake_wait_f = 1.0/(4.0*sqrt(2 * pP.dvs/-g[2]))
 	shake_time = pN.t_max - 1.0
-	shake_axis = 1
+	shake_axis = 0
 
 ### Param Save
 class pSave:

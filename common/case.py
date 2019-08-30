@@ -36,7 +36,7 @@ if datas:
 		sim.engineCreation()
 		#sim.resetEngine()
 		#sim.init()
-		O.resetTime()
+		#O.resetTime()
 		O.saveTmp()
 	#O.run()
 else:
