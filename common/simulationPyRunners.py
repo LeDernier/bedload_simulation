@@ -72,7 +72,7 @@ class pyRuns:
 	shake_old_time = 0.0
 	stop = False
 	@staticmethod
-	def shaker():
+	def shaker(axis=2):
 		if pM.shake_wait_f > 0.0 and O.time > pyRuns.shake_old_time + 1.0/pM.shake_wait_f:
 			pyRuns.shake_old_time = O.time
 			pyRuns.stop = False
@@ -91,7 +91,7 @@ class pyRuns:
 		elif not pyRuns.stop:
 			for b in O.bodies:
 				if not b.dynamic:
-					b.state.vel[2] = shaker_vel
+					b.state.vel[axis] = shaker_vel
 	
 	fluidDisplayIds = []
 	@staticmethod
