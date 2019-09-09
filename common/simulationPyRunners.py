@@ -80,7 +80,7 @@ class pyRuns:
 		if (O.time - pyRuns.shake_old_time) > (1/pM.shake_f):
 			for b in O.bodies:
 				if not b.dynamic:
-					b.state.vel[2] = 0.0
+					b.state.vel[axis] = 0.0
 			if O.time > pM.shake_time:
 				for e in O.engines:
 					if e.label == "shaker":
