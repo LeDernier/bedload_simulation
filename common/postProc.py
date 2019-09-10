@@ -155,7 +155,7 @@ def computeTransportLayerThickness(qsz, dz):
 			zbar += max(0.0, qsz[j]) * (j*dz) * dz 
 		zbar /= qsat
 		
-		# Computing zbar
+		# Computing lambda
 		l = 0
 		for j in range(len(qsz)):
 			l += pow((j*dz) - zbar, 2) * max(0.0, qsz[j]) * dz
@@ -440,7 +440,7 @@ if pP2D.plot_enable:
 				if j > 0:
 					style = ":"
 				plt.plot(v[x], v[y], color=(c[0]/(j+1), c[1]/(j+1), c[2]/(j+1)), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab, linestyle=style)
-				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+				plt.legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 		
 		pP2D.r = pPP.add_r
 		pP2D.v = pPP.add_v
@@ -465,7 +465,7 @@ if pP2D.plot_enable:
 				else:
 					mec = pP2D.mec
 				plt.plot(badata[x], badata[y], color=(c[0]/(j+1), c[1]/(j+1), c[2]/(j+1)), marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
-				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+				plt.legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 
 		pP2D.r = pPP.ext_r
 		pP2D.v = pPP.ext_v
@@ -511,7 +511,7 @@ if pP2D.plot_enable:
 					plt.plot(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=mec, 
 							markersize=pP2D.ms, label=key_path, linestyle='None')
-					plt.legend(fancybox=True, framealpha=0.5, loc=0)
+					plt.legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 		# Adding grid
 		plt.grid()
 		# Saving figure
@@ -555,7 +555,7 @@ if pP2D.plot_enable:
 				else:
 					mec = pP2D.mec
 				plt.loglog(v[x], v[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
-				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+				plt.legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 		
 		pP2D.r = pPP.add_r
 		pP2D.v = pPP.add_v
@@ -580,7 +580,7 @@ if pP2D.plot_enable:
 				else:
 					mec = pP2D.mec
 				plt.loglog(badata[x], badata[y], color=c, marker=m, markevery=me, markeredgewidth=pP2D.mew, markeredgecolor=mec, markerfacecolor=c, markersize=pP2D.ms/(j+1), label=lab)
-				plt.legend(fancybox=True, framealpha=0.5, loc=0)
+				plt.legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 
 		pP2D.r = pPP.ext_r
 		pP2D.v = pPP.ext_v
@@ -626,7 +626,7 @@ if pP2D.plot_enable:
 					plt.loglog(data[x], data[y], color=c, marker=m, markevery=me,
 							markerfacecolor=c, markeredgewidth=pP2D.mew, markeredgecolor=mec, 
 							markersize=pP2D.ms, label=key_path, linestyle='None')
-					plt.legend(fancybox=True, framealpha=0.5, loc=0)
+					plt.legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 		# Adding grid
 		plt.grid()
 		# Saving figure
@@ -637,9 +637,9 @@ if pP2D.plot_enable:
 if pP1D.plot_enable:
 	## Adding legends
 	for key in axs:
-		axs[key].legend(fancybox=True, framealpha=0.5, loc=0)
+		axs[key].legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 	for key in axsT:
-		axsT[key].legend(fancybox=True, framealpha=0.5, loc=0)
+		axsT[key].legend(fancybox=True, framealpha=0.5, loc='center left', bbox_to_anchor=(1.0, 0.5))
 
 	## Adding grids
 	for key in axs:
