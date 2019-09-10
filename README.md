@@ -56,7 +56,7 @@ cd bedload_simulation
 
 #### Executables
 
-* add_extension
+* ***add_extension***
 May be useful to run computations on a cluster.
 Adds an extension to folders.
 Use :
@@ -72,7 +72,7 @@ $ ls
 folder1.dir/ folder2.dir/ folder3.dir/
 ```
 
-* clean_batch
+* ***clean_batch***
 By default, a simulation starts from the last timestep saved. 
 This executable is useful to get rid of all previously saved data in order to restart completely a simulation.
 Deletes all the simulation data of the cases given in argument. Keeps the parameters unchanged.
@@ -93,7 +93,7 @@ case-1/data:
 case-2/data:
 ```
 
-* create_batch
+* ***create_batch***
 May be usefull to create a batch of simulation without manually change parameters of the simulation.
 Copy a case folder for each parameter value given in argument and changes the parameter files accordingly.
 Use :
@@ -113,7 +113,7 @@ $ diff case_A_1.0/params.py case_A_2.0/params.py
 > 	A = 2.0
 ```
 
-* extract_batch
+* ***extract_batch***
 Before being post processed, after a simulation, data should be extracted using this executable.
 The parameters used for the extraction may be edited in the file ***params_extract.py***.
 Extracts the data of the simulations given in argument and stores them in pkl or json format.
@@ -132,7 +132,7 @@ $ ls case-1/
 clean data/ data.pkl framework.py params.py run
 ```
 
-* post_proc_batch
+* ***post_proc_batch***
 Executable usefull to post process data.
 The parameters used for the post processing may be edited in the file ***params_post_proc.py***.
 Reads the data in pkl format in the cases given arguments and use them to plot graphics.
@@ -151,7 +151,7 @@ $ ls post_proc/
 case_phi.pdf case_vx.pdf case_qsx.pdf
 ```
 
-* remove_extension
+* ***remove_extension***
 May be useful after the use of ***add_extension***.
 Removes an extension to folders.
 Use :
@@ -167,7 +167,7 @@ $ ls
 folder1/ folder2/ folder3/
 ```
 
-* run_batch
+* ***run_batch***
 Runs a batch of simulations in the background.
 Use :
 ```
@@ -187,13 +187,12 @@ The file ***nohup.out*** can give information about the simulation.
 You may want to use the ***top*** program to check the ressources used.
 
 
-* simple_post_proc.py
+* ***simple_post_proc.py***
 A simple, commented post processing executable.
 
 #### Folders
 
 * case-\*
-
 Example of simulation cases. Contains the following :
     * clean
     Executable to delete simulation data.
@@ -214,9 +213,9 @@ Folders containing data that may be useful for post processing.
 
 #### Others
 
-* pp_*.py
+* ***pp_*.py***
 Example of post processing parameter files.
-* e_*.py
+* ***e_*.py***
 Example of extract parameter files.
 
 ### Running first tests
