@@ -54,6 +54,9 @@ cd bedload_simulation
 
 ### Repository Description
 
+The following executables may only be functionals the yade executable has been renamed to yade and its folder added to your ***PATH*** in your ***.bashrc***.
+If not, you may to edit the following executables so that they work in your case.
+
 #### Executables
 
 * ***add_extension***
@@ -192,32 +195,88 @@ A simple, commented post processing executable.
 
 #### Folders
 
-* case-\*
+* ***common***
+Contains all the python files common to all simulation cases.
+That is where to look if you want to extend the framework. 
+Contains the following :
+    * ***caseBatch.py***
+    File executed when running ***run_batch***.
+    * ***case.py***
+    File executed when running ***run***.
+    * ***defaultParams.py***
+    Default simulation parameters.
+    * ***extractData.py***
+    File executed when running ***extract_batch***.
+    * ***frameworkCreationUtils.py***
+    File containing the utils needed for the framework creation.
+    * ***measures.py***
+    File containing the utils to "measure" physical quantities. Used in the post processing.
+    * ***postProc.py***
+    File executed when running ***post_proc_batch***
+    * ***simulationDefinition.py***
+    Used by ***caseBatch.py*** and ***case.py***, contains the utils that create the Yade engines from simulations parameters.
+    * ***simulationPyRunners.py***
+    Used by ***caseBatch.py*** and ***case.py***, contains the utils that create the python runners from simulations parameters.
+
+* ***case-\****
 Example of simulation cases. Contains the following :
-    * clean
+    * ***clean***
     Executable to delete simulation data.
     Use:
     ./clean
-    * data/
+    * ***data/***
     Folder that contains the simulation data as *.yade files.
-    * framework.py
+    * ***framework.py***
     Contains the parameters linked to the framework creation of the simulation.
-    * params.py
+    * ***params.py***
     Contains the parameters of the simulation.
-    * run
+    * ***run***
     Executable to run the simulation.
     Use:
     ./run
-* data-\*
+* ***data-\****
 Folders containing data that may be useful for post processing.
 
 #### Others
 
-* ***pp_*.py***
+* ***pp_\*.py***
 Example of post processing parameter files.
-* ***e_*.py***
+* ***e_\*.py***
 Example of extract parameter files.
 
-### Running first tests
+### Running a first test
 
+Move to an example case and run the case. If all goes well a control panel of the simulation should pop up.
+For example case-wet:
+```
+cd case-wet
+./run
+```
 
+### Running validations
+
+The code is validated in comparison with experimental data. To check the validity of the code, you can run the following :
+```
+./run_batch case-exp*
+```
+Wait until the simulations end and then execute the following :
+```
+cp pp_exp6 params_post_proc.py
+./post_proc_batch case-exp6
+cp pp_exp14 params_post_proc.py
+./post_proc_batch case-exp14
+cp pp_exp20 params_post_proc.py
+./post_proc_batch case-exp20
+```
+
+## Using the framework
+
+Copy an example folder and edit the parameters, then run your simulation.
+For example :
+
+```
+cp -r case-wet case-test
+cd case-test
+gedit params.py
+./run
+```
