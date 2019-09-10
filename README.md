@@ -222,8 +222,7 @@ Contains the following :
 Example of simulation cases. Contains the following :
     * ***clean***
     Executable to delete simulation data.
-    Use:
-    ./clean
+    Use : `./clean`
     * ***data/***
     Folder that contains the simulation data as *.yade files.
     * ***framework.py***
@@ -232,8 +231,7 @@ Example of simulation cases. Contains the following :
     Contains the parameters of the simulation.
     * ***run***
     Executable to run the simulation.
-    Use:
-    ./run
+    Use : `./run`
 * ***data-\****
 Folders containing data that may be useful for post processing.
 
@@ -280,3 +278,7 @@ cd case-test
 gedit params.py
 ./run
 ```
+
+## License
+
+This project is licensed under the Unlicense - see the [LICENSE.md](LICENSE.md) file for details
