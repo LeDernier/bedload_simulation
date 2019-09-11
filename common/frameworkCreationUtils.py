@@ -247,8 +247,11 @@ class frCrea: # Framework Creation
 		while n_i < pM.n:
 			x = -pM.l/2.0 + cell_center[0] + d_eff/2.0
 			while x < pM.l/2.0 + cell_center[0] - d_eff/2.0 and n_i < pM.n:
-				y = -pM.w/2.0 + cell_center[1] + d_eff/2.0
-				while y < pM.w/2.0 + cell_center[1] - d_eff/2.0 and n_i < pM.n:
+				y = -pM.w/2.0 + cell_center[1] + d_eff/2.0 
+				if y > pM.w/2.0 + cell_center[1] - d_eff/2.0:
+					y = cell_center[1]
+				y_init = y
+				while (y == y_init) or (y < pM.w/2.0 + cell_center[1] - d_eff/2.0 and n_i < pM.n):
 					col = random.uniform(0.0, 1.0)
 					col = col * colors[0] + (1.0 - col) * colors[1]
 					if pP.kind == "sphere":

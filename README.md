@@ -78,7 +78,7 @@ folder1.dir/ folder2.dir/ folder3.dir/
 * ***clean_batch***
 By default, a simulation starts from the last timestep saved. 
 This executable is useful to get rid of all previously saved data in order to restart completely a simulation.
-Deletes all the simulation data of the cases given in argument. Keeps the parameters unchanged.
+Deletes all the simulation data of the cases given in argument. Keeps the parameters unchanged and the exctracted data.
 Use :
 ```
 ./clean_batch case_folders
@@ -192,6 +192,10 @@ You may want to use the ***top*** program to check the ressources used.
 
 * ***simple_post_proc.py***
 A simple, commented post processing executable.
+Use :
+```
+./simple_post_proc.py
+```
 
 #### Folders
 
@@ -278,6 +282,19 @@ cd case-test
 gedit params.py
 ./run
 ```
+
+Wait until at least two seconds of simulations elpsed, and run the data extraction and the post processing :
+```
+cd ..
+./extract_batch case-test
+./post_proc_batch case-test
+```
+
+## Further improvements
+
+[ ] Cylinders case (especially the fluid coupling)
+[ ] Orientations post processing is not working well
+[ ] Simplification of the post processing
 
 ## License
 
