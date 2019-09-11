@@ -55,7 +55,7 @@ cd bedload_simulation
 ### Repository Description
 
 The following executables may only be functionals the yade executable has been renamed to yade and its folder added to your ***PATH*** in your ***.bashrc***.
-If not, you may to edit the following executables so that they work in your case.
+If not, you may want to edit the following executables so that they work in your case.
 
 #### Executables
 
@@ -292,9 +292,9 @@ cd ..
 
 ## Further improvements
 
-[ ] Cylinders case (especially the fluid coupling)
-[ ] Orientations post processing is not working well
-[ ] Simplification of the post processing
+- [ ] Cylinders case (especially the fluid coupling)
+- [ ] Orientations post processing is not working well
+- [ ] Simplification of the post processing
 
 ## License
 
