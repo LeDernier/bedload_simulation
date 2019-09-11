@@ -71,6 +71,8 @@ class pPP:
 	#-------------------#
 	save_fig_dir = "./post_proc/"
 	save_figs = True
+	if save_figs and not os.path.isdir(save_fig_dir):
+		os.mkdir(save_fig_dir)
 	#-------------------#
 	# Adimensionalisation
 	#-------------------#
