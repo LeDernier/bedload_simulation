@@ -111,8 +111,8 @@ data/
 .ids
 nohup.out
 test*
-.pkl
-.json
+*.pkl
+*.json
 
 # batchs
 *_*/
